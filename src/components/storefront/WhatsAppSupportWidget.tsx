@@ -9,11 +9,10 @@ import {
   Package,
   Building2,
   ShieldCheck,
-  ExternalLink,
-  Sparkles,
+  ArrowUpRight,
 } from 'lucide-react';
 
-const DEALER_WHATSAPP_NUMBER = '919876543210'; // Patel Networks Central Desk
+const DEALER_WHATSAPP_NUMBER = '919876543210';
 
 export function WhatsAppSupportWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,22 +20,22 @@ export function WhatsAppSupportWidget() {
 
   const quickPrompts = [
     {
-      label: 'Track My Order',
+      label: 'Track my order',
       icon: Package,
       text: 'Hi Patel Networks, I would like to track my surveillance hardware order status.',
     },
     {
-      label: 'B2B Contractor Pricing',
+      label: 'B2B contractor pricing',
       icon: Building2,
       text: 'Hello, I am a security system installer and would like to inquire about commercial project dealer pricing.',
     },
     {
-      label: 'CCTV Architecture Advice',
+      label: 'CCTV architecture advice',
       icon: ShieldCheck,
       text: 'Hi, I need technical guidance on selecting the right IP Cameras and NVR storage for a new site installation.',
     },
     {
-      label: 'Warranty & Support Desk',
+      label: 'Warranty & support',
       icon: PhoneCall,
       text: 'Hi Patel Networks support, I have a question regarding product warranty and technical configuration.',
     },
@@ -52,119 +51,98 @@ export function WhatsAppSupportWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 font-sans print:hidden">
-      {/* Expanded Quick-Chat Dialogue Card */}
+    <div className="fixed bottom-5 right-5 z-50 font-sans print:hidden">
+      {/* Expanded dialogue — restrained, monochrome */}
       {isOpen && (
-        <div className="mb-4 w-[340px] sm:w-[380px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-slate-800 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-          {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white flex items-center justify-between">
+        <div className="mb-3 w-[330px] sm:w-[370px] bg-popover text-popover-foreground border border-border shadow-lg overflow-hidden">
+          {/* Header — ink, no gradient */}
+          <div className="p-4 bg-foreground text-background flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center font-bold text-sm">
-                💬
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-300 border-2 border-emerald-700 rounded-full" />
+              <div className="relative w-9 h-9 border border-background/30 flex items-center justify-center">
+                <MessageSquare className="w-4 h-4" />
+                <span className="absolute -bottom-1 -right-1 w-2 h-2 bg-[var(--ember)] border border-foreground" />
               </div>
               <div>
-                <h4 className="text-sm font-bold tracking-tight leading-tight">
-                  Patel Networks Helpdesk
-                </h4>
-                <span className="text-[11px] text-emerald-100 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-ping inline-block" />
-                  Typically replies in ~5 mins
+                <h4 className="text-sm font-medium leading-tight">Patel Networks Helpdesk</h4>
+                <span className="text-[11px] text-background/60 flex items-center gap-1.5 mt-0.5">
+                  <span className="dot-rec" /> Typically replies in ~5 minutes
                 </span>
               </div>
             </div>
-
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="w-7 h-7 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+              className="w-7 h-7 flex items-center justify-center text-background/70 hover:text-background hover:bg-background/10 transition-colors"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="p-4 space-y-4 max-h-[380px] overflow-y-auto">
-            {/* Greeting Speech Bubble */}
-            <div className="p-3.5 rounded-2xl rounded-tl-sm bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900 text-xs text-slate-800 dark:text-slate-200 leading-relaxed shadow-2xs">
-              <p className="font-semibold text-emerald-900 dark:text-emerald-300 mb-1 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                Namaste! How can we assist you today?
-              </p>
-              Tap a quick topic below or type your inquiry to connect directly with our CCTV engineers on WhatsApp.
+          <div className="p-4 space-y-4 max-h-[380px] overflow-y-auto scrollbar-thin">
+            <div className="p-3 border border-border bg-background text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+              Namaste. Tap a topic below or type your inquiry to connect with our CCTV
+              engineers on WhatsApp.
             </div>
 
-            {/* Quick Action Chips */}
-            <div className="space-y-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block px-1">
-                Frequent Topics
-              </span>
-              <div className="grid grid-cols-1 gap-1.5">
-                {quickPrompts.map((prompt) => {
-                  const Icon = prompt.icon;
-                  return (
-                    <button
-                      key={prompt.label}
-                      type="button"
-                      onClick={() => handleLaunchWhatsApp(prompt.text)}
-                      className="w-full text-left p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-300 dark:hover:border-emerald-800 text-xs font-medium text-slate-800 dark:text-slate-200 transition-all flex items-center justify-between group"
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                        <span>{prompt.label}</span>
-                      </span>
-                      <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-emerald-600 transition-colors" />
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="space-y-2">
+              <div className="eyebrow text-stone-400 px-1">Frequent topics</div>
+              {quickPrompts.map((prompt) => {
+                const Icon = prompt.icon;
+                return (
+                  <button
+                    key={prompt.label}
+                    type="button"
+                    onClick={() => handleLaunchWhatsApp(prompt.text)}
+                    className="w-full text-left p-2.5 border border-border hover:border-foreground hover:bg-accent text-xs font-medium text-foreground transition-colors flex items-center justify-between group"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Icon className="w-3.5 h-3.5 text-stone-500 group-hover:text-[var(--ember)] transition-colors" />
+                      <span>{prompt.label}</span>
+                    </span>
+                    <ArrowUpRight className="w-3 h-3 text-stone-400 group-hover:text-foreground transition-colors" />
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Custom Input */}
-            <div className="pt-2">
-              <div className="relative">
-                <textarea
-                  rows={2}
-                  value={customMessage}
-                  onChange={(e) => setCustomMessage(e.target.value)}
-                  placeholder="Type your question or project requirements..."
-                  className="w-full text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 resize-none"
-                />
-              </div>
-
+            <div className="pt-1">
+              <textarea
+                rows={2}
+                value={customMessage}
+                onChange={(e) => setCustomMessage(e.target.value)}
+                placeholder="Type your question or project requirements…"
+                className="w-full text-xs p-3 bg-transparent border border-border focus:border-foreground text-foreground placeholder:text-stone-400 focus:outline-none resize-none"
+              />
               <button
                 type="button"
                 onClick={() => handleLaunchWhatsApp()}
-                className="w-full mt-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.01]"
+                className="w-full mt-2 py-3 px-4 bg-foreground text-background text-xs font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Open WhatsApp Chat</span>
+                Open WhatsApp chat
               </button>
             </div>
           </div>
 
-          {/* Footer note */}
-          <div className="p-2.5 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 text-[10px] text-center text-slate-400">
-            Official Patel Networks Business API Desk • +91 98765 43210
+          <div className="p-2.5 border-t border-border text-[10px] text-center text-stone-400">
+            Official Patel Networks Business API desk · +91 98765 43210
           </div>
         </div>
       )}
 
-      {/* Floating Toggle Button */}
+      {/* Floating toggle — restrained monochrome, sharp */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Contact via WhatsApp"
-        className="group relative flex items-center gap-2.5 p-3 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-xl hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105 active:scale-95"
+        className="group relative flex items-center gap-2.5 px-4 py-3 bg-foreground text-background border border-foreground hover:bg-background hover:text-foreground transition-colors"
       >
-        <div className="relative">
-          <MessageSquare className="w-6 h-6 text-white" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full animate-ping" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full" />
-        </div>
-
-        <span className="hidden sm:inline font-bold text-xs tracking-wide">
-          {isOpen ? 'Close Chat' : 'Chat on WhatsApp'}
+        <span className="dot-rec" />
+        <MessageSquare className="w-4 h-4" />
+        <span className="hidden sm:inline text-xs font-medium tracking-wide">
+          {isOpen ? 'Close' : 'Support'}
         </span>
       </button>
     </div>

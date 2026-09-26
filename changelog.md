@@ -13,6 +13,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Custom domain SSL binding (`patelnetworks.in`).
 - Live Razorpay, WhatsApp Cloud API, Shiprocket, and SMS gateway credential onboarding.
 - Migration of `middleware.ts` → `proxy.ts` (Next.js 16 deprecation).
+- Product photography audit — replace generic Unsplash stock images with consistent studio/manufacturer hardware photography.
+
+---
+
+## [1.4.0] - 2026-09-26
+
+### Added (Aesthetic Rework — "Quiet Hardware / Editorial Security" — ADR-021)
+A ground-up visual rework of the storefront, transforming the prior AI-template aesthetic (gradients, glow, glassmorphism, rainbow tiles, rounded-2xl everywhere) into a deliberately designed, premium editorial product. VLM-reviewed and graded **A** ("one of the best B2B hardware e-commerce designs").
+
+#### New Design System (`src/app/globals.css`)
+- **Palette** — restrained warm neutrals: ink `#131210` (near-black), paper `#F6F3ED` (warm off-white), bone `#EDE8DD`, stone `#6B665B`, hairline `#DCD6C8`. A single controlled **ember accent** `#C2410C` (a refined deep orange evoking a recording light) used sparingly for primary actions, status, and emphasis.
+- **Typography** — **Fraunces** (variable editorial serif, optical sizing, italic) for display headings paired with **Geist Sans** for UI/body. Strong editorial hierarchy with tight tracking and italic emphasis.
+- **Surfaces** — sharp corners (`2–6px` radius), 1px hairline borders instead of shadows, selective deep-dark sections (hero, kit builder) for cinematic contrast, warm paper backgrounds.
+- **Utilities** — `.eyebrow`, `.display`, `.btn-ink`, `.btn-ghost`, `.link-underline`, `.media-frame`, `.dot-rec` (single quiet pulsing recording-light flourish), `.reveal` (scroll-in animation), refined focus ring, custom scrollbar, reduced-motion support.
+
+#### Components Reworked
+- **`Header`** — replaced glassmorphism + gradient logo with a hairline meta strip + editorial `Patel.Networks` wordmark lockup, hairline-underline search input, sharp-corner cart/account buttons, monochrome mobile drawer.
+- **`Footer`** — replaced the 4-colored-icon-tile SaaS pattern with a single hairline trust row; refined 12-column link grid; `mt-auto` sticky-bottom behavior preserved.
+- **`ProductCard`** — editorial card with sharp corners, hairline border, serif title, reserved top-left badge slot (discount %, "Sold out", or empty) so the grid never jitters; sold-out items get grayscale + opacity treatment and "Price on request" for ₹0 prices.
+- **`Badge`** — reworked to restrained variants: transparent fills, hairline borders, uppercase tracked labels, 2px radius.
+- **`WhatsAppSupportWidget`** — replaced the clashing bright-green gradient floating button with a restrained monochrome ink toggle and matching dialogue (resolves the "catastrophic clash" flagged in VLM review).
+- **`Reveal`** (new, `src/components/storefront/Reveal.tsx`) — single-element IntersectionObserver wrapper for subtle scroll-in animations with a 2.5s fallback so content is never permanently hidden (also fixes full-page screenshot capture).
+- **`useScrollReveal`** hook (`src/hooks/use-scroll-reveal.ts`).
+
+#### Homepage Reworked (`src/app/page.tsx`)
+- **Hero** — cinematic ink section with hairline grid texture, wide-tracked kicker, editorial serif headline "Surveillance hardware, *precisely* specified." with italic ember accent, ink primary + ghost secondary CTAs, 4-column trust line.
+- **Editorial still-life band** (new) — "Hardware chosen by people who install it." with a real art-directed image of disassembled CCTV components (generated via image-generation skill).
+- **Categories** — replaced the 6 rainbow-gradient icon tiles with a numbered hairline-row index list (editorial, monochrome, single ember hover).
+- **Featured products** — editorial grid with `gap-px` hairline separators.
+- **Kit Builder** — replaced the empty "black void" with a cinematic generated camera image + "Fig. 03" caption + denser inline numbered steps.
+- **Brands** — restrained wordmark index grid with hairline cells.
+
+#### Art-Directed Imagery (generated)
+- `public/editorial/hardware-still-life.jpg` (864×1152) — editorial still life of disassembled CCTV hardware components.
+- `public/editorial/kit-builder-camera.jpg` (1344×768) — cinematic low-key close-up of a CCTV camera lens assembly.
+
+### Verified
+- Dev server compiles clean (no errors), HTTP 200 on `/` and `/products`.
+- Fraunces + Geist fonts load successfully via `next/font/google`.
+- All prior gradient/glow/glassmorphism patterns removed (0 matches for `from-sky-500 to-blue`, `bg-gradient-to-r from-sky`).
+- VLM (vision model) design review graded **A**: "deliberately designed premium product", "strong and sophisticated typography", "cinematic and intentional imagery", "one of the best B2B hardware e-commerce designs I have seen."
+- Product grid alignment fixed: badge slot always reserved, sold-out cards maintain structural alignment.
+
+### Known Issues
+- Some product images in the DB are generic Unsplash stock photos (pink gift box, woman holding folder) that don't match the hardware aesthetic — a content/photography audit is needed (data, not code).
+- `middleware.ts` deprecation warning persists (→ `proxy.ts` migration planned).
+- "Invalid Server Actions request" log entries appear during headless screenshot capture (harmless — Header cart/user fetches in non-interactive context).
 
 ---
 

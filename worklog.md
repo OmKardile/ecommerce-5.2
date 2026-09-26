@@ -629,3 +629,36 @@ Stage Summary:
 - **Documentation CURRENT**: changelog.md (v1.3.0), decisions.md (ADR-020), worklog.md updated. All 13 docs synced.
 - **Known issues**: middleware.ts deprecation (→proxy.ts migration planned), 1 lint warning (cart set-state-in-effect), agent-browser QA deferred to cron.
 - **Next steps**: Set up webDevReview cron (every 15 min) for ongoing QA + feature development. Begin UI enhancement with shadcn/ui. Address Medusa migration as a documented future decision (not actioned — existing 12-phase custom architecture preserved).
+
+
+---
+Task ID: 9-AESTHETIC-REWORK
+Agent: Lead Developer (Z.ai Code)
+Task: Execute a full aesthetic rework of the Patel Networks storefront per the user's detailed "aesthetic_rework" brief — transform the AI-generated SaaS-template UI into a premium, deliberately designed product with Apple-level polish, editorial sensibility, restrained neutrals, sharp corners, and a single controlled accent.
+
+Work Log:
+- Studied the baseline storefront (Header, Footer, ProductCard, homepage, Badge) — confirmed it exhibited every anti-pattern from the brief: gradient orbs, glassmorphism header, sky→indigo gradient buttons, glow shadows, rainbow category tiles, rounded-2xl everywhere, pulsing dots, emoji in links, gradient clip-text headlines.
+- Defined a coherent design direction: "Quiet Hardware / Editorial Security" — warm near-black ink + paper neutrals + single ember (#C2410C) accent, Fraunces serif + Geist sans, sharp corners, hairline borders, no gradients/glow/glass.
+- Implemented the design system in src/app/globals.css: full token set (ink/paper/bone/stone/hairline/ember), light + dark themes mapped to shadcn-compatible CSS variables, editorial utility classes (.eyebrow, .display, .btn-ink, .btn-ghost, .link-underline, .media-frame, .dot-rec, .reveal), reduced-motion support.
+- Updated src/app/layout.tsx: added Fraunces (variable editorial serif, optical sizing) alongside Geist Sans, set paper background + flex-col sticky-footer structure.
+- Created src/hooks/use-scroll-reveal.ts and src/components/storefront/Reveal.tsx: IntersectionObserver-based subtle scroll reveals with a 2.5s fallback so content is never permanently hidden (also fixes full-page screenshot capture).
+- Reworked src/components/ui/Badge.tsx: restrained variants (transparent fills, hairline borders, uppercase tracked labels, 2px radius).
+- Reworked src/components/storefront/Header.tsx: hairline meta strip replacing the dense announcement bar, editorial "Patel.Networks" wordmark lockup, hairline-underline search input, sharp-corner cart/account buttons, monochrome mobile drawer. Removed gradient logo tile, glassmorphism, sky→indigo gradient CTA.
+- Reworked src/components/storefront/Footer.tsx: single hairline trust row replacing the 4-colored-icon-tile SaaS pattern, refined 12-column link grid, mt-auto sticky-bottom preserved.
+- Reworked src/components/storefront/ProductCard.tsx: editorial card with sharp corners, hairline border, serif title, reserved top-left badge slot so the grid never jitters. Sold-out items get grayscale + opacity + "Sold out" badge; ₹0 prices show "Price on request".
+- Generated two art-directed images via the image-generation skill: public/editorial/hardware-still-life.jpg (864×1152, disassembled CCTV components) and public/editorial/kit-builder-camera.jpg (1344×768, cinematic low-key camera close-up).
+- Reworked src/components/storefront/WhatsAppSupportWidget.tsx: replaced the clashing bright-green gradient floating button with a restrained monochrome ink toggle + matching dialogue (resolves the "catastrophic clash" flagged in VLM review).
+- Rewrote src/app/page.tsx: cinematic ink hero ("Surveillance hardware, precisely specified." with italic ember accent), new editorial still-life band ("Hardware chosen by people who install it."), categories as a numbered hairline-row index (replacing rainbow tiles), editorial featured-products grid, kit builder section with the cinematic camera image + denser numbered steps (replacing the empty black void), restrained brand wordmark index.
+- Debugged a Turbopack panic caused by Fraunces' exotic `SOFT` axis — removed the axis and the panic resolved.
+- Diagnosed that the "void" the VLM reported in v3 was a screenshot artifact: the .reveal opacity:0 state hid below-the-fold content in full-page screenshots because IntersectionObserver never fired without scrolling. Fixed via the 2.5s fallback in Reveal + scroll-before-screenshot workflow.
+- VLM design review iterations: v3 graded A- (void artifact), v4 graded A- (sold-out card misalignment), v5 graded A (sold-out fix applied — grid now "mathematically and visually sound").
+- Updated changelog.md with v1.4.0 entry; appended ADR-021 to decisions.md.
+
+Stage Summary:
+- **Aesthetic rework COMPLETE and VLM-graded A** ("one of the best B2B hardware e-commerce designs I have seen", "deliberately designed premium product", "not a Shopify/WooCommerce theme").
+- **Design system**: "Quiet Hardware / Editorial Security" — warm neutrals + single ember accent, Fraunces serif + Geist sans, sharp corners, hairline borders, no gradients/glow/glass.
+- **All anti-patterns removed**: 0 matches for the old gradient/glassmorphism patterns. Replaced with editorial restraint.
+- **Art-directed imagery**: 2 generated cinematic images integrated (hardware still-life + camera close-up).
+- **Functionality preserved**: all routes still HTTP 200, DB untouched, shadcn/ui library intact and theme-compatible.
+- **Remaining (content, not code)**: some DB product images are generic Unsplash stock (pink gift box, woman with folder) — a photography audit is the next content task.
+- **Cron**: webDevReview job (every 15 min, job_id 415773) is active for ongoing QA + feature development.

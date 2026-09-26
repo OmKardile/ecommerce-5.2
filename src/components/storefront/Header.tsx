@@ -3,18 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
-  Shield,
   Search,
   ShoppingCart,
   User,
-  Wrench,
   Menu,
   X,
-  PhoneCall,
-  CheckCircle2,
-  FileText,
+  ArrowUpRight,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
 import { getCartAction } from '@/app/actions/cart.actions';
 import { getCurrentUserAction } from '@/app/actions/auth.actions';
 import { quickSearchAction } from '@/app/actions/catalog.actions';
@@ -46,7 +41,6 @@ export function Header() {
   const [cartCount, setCartCount] = useState<number>(0);
   const [currentUser, setCurrentUser] = useState<HeaderUser | null>(null);
 
-  // Live search autocomplete states
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -58,7 +52,7 @@ export function Header() {
       const cart = await getCartAction();
       setCartCount(cart?.itemCount ?? 0);
     } catch {
-      // Graceful fallback
+      // graceful
     }
   };
 
@@ -69,7 +63,7 @@ export function Header() {
         setCurrentUser(res.user as HeaderUser);
       }
     } catch {
-      // Graceful fallback
+      // graceful
     }
   };
 
@@ -84,14 +78,12 @@ export function Header() {
     return () => window.removeEventListener('cart-updated', onCartUpdate);
   }, []);
 
-  // Debounced live search autocomplete
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
     }
-
     setIsSearching(true);
     const timer = setTimeout(async () => {
       try {
@@ -101,16 +93,14 @@ export function Header() {
           setShowDropdown(true);
         }
       } catch {
-        // Graceful fallback
+        // graceful
       } finally {
         setIsSearching(false);
       }
     }, 200);
-
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Click-outside listener & Escape key handler to dismiss search dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -122,13 +112,9 @@ export function Header() {
         setShowDropdown(false);
       }
     };
-
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setShowDropdown(false);
-      }
+      if (event.key === 'Escape') setShowDropdown(false);
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -152,190 +138,170 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
-      {/* Top Announcement Bar */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 hidden md:block">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-[2px] border-b border-border transition-colors">
+      {/* Slim meta strip — restrained, monochrome, no icons clutter */}
+      <div className="hidden md:block border-b border-border">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex justify-between items-center h-8 text-[11px] text-stone-500 dark:text-stone-400">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5" /> 100% Genuine Hikvision, CP Plus & Dahua
-            </span>
-            <span className="flex items-center gap-1.5 text-slate-300">
-              <FileText className="w-3.5 h-3.5 text-sky-400" /> B2B GST Tax Invoicing (18% ITC)
+            <span className="flex items-center gap-2">
+              <span className="dot-rec" aria-hidden />
+              <span>Authorized distributor — CP Plus · Hikvision · Dahua</span>
             </span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400">
-            <span>Direct Dispatch Across India</span>
-            <span>•</span>
-            <a
-              href="tel:+919876543210"
-              className="flex items-center gap-1.5 text-slate-200 hover:text-white transition-colors"
-            >
-              <PhoneCall className="w-3.5 h-3.5 text-emerald-400" /> +91 98765 43210
+          <div className="flex items-center gap-5">
+            <span className="hidden lg:inline">B2B GST invoicing · 18% ITC</span>
+            <span className="hidden lg:inline text-stone-300 dark:text-stone-600">/</span>
+            <a href="tel:+919876543210" className="link-underline hover:text-foreground transition-colors">
+              +91 98765 43210
             </a>
           </div>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                Patel Networks
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              </span>
-              <span className="block text-[10px] uppercase tracking-widest font-semibold text-sky-600 dark:text-sky-400 -mt-1">
-                Security & Surveillance
-              </span>
-            </div>
+      {/* Main bar */}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
+        <div className="flex items-center justify-between h-[68px] gap-6">
+          {/* Logo lockup — editorial */}
+          <Link href="/" className="flex items-baseline gap-2 shrink-0 group" aria-label="Patel Networks home">
+            <span className="display text-[22px] sm:text-[26px] leading-none text-foreground">
+              Patel<span className="text-[var(--ember)]">.</span>Networks
+            </span>
+            <span className="hidden sm:inline eyebrow text-stone-500 dark:text-stone-500 ml-1">
+              Security Hardware
+            </span>
           </Link>
 
-          {/* Search Bar */}
+          {/* Search — hairline input, sharp */}
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-lg relative items-center"
+            className="hidden md:flex flex-1 max-w-md relative items-center"
           >
-            <div ref={searchContainerRef} className="relative w-full">
+            <div ref={searchContainerRef} className="relative w-full group">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => {
-                  if (suggestions.length > 0) setShowDropdown(true);
-                }}
-                placeholder="Search CCTV cameras, 4MP, DVRs, Cat6 cable, SKUs..."
-                className="w-full pl-10 pr-9 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all placeholder:text-slate-400 text-slate-900 dark:text-white shadow-inner"
+                onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
+                placeholder="Search cameras, recorders, cable, SKU…"
+                className="w-full px-0 py-2 pr-8 text-sm bg-transparent border-0 border-b border-border focus:outline-none focus:border-foreground transition-colors placeholder:text-stone-400 text-foreground"
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-stone-400 absolute right-0 top-1/2 -translate-y-1/2 transition-colors group-focus-within:text-foreground" />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  aria-label="Clear search query"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                  aria-label="Clear search"
+                  className="absolute right-6 top-1/2 -translate-y-1/2 text-stone-400 hover:text-foreground transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
 
-              {/* Autocomplete Dropdown */}
+              {/* Autocomplete — clean, hairline, sharp */}
               {showDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden z-50 animate-in fade-in-50 slide-in-from-top-1 text-left">
+                <div className="absolute left-0 right-0 top-full mt-2 bg-popover text-popover-foreground border border-border shadow-sm overflow-hidden z-50">
                   {isSearching ? (
-                    <div className="p-4 text-center text-xs text-slate-400">
-                      Searching surveillance hardware...
-                    </div>
+                    <div className="p-5 text-xs text-stone-500">Searching…</div>
                   ) : suggestions.length > 0 ? (
-                    <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                      <div className="p-2 text-[10px] uppercase tracking-wider font-bold text-slate-400 bg-slate-50 dark:bg-slate-950/60 px-3">
-                        Matching Hardware ({suggestions.length})
+                    <div>
+                      <div className="eyebrow px-4 pt-3 pb-2 text-stone-400">
+                        Matching hardware · {suggestions.length}
                       </div>
-                      {suggestions.map((item) => (
-                        <Link
-                          key={item.id}
-                          href={`/products/${item.slug}`}
-                          onClick={() => setShowDropdown(false)}
-                          className="flex items-center justify-between p-3 hover:bg-sky-50 dark:hover:bg-slate-800/80 transition-colors group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">
-                              {item.brandName.slice(0, 2).toUpperCase()}
-                            </div>
-                            <div>
-                              <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 block line-clamp-1">
+                      <div className="divide-y divide-border border-t border-border">
+                        {suggestions.map((item) => (
+                          <Link
+                            key={item.id}
+                            href={`/products/${item.slug}`}
+                            onClick={() => setShowDropdown(false)}
+                            className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-accent transition-colors group"
+                          >
+                            <div className="min-w-0">
+                              <div className="text-sm text-foreground group-hover:text-[var(--ember)] transition-colors truncate">
                                 {item.name}
-                              </span>
-                              <span className="text-[10px] text-slate-500 font-mono">
-                                {item.modelNumber} • {item.categoryName}
-                              </span>
+                              </div>
+                              <div className="text-[11px] text-stone-500 font-mono mt-0.5 truncate">
+                                {item.brandName} · {item.modelNumber || item.categoryName}
+                              </div>
                             </div>
-                          </div>
-                          <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0 ml-3">
-                            {formatInr(item.sellingPrice)}
-                          </span>
-                        </Link>
-                      ))}
+                            <span className="text-sm font-mono text-foreground shrink-0">
+                              {formatInr(item.sellingPrice)}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
                       <button
                         type="submit"
-                        className="w-full py-2.5 px-3 text-center text-xs font-semibold text-sky-600 dark:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors block"
+                        className="w-full py-3 px-4 text-left text-xs font-medium text-stone-600 hover:text-foreground hover:bg-accent transition-colors border-t border-border flex items-center justify-between"
                       >
-                        View all results for &quot;{searchQuery}&quot; →
+                        <span>View all results for “{searchQuery}”</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
-                    <div className="p-4 text-center text-xs text-slate-400">
-                      No matching products found.
-                    </div>
+                    <div className="p-5 text-xs text-stone-500">No matching hardware.</div>
                   )}
                 </div>
               )}
             </div>
           </form>
 
-          {/* Navigation & CTAs */}
-          <nav className="hidden lg:flex items-center gap-6">
-            <Link
-              href="/products"
-              className="text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
-            >
-              Browse Products
-            </Link>
+          {/* Nav + actions */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            <nav className="hidden lg:flex items-center gap-6 mr-2">
+              <Link
+                href="/products"
+                className="text-sm text-stone-700 dark:text-stone-300 hover:text-foreground link-underline transition-colors"
+              >
+                Catalog
+              </Link>
+              <Link
+                href="/kit-builder"
+                className="text-sm text-stone-700 dark:text-stone-300 hover:text-foreground link-underline transition-colors"
+              >
+                Kit Builder
+              </Link>
+            </nav>
 
-            {/* Custom CCTV Kit Builder CTA */}
-            <Link
-              href="/kit-builder"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-white text-xs font-semibold shadow-md shadow-sky-500/15 hover:shadow-sky-500/25 hover:scale-[1.02] transition-all"
-            >
-              <Wrench className="w-3.5 h-3.5" />
-              Custom CCTV Kit Builder
-            </Link>
-          </nav>
-
-          {/* User Actions */}
-          <div className="flex items-center gap-3">
-            {/* Account / Login */}
+            {/* Account */}
             {currentUser ? (
               <Link
                 href="/account"
-                className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900 flex items-center gap-2 text-xs font-semibold border border-sky-200 dark:border-sky-800 transition-all"
+                className="px-3 py-2 text-sm text-stone-700 dark:text-stone-300 hover:text-foreground border border-transparent hover:border-border transition-colors flex items-center gap-2"
               >
-                <User className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                <User className="w-4 h-4" />
                 <span className="hidden sm:inline">
-                  Hi, {currentUser.customer?.fullName?.split(' ')[0] || 'Account'}
+                  {currentUser.customer?.fullName?.split(' ')[0] || 'Account'}
                 </span>
               </Link>
             ) : (
               <Link
                 href="/account/login"
-                className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 flex items-center gap-2 text-xs font-medium border border-transparent hover:border-slate-200 dark:hover:border-slate-800 transition-all"
+                className="px-3 py-2 text-sm text-stone-700 dark:text-stone-300 hover:text-foreground border border-transparent hover:border-border transition-colors flex items-center gap-2"
               >
-                <User className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <span className="hidden sm:inline">Login / Account</span>
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline">Account</span>
               </Link>
             )}
 
-            {/* Cart Button */}
+            {/* Cart — minimal count, no pill */}
             <Link
               href="/cart"
-              className="relative p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white border border-slate-200/80 dark:border-slate-800 transition-all"
+              className="relative px-3 py-2 text-sm text-foreground hover:bg-accent border border-border hover:border-foreground transition-colors flex items-center gap-2"
             >
-              <ShoppingCart className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+              <ShoppingCart className="w-4 h-4" />
               <span className="hidden sm:inline">Cart</span>
-              <span className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center text-[10px] font-bold">
-                {cartCount}
-              </span>
+              {cartCount > 0 && (
+                <span className="text-[var(--ember)] font-mono text-xs leading-none">
+                  {String(cartCount).padStart(2, '0')}
+                </span>
+              )}
             </Link>
 
-            {/* Mobile menu toggle */}
+            {/* Mobile toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900"
+              className="lg:hidden p-2 text-foreground hover:bg-accent transition-colors"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -343,53 +309,43 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top-2">
+        <div className="lg:hidden border-t border-border bg-background px-6 pt-4 pb-8 space-y-6">
           <form onSubmit={handleSearch} className="relative w-full">
             <div ref={mobileSearchRef} className="relative w-full">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => {
-                  if (suggestions.length > 0) setShowDropdown(true);
-                }}
-                placeholder="Search CCTV cameras, brands, SKUs..."
-                className="w-full pl-10 pr-9 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white"
+                onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
+                placeholder="Search cameras, recorders, cable…"
+                className="w-full px-0 py-3 text-sm bg-transparent border-0 border-b border-border focus:outline-none focus:border-foreground text-foreground"
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
                   aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-slate-400"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-400"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
               )}
-
-              {/* Mobile Autocomplete Suggestions */}
               {showDropdown && suggestions.length > 0 && (
-                <div className="mt-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800/60 max-h-60 overflow-y-auto">
-                  {suggestions.slice(0, 4).map((item) => (
+                <div className="mt-2 bg-popover border border-border shadow-sm overflow-hidden divide-y divide-border max-h-72 overflow-y-auto">
+                  {suggestions.slice(0, 5).map((item) => (
                     <Link
                       key={item.id}
                       href={`/products/${item.slug}`}
-                      onClick={() => {
-                        setShowDropdown(false);
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex items-center justify-between p-2.5 hover:bg-sky-50 dark:hover:bg-slate-800 text-xs"
+                      onClick={() => { setShowDropdown(false); setMobileMenuOpen(false); }}
+                      className="flex items-center justify-between p-3 hover:bg-accent text-sm"
                     >
-                      <div className="truncate mr-2">
-                        <span className="font-bold text-slate-900 dark:text-white block truncate">
-                          {item.name}
-                        </span>
-                        <span className="text-[10px] text-slate-500 font-mono">
-                          {item.brandName} • {formatInr(item.sellingPrice)}
-                        </span>
+                      <div className="truncate mr-3">
+                        <div className="text-foreground truncate">{item.name}</div>
+                        <div className="text-[11px] text-stone-500 font-mono">
+                          {item.brandName} · {formatInr(item.sellingPrice)}
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -398,27 +354,27 @@ export function Header() {
             </div>
           </form>
 
-          <div className="flex flex-col gap-2 pt-2">
+          <div className="flex flex-col divide-y divide-border border-y border-border">
             <Link
               href="/products"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 text-sm font-medium rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900"
+              className="py-4 text-sm text-foreground flex items-center justify-between"
             >
-              Browse All Products
+              Browse Catalog <ArrowUpRight className="w-4 h-4 text-stone-400" />
             </Link>
             <Link
               href="/kit-builder"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 text-sm font-semibold rounded-lg bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 flex items-center gap-2"
+              className="py-4 text-sm text-foreground flex items-center justify-between"
             >
-              <Wrench className="w-4 h-4" /> Custom CCTV Kit Builder
+              CCTV Kit Builder <ArrowUpRight className="w-4 h-4 text-stone-400" />
             </Link>
             <Link
               href="/account"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 text-sm font-medium rounded-lg text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900"
+              className="py-4 text-sm text-foreground flex items-center justify-between"
             >
-              Login with Phone OTP
+              Login with Phone OTP <ArrowUpRight className="w-4 h-4 text-stone-400" />
             </Link>
           </div>
         </div>

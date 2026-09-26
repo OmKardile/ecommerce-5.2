@@ -2,31 +2,21 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  Shield,
-  Wrench,
-  CheckCircle2,
   ArrowRight,
-  Truck,
-  FileText,
-  BadgeCheck,
-  Video,
-  HardDrive,
-  Cpu,
-  Layers,
-  PhoneCall,
-  Sparkles,
+  ArrowUpRight,
+  Wrench,
 } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
 import { ProductCard } from '@/components/storefront/ProductCard';
-import { Badge } from '@/components/ui/Badge';
+import { Reveal } from '@/components/storefront/Reveal';
 import {
   getFeaturedProducts,
   getCategories,
   getPopularBrands,
 } from '@/server/services/catalog.service';
 
-export const revalidate = 60; // ISR cache every 60 seconds
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [featuredProducts, categories, brands] = await Promise.all([
@@ -35,266 +25,345 @@ export default async function HomePage() {
     getPopularBrands(),
   ]);
 
+  // Curated category entries with restrained monochrome presentation
+  const categoryOrder = [
+    'hd-analog-cameras',
+    'network-ip-cameras',
+    'recorders-dvr-nvr',
+    'surveillance-storage',
+    'cables-wiring',
+    'power-accessories',
+  ];
+  const curatedCategories = categoryOrder
+    .map((slug) => categories.find((c) => c.slug === slug))
+    .filter(Boolean)
+    .slice(0, 6);
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
       <main className="flex-1">
         {/* ============================================================ */}
-        {/* HERO SECTION */}
+        {/* HERO — cinematic ink, restrained, editorial */}
         {/* ============================================================ */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white py-20 lg:py-28 border-b border-slate-800">
-          {/* Subtle Grid texture */}
-          <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
+        <section className="relative overflow-hidden bg-foreground text-background">
+          {/* Hairline grid texture — extremely subtle */}
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)',
+              backgroundSize: '64px 64px',
+            }}
+          />
 
-          {/* Accent glow orb */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl space-y-6">
-              {/* Live Status Pill */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs font-medium text-slate-200 backdrop-blur-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="text-emerald-400 font-semibold">Authorized Indian Distributor</span>
-                <span>•</span>
-                <span>CP Plus • Hikvision • Dahua</span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15]">
-                Commercial CCTV & Surveillance Systems for{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-emerald-400">
-                  Total Security.
+          <div className="relative max-w-[1400px] mx-auto px-6 lg:px-10 pt-20 pb-24 lg:pt-28 lg:pb-32">
+            {/* Eyebrow — wider letter-spacing, more presence */}
+            <Reveal>
+              <div className="flex items-center gap-4 mb-12">
+                <span className="dot-rec" />
+                <span className="text-[12px] tracking-[0.24em] uppercase font-medium text-background/55">
+                  Authorized Indian distributor
                 </span>
+                <span className="text-background/20">/</span>
+                <span className="text-[12px] tracking-[0.24em] uppercase text-background/40">
+                  CP Plus · Hikvision · Dahua
+                </span>
+              </div>
+            </Reveal>
+
+            {/* Headline — editorial serif, left-aligned, tight */}
+            <Reveal delay={60}>
+              <h1 className="display text-[clamp(2.6rem,7vw,5.5rem)] leading-[0.98] max-w-5xl text-background">
+                Surveillance hardware,
+                <br />
+                <span className="ital">precisely</span> specified.
               </h1>
+            </Reveal>
 
-              {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
-                Procure certified HD analog cameras, AI AcuSense network recorders, 24/7 surveillance hard drives, and Cat6 cabling. Every order includes verified 18% GST tax invoices with immediate Indian logistics dispatch.
+            {/* Subtitle — narrow editorial column */}
+            <Reveal delay={120}>
+              <p className="mt-8 text-base sm:text-lg text-background/70 leading-relaxed max-w-xl font-sans">
+                Procure certified HD analog cameras, AI AcuSense recorders, 24/7
+                surveillance drives and Cat6 cabling. Every order ships with verified
+                18% GST invoicing and immediate pan-India dispatch.
               </p>
+            </Reveal>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-4">
+            {/* CTAs — one primary ink, one ghost (inverted for dark) */}
+            <Reveal delay={180}>
+              <div className="mt-10 flex flex-wrap items-center gap-3">
                 <Link
                   href="/products"
-                  className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2.5 bg-background text-foreground px-7 py-4 text-sm font-medium rounded-sm transition-transform hover:-translate-y-0.5"
                 >
-                  Explore CCTV Catalog <ArrowRight className="w-4 h-4" />
+                  Browse the catalog
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
-
                 <Link
                   href="/kit-builder"
-                  className="px-6 py-3.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 text-white font-semibold text-sm border border-slate-700 shadow-md flex items-center gap-2 transition-all hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2.5 px-7 py-4 text-sm font-medium rounded-sm border border-background/30 text-background hover:border-background hover:bg-background/5 transition-colors"
                 >
-                  <Wrench className="w-4 h-4 text-sky-400" />
-                  Custom CCTV Kit Builder
+                  <Wrench className="w-4 h-4" />
+                  Build a CCTV kit
                 </Link>
               </div>
+            </Reveal>
 
-              {/* Trust Indicators */}
-              <div className="pt-8 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>100% Genuine Serials</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-sky-400 shrink-0" />
-                  <span>18% GST Input Credit</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-indigo-400 shrink-0" />
-                  <span>Express Dispatch</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>On-Site Warranty</span>
-                </div>
+            {/* Trust line — hairline divider, no colored icons */}
+            <Reveal delay={240}>
+              <div className="mt-16 pt-8 border-t border-background/15 grid grid-cols-2 md:grid-cols-4 gap-y-5 gap-x-8 max-w-3xl">
+                {[
+                  ['Genuine serials', 'manufacturer-warranted'],
+                  ['18% GST', 'input tax credit'],
+                  ['Express dispatch', 'Shiprocket · Delhivery'],
+                  ['On-site warranty', 'serial-tracked RMA'],
+                ].map(([a, b]) => (
+                  <div key={a}>
+                    <div className="text-sm text-background font-medium">{a}</div>
+                    <div className="text-[11px] text-background/50 mt-0.5">{b}</div>
+                  </div>
+                ))}
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* MAIN CATEGORIES TILES */}
+        {/* EDITORIAL STILL-LIFE BAND — real art-directed imagery */}
         {/* ============================================================ */}
-        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-            <div>
-              <Badge variant="tech" className="mb-2 uppercase text-[10px]">
-                Product Categories
-              </Badge>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                Surveillance & Networking Hardware
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 -mt-px">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center py-20 lg:py-28">
+            <Reveal className="lg:col-span-5 order-2 lg:order-1">
+              <div className="eyebrow text-stone-500 mb-5">The discipline</div>
+              <h2 className="display text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight text-foreground">
+                Hardware chosen by people who install it.
               </h2>
-            </div>
-            <Link
-              href="/products"
-              className="text-sm font-semibold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1"
-            >
-              View Full Catalog <ArrowRight className="w-4 h-4" />
-            </Link>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-6 max-w-md">
+                Every camera, recorder and drive in our catalog is vetted by engineers
+                who specify and deploy these systems in the field. No rebranded grey
+                market, no mystery SKUs — only serial-tracked, manufacturer-warranted
+                hardware from the brands Indian installers already trust.
+              </p>
+              <Link href="/about" className="inline-flex items-center gap-1.5 mt-8 text-sm text-foreground link-underline">
+                Read the sourcing standard <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </Reveal>
+            <Reveal delay={80} className="lg:col-span-7 order-1 lg:order-2">
+              <div className="media-frame relative aspect-[4/5] sm:aspect-[5/4] border border-border">
+                <Image
+                  src="/editorial/hardware-still-life.jpg"
+                  alt="Disassembled CCTV surveillance hardware components — lens, board, connector, bracket"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="object-cover"
+                />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CATEGORIES — editorial index, not rainbow tiles */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <Reveal>
+              <div>
+                <div className="eyebrow text-stone-500 mb-3">01 — Categories</div>
+                <h2 className="display text-[clamp(1.9rem,4vw,2.8rem)] leading-tight text-foreground max-w-xl">
+                  Six disciplines of security hardware.
+                </h2>
+              </div>
+            </Reveal>
+            <Reveal delay={80}>
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-1.5 text-sm text-foreground link-underline"
+              >
+                View full catalog <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </Reveal>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              {
-                name: 'HD Analog Cameras',
-                desc: '2MP to 16MP Bullet & Dome',
-                icon: Video,
-                slug: 'hd-analog-cameras',
-                color: 'from-blue-500/10 to-sky-500/10 text-sky-600 dark:text-sky-400',
-              },
-              {
-                name: 'Network IP Cameras',
-                desc: 'PoE AI Smart Surveillance',
-                icon: Cpu,
-                slug: 'network-ip-cameras',
-                color: 'from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400',
-              },
-              {
-                name: 'DVR & NVR Recorders',
-                desc: '4, 8 & 16 Channels with AI',
-                icon: Layers,
-                slug: 'recorders-dvr-nvr',
-                color: 'from-indigo-500/10 to-purple-500/10 text-indigo-600 dark:text-indigo-400',
-              },
-              {
-                name: 'Surveillance HDDs',
-                desc: '1TB to 8TB Seagate & WD',
-                icon: HardDrive,
-                slug: 'surveillance-storage',
-                color: 'from-amber-500/10 to-orange-500/10 text-amber-600 dark:text-amber-400',
-              },
-              {
-                name: 'Cables & Wiring',
-                desc: 'Cat6 305m Drums & 3+1 HD',
-                icon: Layers,
-                slug: 'cables-wiring',
-                color: 'from-rose-500/10 to-pink-500/10 text-rose-600 dark:text-rose-400',
-              },
-              {
-                name: 'Power & Accessories',
-                desc: 'SMPS & BNC Connectors',
-                icon: Shield,
-                slug: 'power-accessories',
-                color: 'from-cyan-500/10 to-blue-500/10 text-cyan-600 dark:text-cyan-400',
-              },
-            ].map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/products?category=${cat.slug}`}
-                className="group flex flex-col p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-lg hover:border-sky-500/50 transition-all text-center items-center"
-              >
-                <div
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}
+          {/* Index list — numbered, hairline rows, no icon tiles */}
+          <div className="border-t border-border">
+            {curatedCategories.map((cat, idx) => (
+              <Reveal key={cat!.id} delay={idx * 40}>
+                <Link
+                  href={`/products?category=${cat!.slug}`}
+                  className="group grid grid-cols-12 items-center gap-4 py-7 border-b border-border hover:bg-accent/50 transition-colors px-2 -mx-2"
                 >
-                  <cat.icon className="w-6 h-6" />
-                </div>
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                  {cat.name}
-                </h4>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">
-                  {cat.desc}
-                </p>
-              </Link>
+                  <span className="col-span-2 sm:col-span-1 font-mono text-xs text-stone-400">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <span className="col-span-7 sm:col-span-5 display text-xl sm:text-2xl text-foreground group-hover:text-[var(--ember)] transition-colors">
+                    {cat!.name}
+                  </span>
+                  <span className="hidden sm:block col-span-5 text-sm text-stone-500">
+                    {categoryBlurb(cat!.slug)}
+                  </span>
+                  <span className="col-span-3 sm:col-span-1 flex justify-end">
+                    <ArrowUpRight className="w-5 h-5 text-stone-400 group-hover:text-foreground group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                  </span>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* FEATURED PRODUCTS FROM SUPABASE */}
+        {/* FEATURED PRODUCTS — editorial grid */}
         {/* ============================================================ */}
-        <section className="py-14 bg-slate-100/70 dark:bg-slate-900/40 border-y border-slate-200/80 dark:border-slate-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-              <div>
-                <Badge variant="tech" className="mb-2 uppercase text-[10px]">
-                  Featured Systems
-                </Badge>
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                  High-Demand Surveillance Models
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Genuine stock available with immediate SKU-level dispatch from our central warehouse.
-                </p>
-              </div>
-
-              <Link
-                href="/products"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-sky-500 transition-colors shadow-xs"
-              >
-                View All {featuredProducts.length}+ Models <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+        <section className="border-y border-border bg-card/40">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+              <Reveal>
+                <div>
+                  <div className="eyebrow text-stone-500 mb-3">02 — Featured</div>
+                  <h2 className="display text-[clamp(1.9rem,4vw,2.8rem)] leading-tight text-foreground max-w-xl">
+                    High-demand surveillance models.
+                  </h2>
+                  <p className="text-sm text-stone-500 mt-3 max-w-md">
+                    Genuine stock, SKU-level dispatch from our central warehouse.
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal delay={80}>
+                <Link
+                  href="/products"
+                  className="btn-ghost shrink-0"
+                >
+                  All {featuredProducts.length}+ models <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </Reveal>
             </div>
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
+              {featuredProducts.slice(0, 4).map((product, idx) => (
+                <Reveal key={product.id} delay={idx * 50} className="bg-background">
+                  <ProductCard product={product} />
+                </Reveal>
               ))}
             </div>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* INTERACTIVE CCTV KIT BUILDER PROMO BANNER */}
+        {/* KIT BUILDER — cinematic image + editorial copy */}
         {/* ============================================================ */}
-        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-sky-950 text-white p-8 sm:p-12 lg:p-16 border border-slate-800 shadow-2xl overflow-hidden">
-            <div className="absolute right-0 bottom-0 translate-x-12 translate-y-12 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+        <section className="bg-foreground text-background">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-24 lg:py-32">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Art-directed image — replaces the void */}
+              <Reveal className="lg:col-span-6 order-1">
+                <div className="media-frame relative aspect-[16/11] border border-background/15">
+                  <Image
+                    src="/editorial/kit-builder-camera.jpg"
+                    alt="Cinematic close-up of a premium CCTV camera lens assembly in low-key light"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute top-4 left-4 flex items-center gap-2 bg-foreground/80 backdrop-blur-[2px] px-2.5 py-1">
+                    <span className="dot-rec" />
+                    <span className="text-[10px] tracking-[0.2em] uppercase text-background/70">Fig. 03</span>
+                  </div>
+                </div>
+              </Reveal>
 
-            <div className="relative max-w-2xl space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-950 border border-sky-800 text-xs font-semibold text-sky-400">
-                <Sparkles className="w-3.5 h-3.5" /> Interactive Configuration Tool
-              </div>
+              <div className="lg:col-span-6 space-y-8 order-2">
+                <Reveal>
+                  <div className="eyebrow text-background/50">03 — Configuration tool</div>
+                </Reveal>
+                <Reveal delay={60}>
+                  <h2 className="display text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.02]">
+                    Don&apos;t know which parts fit together? <span className="ital">Build a kit.</span>
+                  </h2>
+                </Reveal>
+                <Reveal delay={120}>
+                  <p className="text-base text-background/70 leading-relaxed max-w-lg">
+                    Assemble your surveillance package step by step — pick DVR channel
+                    capacity, mix dome & bullet cameras, calculate required recording days,
+                    and receive an automatic bundle discount.
+                  </p>
+                </Reveal>
 
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                Don&apos;t know which parts fit together?{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">
-                  Build a Custom CCTV Kit.
-                </span>
-              </h3>
+                {/* Numbered steps — inline, denser */}
+                <Reveal delay={160}>
+                  <ol className="grid grid-cols-2 gap-x-8 gap-y-5 pt-4 border-t border-background/15">
+                    {[
+                      ['Recorder', '4, 8 or 16 channel DVR/NVR'],
+                      ['Cameras', 'Dome & bullet, 2MP to 8MP'],
+                      ['Storage', 'Recording-day calculator'],
+                      ['Accessories', 'Cable, SMPS, connectors'],
+                    ].map(([step, desc], i) => (
+                      <li key={step} className="pt-5">
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="font-mono text-[10px] text-background/40">0{i + 1}</span>
+                          <span className="text-sm font-medium text-background">{step}</span>
+                        </div>
+                        <div className="text-[13px] text-background/55">{desc}</div>
+                      </li>
+                    ))}
+                  </ol>
+                </Reveal>
 
-              <p className="text-sm text-slate-300 leading-relaxed font-normal">
-                Assemble your exact surveillance package step-by-step: Pick your DVR channel size, mix and match dome & bullet cameras, calculate required hard drive recording days, and get an automatic bundle discount.
-              </p>
-
-              <div className="pt-2">
-                <Link
-                  href="/kit-builder"
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-sm shadow-xl shadow-sky-500/25 transition-all hover:scale-105"
-                >
-                  <Wrench className="w-4 h-4" /> Start CCTV Kit Builder Now
-                </Link>
+                <Reveal delay={200}>
+                  <Link
+                    href="/kit-builder"
+                    className="inline-flex items-center gap-2.5 bg-background text-foreground px-7 py-4 text-sm font-medium rounded-sm transition-transform hover:-translate-y-0.5"
+                  >
+                    <Wrench className="w-4 h-4" />
+                    Start the kit builder
+                  </Link>
+                </Reveal>
               </div>
             </div>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* AUTHORIZED BRANDS */}
+        {/* BRANDS — restrained wordmark index */}
         {/* ============================================================ */}
-        <section className="py-12 border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-950">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p className="text-xs uppercase tracking-widest font-bold text-slate-400 dark:text-slate-500 mb-6">
-              Authorized Supply For Premier Security & Networking Brands
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20">
+          <Reveal>
+            <div className="eyebrow text-stone-500 mb-8 text-center">
+              Authorized supply — premier security & networking brands
+            </div>
+          </Reveal>
+          <Reveal delay={60}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 border-t border-l border-border">
               {brands.map((b) => (
                 <Link
                   key={b.id}
                   href={`/products?brand=${b.slug}`}
-                  className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400 transition-colors shadow-2xs"
+                  className="group flex items-center justify-center py-8 px-4 border-r border-b border-border hover:bg-accent/50 transition-colors"
                 >
-                  {b.name}
+                  <span className="display text-xl text-foreground group-hover:text-[var(--ember)] transition-colors">
+                    {b.name}
+                  </span>
                 </Link>
               ))}
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
 
       <Footer />
     </div>
   );
+}
+
+function categoryBlurb(slug: string): string {
+  const map: Record<string, string> = {
+    'hd-analog-cameras': '2MP to 16MP bullet & dome',
+    'network-ip-cameras': 'PoE AI smart surveillance',
+    'recorders-dvr-nvr': '4, 8 & 16 channel with AI',
+    'surveillance-storage': '1TB to 8TB Seagate & WD',
+    'cables-wiring': 'Cat6 305m drums & 3+1 HD',
+    'power-accessories': 'SMPS & BNC connectors',
+  };
+  return map[slug] ?? 'Curated surveillance hardware';
 }

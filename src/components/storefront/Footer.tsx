@@ -1,245 +1,117 @@
 import React from 'react';
 import Link from 'next/link';
-import {
-  ShieldCheck,
-  Truck,
-  FileCheck2,
-  Headphones,
-  Mail,
-  MapPin,
-  Phone,
-} from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-slate-950 text-slate-400 border-t border-slate-800 mt-auto">
-      {/* 4 Trust Value Propositions */}
-      <div className="border-b border-slate-800/80 bg-slate-900/60 py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-white">100% Genuine Brands</h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Direct authorized supply for CP Plus, Hikvision, Dahua with serial-tracked manufacturer warranty.
-                </p>
-              </div>
+    <footer className="mt-auto border-t border-border bg-background">
+      {/* Trust strip — single hairline row, no colored icon tiles */}
+      <div className="border-b border-border">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-8 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
+          {[
+            { k: 'Genuine brands', v: 'Serial-tracked, manufacturer warranty on CP Plus, Hikvision & Dahua.' },
+            { k: 'Pan-India dispatch', v: 'AWB via Shiprocket & Delhivery, SMS + WhatsApp tracking.' },
+            { k: 'GST invoicing', v: 'Enter your GSTIN at checkout for 18% input tax credit.' },
+            { k: 'Technical desk', v: 'Advice on DVR channels, lens FOV and PoE topologies.' },
+          ].map((item) => (
+            <div key={item.k}>
+              <div className="eyebrow text-stone-500 mb-2">{item.k}</div>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-[28ch]">
+                {item.v}
+              </p>
             </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                <Truck className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-white">Express Pan-India Logistics</h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Real-time AWB dispatch via Shiprocket & Delhivery with SMS & WhatsApp tracking updates.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
-                <FileCheck2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-white">GST Invoices & Input Credit</h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Enter your company GSTIN at checkout to claim full 18% Input Tax Credit on all surveillance hardware.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                <Headphones className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="text-sm font-semibold text-white">Surveillance Technical Support</h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Expert advice on DVR/NVR channel capacity, lens FOV calculations, and PoE network topologies.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <span className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Patel Networks
-              <span className="text-xs font-mono text-sky-400 bg-sky-950 px-2 py-0.5 rounded border border-sky-800">
-                MEGA-TECH
+      {/* Main links */}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+          {/* Brand */}
+          <div className="md:col-span-5 space-y-5">
+            <div className="flex items-baseline gap-3">
+              <span className="display text-[28px] leading-none text-foreground">
+                Patel<span className="text-[var(--ember)]">.</span>Networks
               </span>
-            </span>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              India&apos;s specialized procurement platform for commercial security, CCTV cameras, fiber optic
-              converters, surveillance hard drives, and enterprise networking hardware.
+              <span className="eyebrow text-stone-500">Mega-Tech</span>
+            </div>
+            <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-sm">
+              India&apos;s specialized procurement platform for commercial security,
+              CCTV cameras, fiber converters, surveillance hard drives and enterprise
+              networking hardware.
             </p>
-            <div className="pt-2 space-y-2 text-xs">
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <MapPin className="w-4 h-4 text-sky-400 shrink-0" />
-                <span>Security Hub, Commercial Arcade, Gujarat, India</span>
+            <div className="pt-2 space-y-2 text-sm">
+              <div className="flex items-baseline gap-3">
+                <span className="eyebrow text-stone-400 w-16">Address</span>
+                <span className="text-foreground">Security Hub, Commercial Arcade, Gujarat, India</span>
               </div>
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>+91 98765 43210 (Sales & Wholesale Inquiries)</span>
+              <div className="flex items-baseline gap-3">
+                <span className="eyebrow text-stone-400 w-16">Phone</span>
+                <a href="tel:+919876543210" className="text-foreground link-underline">+91 98765 43210</a>
               </div>
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <Mail className="w-4 h-4 text-indigo-400 shrink-0" />
-                <span>sales@patelnetworks.com</span>
+              <div className="flex items-baseline gap-3">
+                <span className="eyebrow text-stone-400 w-16">Email</span>
+                <a href="mailto:sales@patelnetworks.com" className="text-foreground link-underline">sales@patelnetworks.com</a>
               </div>
             </div>
           </div>
 
-          {/* Categories */}
-          <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Categories
-            </h5>
-            <ul className="space-y-2.5 text-xs">
-              <li>
-                <Link href="/products?category=hd-analog-cameras" className="hover:text-white transition-colors">
-                  HD Analog Cameras
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=network-ip-cameras" className="hover:text-white transition-colors">
-                  Network (IP) Cameras
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=recorders-dvr-nvr" className="hover:text-white transition-colors">
-                  DVR & NVR Recorders
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=cables-wiring" className="hover:text-white transition-colors">
-                  CCTV & Cat6 Cables
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=surveillance-storage" className="hover:text-white transition-colors">
-                  Surveillance Hard Drives
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?category=power-accessories" className="hover:text-white transition-colors">
-                  SMPS Power Supplies
-                </Link>
-              </li>
+          {/* Link columns */}
+          <div className="md:col-span-2">
+            <div className="eyebrow text-stone-500 mb-4">Categories</div>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="/products?category=hd-analog-cameras" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">HD Analog Cameras</Link></li>
+              <li><Link href="/products?category=network-ip-cameras" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Network IP Cameras</Link></li>
+              <li><Link href="/products?category=recorders-dvr-nvr" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">DVR & NVR Recorders</Link></li>
+              <li><Link href="/products?category=cables-wiring" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">CCTV & Cat6 Cables</Link></li>
+              <li><Link href="/products?category=surveillance-storage" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Surveillance Hard Drives</Link></li>
+              <li><Link href="/products?category=power-accessories" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">SMPS Power Supplies</Link></li>
             </ul>
           </div>
 
-          {/* Brands */}
-          <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Top Brands
-            </h5>
-            <ul className="space-y-2.5 text-xs">
-              <li>
-                <Link href="/products?brand=cp-plus" className="hover:text-white transition-colors">
-                  CP Plus Cosmic Series
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?brand=hikvision" className="hover:text-white transition-colors">
-                  Hikvision AcuSense AI
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?brand=dahua" className="hover:text-white transition-colors">
-                  Dahua Full-Color
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?brand=d-link" className="hover:text-white transition-colors">
-                  D-Link Structured Cables
-                </Link>
-              </li>
-              <li>
-                <Link href="/products?brand=optilink" className="hover:text-white transition-colors">
-                  Optilink Fiber Converters
-                </Link>
-              </li>
+          <div className="md:col-span-2">
+            <div className="eyebrow text-stone-500 mb-4">Brands</div>
+            <ul className="space-y-2.5 text-sm">
+              <li><Link href="/products?brand=cp-plus" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">CP Plus</Link></li>
+              <li><Link href="/products?brand=hikvision" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Hikvision</Link></li>
+              <li><Link href="/products?brand=dahua" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Dahua</Link></li>
+              <li><Link href="/products?brand=d-link" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">D-Link</Link></li>
+              <li><Link href="/products?brand=optilink" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Optilink</Link></li>
             </ul>
           </div>
 
-          {/* Quick Links & Policies */}
-          <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Customer & Tools
-            </h5>
-            <ul className="space-y-2.5 text-xs">
+          <div className="md:col-span-3">
+            <div className="eyebrow text-stone-500 mb-4">Customer & Tools</div>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/kit-builder" className="text-sky-400 hover:text-sky-300 font-semibold transition-colors">
-                  🛠️ CCTV Kit Builder
+                <Link href="/kit-builder" className="text-foreground hover:text-[var(--ember)] transition-colors flex items-center gap-1.5">
+                  CCTV Kit Builder <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </li>
-              <li>
-                <Link href="/account" className="hover:text-white transition-colors">
-                  Track Your Order
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  About Patel Networks
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact & Wholesale Desk
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-white transition-colors">
-                  CCTV & GST FAQs
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping-policy" className="hover:text-white transition-colors">
-                  Shipping & Dispatch Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/return-policy" className="hover:text-white transition-colors">
-                  Warranty & Returns
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy-policy" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
+              <li><Link href="/account" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Track Your Order</Link></li>
+              <li><Link href="/about" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">About Patel Networks</Link></li>
+              <li><Link href="/contact" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Contact & Wholesale Desk</Link></li>
+              <li><Link href="/faq" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">CCTV & GST FAQs</Link></li>
+              <li><Link href="/shipping-policy" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Shipping Policy</Link></li>
+              <li><Link href="/return-policy" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Warranty & Returns</Link></li>
+              <li><Link href="/privacy-policy" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-slate-900 pt-8 mt-12 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} Patel Networks. All rights reserved. Registered Indian Enterprise.</p>
-          <div className="flex items-center gap-4">
-            <span>Payment Security: Razorpay SSL 256-bit</span>
-            <span>•</span>
-            <span>Shipping: Shiprocket & Delhivery Express</span>
-            <span>•</span>
-            <Link href="/admin" className="hover:text-slate-300 transition-colors text-[11px]">
+        {/* Bottom bar */}
+        <div className="border-t border-border mt-14 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs text-stone-500">
+          <p>© {new Date().getFullYear()} Patel Networks. Registered Indian enterprise.</p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <span>Razorpay SSL · 256-bit</span>
+            <span className="text-stone-300 dark:text-stone-600">/</span>
+            <span>Shiprocket & Delhivery Express</span>
+            <span className="text-stone-300 dark:text-stone-600">/</span>
+            <Link href="/admin" className="hover:text-foreground link-underline transition-colors">
               Operations Portal
             </Link>
           </div>
-
         </div>
       </div>
     </footer>

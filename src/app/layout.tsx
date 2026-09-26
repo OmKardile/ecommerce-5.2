@@ -1,22 +1,26 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Fraunces } from 'next/font/google';
 import './globals.css';
 import { WhatsAppSupportWidget } from '@/components/storefront/WhatsAppSupportWidget';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const fraunces = Fraunces({
+  variable: '--font-fraunces',
   subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
 });
 
 export const metadata: Metadata = {
-  title: 'Patel Networks | Commercial CCTV, Surveillance & Networking Hardware',
+  title: 'Patel Networks — Commercial CCTV, Surveillance & Networking Hardware',
   description:
-    'Authorized Indian supplier for CP Plus, Hikvision, Dahua, and D-Link surveillance cameras, AI DVRs, 24/7 hard drives, and networking hardware with B2B GST tax invoicing.',
+    'Authorized Indian supplier for CP Plus, Hikvision, Dahua and D-Link surveillance cameras, AI DVRs, 24/7 hard drives and networking hardware with B2B GST tax invoicing.',
 };
 
 export default function RootLayout({
@@ -27,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-screen flex flex-col bg-background font-sans text-foreground">
         {children}
         <WhatsAppSupportWidget />
       </body>

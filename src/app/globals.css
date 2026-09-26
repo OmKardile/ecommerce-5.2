@@ -3,11 +3,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   PATEL NETWORKS — Design System
+   "Quiet Hardware / Editorial Security"
+   Restrained neutrals + one controlled accent (ember).
+   Sharp corners, hairline borders, no glow, no gradients.
+   ============================================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-fraunces);
+
+  /* Brand tokens (semantic aliases for shadcn compatibility) */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -37,144 +47,306 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
 }
 
-/* ============================================================
-   PATEL NETWORKS — Storefront Brand Theme (sky/slate CCTV tech)
-   Overrides shadcn defaults with brand-aligned primary color.
-   All shadcn variables retained for component compatibility.
-   ============================================================ */
+/* ---------- LIGHT: warm paper ---------- */
 :root {
-  --radius: 0.625rem;
-  /* Brand: sky-600 (#0284c7) storefront primary */
-  --background: #f8fafc;          /* slate-50 */
-  --foreground: #0f172a;          /* slate-900 */
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0284c7;             /* sky-600 brand */
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;            /* slate-100 */
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;     /* slate-500 */
-  --accent: #e0f2fe;              /* sky-100 */
-  --accent-foreground: #0c4a6e;     /* sky-900 */
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e2e8f0;              /* slate-200 */
-  --input: #e2e8f0;
-  --ring: #0ea5e9;                /* sky-500 focus ring */
-  --accent-glow: rgba(2, 132, 199, 0.15);
-  --chart-1: #0284c7;
-  --chart-2: #0ea5e9;
-  --chart-3: #14b8a6;
-  --chart-4: #f59e0b;
-  --chart-5: #ef4444;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #0284c7;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0ea5e9;
+  /* Radii — deliberately small for a "precision instrument" feel */
+  --radius: 4px;
+
+  /* Core neutrals (warm) */
+  --ink: #131210;            /* near-black, warm */
+  --paper: #F6F3ED;          /* main background, warm off-white */
+  --bone: #EDE8DD;           /* alt section / card hover */
+  --stone: #6B665B;          /* secondary text */
+  --stone-soft: #948F83;     /* tertiary text */
+  --hairline: #DCD6C8;       /* light borders */
+  --hairline-strong: #C9C2B2;
+
+  /* Accent — single controlled ember (the "recording light") */
+  --ember: #C2410C;          /* deep, refined orange */
+  --ember-soft: #E9651A;
+  --ember-tint: #F4E4D6;     /* whisper of accent for hover backgrounds */
+
+  /* Semantic mapping (shadcn-compatible) */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #FFFFFF;
+  --card-foreground: var(--ink);
+  --popover: #FFFFFF;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);            /* primary buttons = solid ink */
+  --primary-foreground: var(--paper);
+  --secondary: var(--bone);
+  --secondary-foreground: var(--ink);
+  --muted: var(--bone);
+  --muted-foreground: var(--stone);
+  --accent: var(--ember-tint);
+  --accent-foreground: var(--ember);
+  --destructive: #9F1239;            /* refined rose, not screaming red */
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --ring: var(--ember);
+
+  --chart-1: var(--ember);
+  --chart-2: #475569;
+  --chart-3: #8B857A;
+  --chart-4: #B8651A;
+  --chart-5: #1C1B17;
+
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--paper);
+  --sidebar-accent: var(--bone);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--hairline);
+  --sidebar-ring: var(--ember);
 }
 
+/* ---------- DARK: cinematic ink ---------- */
 .dark {
-  --background: #030712;          /* slate-950 */
-  --foreground: #f8fafc;
-  --card: #0f172a;                /* slate-900 */
-  --card-foreground: #f8fafc;
-  --popover: #0f172a;
-  --popover-foreground: #f8fafc;
-  --primary: #38bdf8;             /* sky-400 brand */
-  --primary-foreground: #030712;
-  --secondary: #1e293b;            /* slate-800 */
-  --secondary-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;     /* slate-400 */
-  --accent: #0c4a6e;              /* sky-900 */
-  --accent-foreground: #f8fafc;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #1e293b;
-  --input: oklch(1 0 0 / 15%);
-  --ring: #38bdf8;
-  --accent-glow: rgba(56, 189, 248, 0.15);
-  --chart-1: #38bdf8;
-  --chart-2: #0ea5e9;
-  --chart-3: #2dd4bf;
-  --chart-4: #fbbf24;
-  --chart-5: #f87171;
-  --sidebar: #0f172a;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #38bdf8;
-  --sidebar-primary-foreground: #030712;
-  --sidebar-accent: #1e293b;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #1e293b;
-  --sidebar-ring: #38bdf8;
+  --ink: #F6F3ED;            /* in dark mode, ink becomes the light text */
+  --paper: #131210;          /* background becomes the dark */
+  --bone: #1E1C18;           /* alt section */
+  --stone: #A8A294;
+  --stone-soft: #756F62;
+  --hairline: #2A2823;
+  --hairline-strong: #3A3830;
+
+  --ember: #E9651A;          /* brighter ember for dark bg */
+  --ember-soft: #FB923C;
+  --ember-tint: #2A1A10;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #1A1916;
+  --card-foreground: var(--ink);
+  --popover: #1A1916;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #131210;
+  --secondary: var(--bone);
+  --secondary-foreground: var(--ink);
+  --muted: var(--bone);
+  --muted-foreground: var(--stone);
+  --accent: var(--ember-tint);
+  --accent-foreground: var(--ember-soft);
+  --destructive: #F43F5E;
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --ring: var(--ember);
+
+  --chart-1: var(--ember-soft);
+  --chart-2: #A8A294;
+  --chart-3: #756F62;
+  --chart-4: #FB923C;
+  --chart-5: #F6F3ED;
+
+  --sidebar: #1A1916;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #131210;
+  --sidebar-accent: var(--bone);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--hairline);
+  --sidebar-ring: var(--ember);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     overflow-x: hidden;
+  }
+  /* Editorial display headings — Fraunces with optical sizing */
+  h1, h2, h3 {
+    font-family: var(--font-serif), Georgia, serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+  }
+  /* Selection — ember, the only flourish */
+  ::selection {
+    background: var(--ember);
+    color: #FFFFFF;
+  }
+  /* Focus ring — refined, not a halo */
+  :focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: 2px;
   }
 }
 
 /* ============================================================
-   Custom Tech Glow & Surveillance UI Accents (storefront)
+   Utilities — editorial primitives
    ============================================================ */
-.surveillance-badge-pulse {
-  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+/* Editorial eyebrow label */
+.eyebrow {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--stone);
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.85;
-    transform: scale(1.05);
-  }
+/* Editorial display: serif, tight tracking, optical */
+.display {
+  font-family: var(--font-serif), Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+.display em,
+.display .ital {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ember);
 }
 
-/* Subtle Grid Pattern for Surveillance UI */
-.bg-grid-pattern {
-  background-size: 32px 32px;
-  background-image:
-    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+/* Hairline rule */
+.rule {
+  height: 1px;
+  background: var(--hairline);
+  width: 100%;
 }
 
-.dark .bg-grid-pattern {
-  background-image:
-    linear-gradient(to right, rgba(51, 65, 85, 0.18) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(51, 65, 85, 0.18) 1px, transparent 1px);
+/* Sharp interactive — primary ink button */
+.btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 3px;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.18s ease;
+  will-change: transform;
+}
+.btn-ink:hover { transform: translateY(-1px); }
+.btn-ink:active { transform: translateY(0); }
+
+/* Ghost / secondary button — hairline border, no fill */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1;
+  padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 3px;
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+.btn-ghost:hover {
+  border-color: var(--ink);
+  background: var(--bone);
 }
 
-/* Custom scrollbar for long lists */
-.scrollbar-thin::-webkit-scrollbar {
+/* Link underline reveal */
+.link-underline {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.link-underline:hover { background-size: 100% 1px; }
+
+/* Scroll reveal — set on elements that should animate in */
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Recording dot — the single quiet flourish */
+.dot-rec {
+  position: relative;
+  display: inline-block;
   width: 6px;
   height: 6px;
+  border-radius: 9999px;
+  background: var(--ember);
 }
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
+.dot-rec::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1px solid var(--ember);
+  opacity: 0.35;
+  animation: rec-pulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+@keyframes rec-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.4); opacity: 0; }
+}
+
+/* Subtle paper grain on dark sections (very faint) */
+.bg-ink-grain {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+/* Custom thin scrollbar */
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(2, 132, 199, 0.3);
-  border-radius: 3px;
+  background: var(--hairline-strong);
+  border-radius: 9999px;
 }
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(2, 132, 199, 0.5);
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: var(--stone); }
+
+/* Image zoom container — clean, no rounded, contained */
+.media-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--bone);
+}
+.media-frame img {
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.media-frame:hover img {
+  transform: scale(1.04);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .media-frame img { transition: none !important; }
+  .dot-rec::after { animation: none !important; }
+  .btn-ink:hover, .btn-ghost:hover { transform: none !important; }
 }

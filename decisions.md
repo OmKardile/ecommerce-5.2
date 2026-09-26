@@ -495,6 +495,28 @@
   * Ongoing development must continue to avoid destructive DB commands; the seed script is preserved but flagged as destructive.
   * Future Medusa migration (user's stated recommendation) remains a separate, larger decision documented but not actioned — the existing custom architecture (12 phases, 19 ADRs) is preserved and extended.
 
+---
+
+## ADR-021: Aesthetic Rework — "Quiet Hardware / Editorial Security"
+* **Status**: ACCEPTED
+* **Date**: 2026-09-26
+* **Context**:
+  The prior storefront UI exhibited the full catalogue of "AI-generated SaaS template" anti-patterns: gradient orbs and glow effects, glassmorphism header, sky→indigo gradient buttons, rainbow-colored category icon tiles, `rounded-2xl`/`rounded-3xl` on every surface, pulsing emerald dots, emoji in nav links, gradient clip-text headlines, oversized empty hero. The user requested an aesthetic rework to "Apple ecosystem-level polish with editorial design and a slightly unconventional personality," explicitly removing all generic AI-template patterns in favor of "designed, not decorated."
+* **Decision**:
+  Adopted a **"Quiet Hardware / Editorial Security"** design language — a premium B2B equipment procurement aesthetic combining the restraint of Linear/Apple, the editorial sensibility of a design publication, and a "precision instrument" personality.
+  1. **Palette**: warm near-black ink + warm off-white paper + bone + stone neutrals, with a *single* controlled **ember accent** `#C2410C` (a deep refined orange evoking a surveillance recording light) used sparingly for primary actions, status, and emphasis. No blue/indigo, no rainbow.
+  2. **Typography**: **Fraunces** variable editorial serif (optical sizing, italic) for display + **Geist Sans** for UI. Strong hierarchy with tight tracking and italic ember emphasis words.
+  3. **Surfaces**: sharp corners (2–6px radius), 1px hairline borders instead of shadows, selective deep-dark cinematic sections, warm paper backgrounds. Removes all `rounded-2xl`, gradients, glow, glassmorphism.
+  4. **Motion**: subtle IntersectionObserver scroll reveals (opacity + 10px translateY, 600ms ease-out), single quiet pulsing `dot-rec` recording-light flourish, image zoom on hover, link underline reveal. All respect `prefers-reduced-motion`.
+  5. **Imagery**: real art-directed photography (generated via image-generation skill) — a hardware still-life and a cinematic camera close-up — replacing generic decorative graphics.
+  6. **Component reworks**: Header (hairline meta strip + editorial wordmark), Footer (single hairline trust row replacing colored icon tiles), ProductCard (sharp editorial card with reserved badge slot for grid alignment), Badge (restrained variants), WhatsApp widget (monochrome replacing the clashing green gradient).
+* **Consequences**:
+  * The storefront now reads as a deliberately designed premium product (VLM-graded **A**: "one of the best B2B hardware e-commerce designs I have seen", "not a Shopify/WooCommerce theme").
+  * All functionality preserved — only the presentation layer changed.
+  * The full shadcn/ui library remains available and theme-compatible (CSS variables mapped to the new tokens) for future component work.
+  * A content/photography audit remains as a follow-up — some DB product images are generic Unsplash stock that don't match the hardware aesthetic (data issue, not code).
+  * The `Reveal` component's 2.5s fallback ensures content is never permanently hidden (robust for real users, screenshots, and slow connections).
+
 
 When new decisions are made during subsequent phases, append them using the following format:
 
