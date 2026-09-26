@@ -9,6 +9,7 @@ import {
   getPopularBrands,
 } from '@/server/services/catalog.service';
 import { ArrowUpRight, Check } from 'lucide-react';
+import { ProductsFilterDrawer } from '@/components/storefront/ProductsFilterDrawer';
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -46,21 +47,28 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const hasActiveFilters = !!(categorySlug || brandSlug || searchQuery || inStockOnly);
 
   const heading = searchQuery
-    ? `“${searchQuery}”`
+    ? `"${searchQuery}"`
     : categorySlug
     ? categories.find((c) => c.slug === categorySlug)?.name || 'Catalog'
     : brandSlug
     ? `${brands.find((b) => b.slug === brandSlug)?.name || 'Brand'} Hardware`
     : 'Surveillance & Security Catalog';
 
+  const activeCategoryName = categorySlug
+    ? categories.find((c) => c.slug === categorySlug)?.name
+    : null;
+  const activeBrandName = brandSlug
+    ? brands.find((b) => b.slug === brandSlug)?.name
+    : null;
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background overflow-x-hidden">
       <Header />
 
-      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 lg:px-10 py-10 sm:py-14">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-8 sm:py-14">
         {/* Breadcrumb + heading */}
-        <div className="mb-10">
-          <nav className="text-[11px] text-stone-500 mb-3 flex items-center gap-2">
+        <div className="mb-8">
+          <nav className="text-[11px] text-stone-500 mb-3 flex items-center gap-2 flex-wrap">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <span className="text-stone-300 dark:text-stone-600">/</span>
             <span className="text-foreground">Catalog</span>
@@ -73,8 +81,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </nav>
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <h1 className="display text-[clamp(1.8rem,4vw,2.8rem)] leading-tight text-foreground">
+            <div className="min-w-0">
+              <h1 className="display text-[clamp(1.6rem,5vw,2.8rem)] leading-tight text-foreground break-words">
                 {heading}
               </h1>
               <p className="text-sm text-stone-500 mt-2">
@@ -93,16 +101,27 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </div>
         </div>
 
-        {/* Layout: sidebar + grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Filter sidebar — hairline, sharp */}
-          <aside className="lg:col-span-3 lg:sticky lg:top-24 space-y-8">
+        {/* Mobile filter toggle — replaces the sidebar on small screens */}
+        <div className="lg:hidden mb-6">
+          <ProductsFilterDrawer
+            categories={categories}
+            brands={brands}
+            activeCategory={categorySlug || null}
+            activeBrand={brandSlug || null}
+            inStockOnly={inStockOnly}
+          />
+        </div>
+
+        {/* Layout: sidebar (desktop only) + grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          {/* Desktop filter sidebar — hidden on mobile, replaced by drawer */}
+          <aside className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 space-y-8 overflow-hidden">
             <div className="border-t border-border pt-5">
               <div className="eyebrow text-stone-500 mb-3">Category</div>
               <div className="space-y-px">
                 <Link
                   href={`/products${brandSlug ? `?brand=${brandSlug}` : ''}`}
-                  className={`block py-2 text-sm transition-colors ${
+                  className={`block py-2 text-sm transition-colors truncate ${
                     !categorySlug
                       ? 'text-foreground font-medium'
                       : 'text-stone-500 hover:text-foreground'
@@ -120,8 +139,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         : 'text-stone-500 hover:text-foreground'
                     }`}
                   >
-                    <span>{cat.name}</span>
-                    <span className="text-[11px] font-mono text-stone-400">{cat._count.products}</span>
+                    <span className="truncate mr-2">{cat.name}</span>
+                    <span className="text-[11px] font-mono text-stone-400 shrink-0">{cat._count.products}</span>
                   </Link>
                 ))}
               </div>
@@ -150,8 +169,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         : 'text-stone-500 hover:text-foreground'
                     }`}
                   >
-                    <span>{b.name}</span>
-                    <span className="text-[11px] font-mono text-stone-400">{b._count.products}</span>
+                    <span className="truncate mr-2">{b.name}</span>
+                    <span className="text-[11px] font-mono text-stone-400 shrink-0">{b._count.products}</span>
                   </Link>
                 ))}
               </div>
@@ -180,15 +199,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </aside>
 
           {/* Product grid */}
-          <div className="lg:col-span-9">
+          <div className="lg:col-span-9 min-w-0">
             {products.length === 0 ? (
-              <div className="border border-border bg-card p-16 text-center max-w-md mx-auto">
+              <div className="border border-border bg-card p-12 sm:p-16 text-center max-w-md mx-auto my-8">
                 <div className="flex items-center justify-center mb-6">
                   <span className="dot-rec" />
                 </div>
                 <h3 className="display text-2xl text-foreground">No matching products</h3>
                 <p className="text-sm text-stone-500 mt-2 max-w-sm mx-auto">
-                  Try clearing filters or searching for “4MP”, “Hikvision”, or “DVR”.
+                  Try clearing filters or searching for "4MP", "Hikvision", or "DVR".
                 </p>
                 <Link href="/products" className="btn-ink mt-8">
                   View all products <ArrowUpRight className="w-3.5 h-3.5" />
