@@ -662,3 +662,29 @@ Stage Summary:
 - **Functionality preserved**: all routes still HTTP 200, DB untouched, shadcn/ui library intact and theme-compatible.
 - **Remaining (content, not code)**: some DB product images are generic Unsplash stock (pink gift box, woman with folder) — a photography audit is the next content task.
 - **Cron**: webDevReview job (every 15 min, job_id 415773) is active for ongoing QA + feature development.
+
+
+---
+Task ID: 10-BLUE-THEME-PDP-CART
+Agent: Lead Developer (Z.ai Code) — webDevReview cron round
+Task: (1) Change the color theme from ember/orange to white/off-white/black + controlled blue per user direction. (2) Continue advancing the aesthetic rework — rework the product detail page and cart page (the two highest-traffic conversion pages still on the old aesthetic). (3) Fix the outstanding lint error. (4) QA + VLM review.
+
+Work Log:
+- Reviewed worklog (Task 9-AESTHETIC-REWORK) — confirmed homepage + shared components were reworked to the "Quiet Hardware / Editorial Security" system with an ember accent, VLM-graded A.
+- Identified the scope of remaining old-aesthetic pages: 12 routes + 4 components still import gradient/glass patterns (products/[slug], cart, checkout, kit-builder, about, contact, faq, all policy pages, account/login, order-success; B2BContractorCallout, B2BQuoteModal, PincodeChecker, AccountPortalClient).
+- Selected the two highest-impact conversion pages for this round: product detail (products/[slug]) and cart — plus the lint fix.
+- PALETTE MIGRATION (ember → blue): renamed the brand accent CSS var `--ember` → `--brand` in globals.css to avoid colliding with shadcn's `--accent` semantic var and to stay semantically correct now that it's blue. Changed values: light `--brand: #1E40AF` (blue-800), dark `--brand: #60A5FA` (blue-400), plus `--brand-soft` and `--brand-tint`. Updated `--ring`, `--accent-foreground`, chart-1, sidebar-ring to var(--brand). Fixed all `--ember-*` refs in the dark block. Migrated all 8 component/page files: sed-replaced `var(--ember)` → `var(--brand)`. Renamed Badge `ember` variant → `brand`. Verified zero `ember` references remain in src/.
+- PRODUCT DETAIL PAGE rework (src/app/products/[slug]/page.tsx): editorial gallery with sharp hairline frame + brand corner mark + sharp thumbnails; info column with mono meta line (model/HSN), Fraunces display title, short description; specs as a hairline-row definition table with mono values and a brand-blue GST rate row; refined breadcrumb; "Need a spec clarification?" link. Preserved the JSON-LD Product + BreadcrumbList structured data.
+- DYNAMIC VARIANT SELECTOR rework (src/components/storefront/DynamicVariantSelector.tsx): price block as hairline card with mono pricing + GST breakdown + ITC-eligible dot; variant chips as sharp gap-px grid where selected = solid ink (black) and sold-out = muted; quantity stepper sharp; Add to cart = solid ink button; Buy now = ghost button with brand-blue arrow; stock/COD as plain text (no colored pills); mobile sticky bar solid (no glass).
+- CART PAGE rework (src/app/cart/page.tsx): editorial hairline-row item list (no rounded cards); sticky order-summary sidebar with hairline price table, ITC notice, COD warning; editorial empty state; checkout = solid ink button. FIXED the lint error: refactored the useEffect so setLoading is only called inside the async callback after the await resolves (loading defaults to true), never synchronously in the effect body.
+- REVEAL component hardened (src/components/storefront/Reveal.tsx): refactored the early-return fallback branches (no element / no IntersectionObserver) to schedule setVisible via setTimeout(…, 0) instead of calling it synchronously in the effect body — resolves the second react-hooks/set-state-in-effect error.
+- Lint now passes with 0 errors (was 1).
+- Verified: all 4 reworked routes return HTTP 200; dev.log clean; blue --brand var present; old ember #C2410C fully removed.
+- VLM design review (homepage + product detail, blue theme): graded premium. Quotes — "successfully avoided the template trap"; blue accent "Institutional and Technical rather than Generic"; "controlled… used sparingly as an accent" (H1 emphasis word, active variant state, primary links, discount %); PDP "Excellent balance of Editorial Style and Conversion Optimization"; "feels like a site built for engineers who appreciate good design."
+
+Stage Summary:
+- **Color theme changed to white/off-white/black + blue** — the controlled blue (#1E40AF light / #60A5FA dark) replaces ember/orange. Editorial structure preserved. Cohesive "cleanroom/archival" aesthetic.
+- **Product detail page + cart page fully reworked** to the design system (were the two highest-traffic pages still on the old aesthetic).
+- **Lint: 0 errors** (was 1; fixed set-state-in-effect in cart + Reveal).
+- **VLM-verified premium** — "feels like a site built for engineers who appreciate good design."
+- **Remaining for next cron round**: checkout, kit-builder, about, contact, faq, all policy pages, account/login, order-success, + B2BContractorCallout/B2BQuoteModal/PincodeChecker/AccountPortalClient components still on the old aesthetic. Photography audit (DB image content) remains a content follow-up.

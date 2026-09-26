@@ -133,7 +133,7 @@ export function DynamicVariantSelector({ product }: DynamicVariantSelectorProps)
             </span>
           )}
           {discountPct > 0 && (
-            <span className="text-[var(--ember)] text-xs font-mono tracking-tight">
+            <span className="text-[var(--brand)] text-xs font-mono tracking-tight">
               −{discountPct}%
             </span>
           )}
@@ -144,7 +144,7 @@ export function DynamicVariantSelector({ product }: DynamicVariantSelectorProps)
           <span className="font-mono">
             {formatPrice(gstBreakdown.taxableValue)} + 18% GST ({formatPrice(gstBreakdown.totalGst)})
           </span>
-          <span className="text-[var(--ember)] flex items-center gap-1.5">
+          <span className="text-[var(--brand)] flex items-center gap-1.5">
             <span className="dot-rec" /> ITC eligible
           </span>
         </div>
@@ -202,7 +202,7 @@ export function DynamicVariantSelector({ product }: DynamicVariantSelectorProps)
             <span className="dot-rec" /> {availableStock} units ready to dispatch
           </span>
         ) : availableStock > 0 ? (
-          <span className="text-[var(--ember)] flex items-center gap-1.5">
+          <span className="text-[var(--brand)] flex items-center gap-1.5">
             <span className="dot-rec" /> Low stock — {availableStock} remaining
           </span>
         ) : (
@@ -262,7 +262,7 @@ export function DynamicVariantSelector({ product }: DynamicVariantSelectorProps)
           </button>
         </div>
 
-        {/* Buy now — ghost with ember arrow */}
+        {/* Buy now — ghost with brand arrow */}
         <button
           type="button"
           onClick={handleBuyNow}
@@ -275,7 +275,7 @@ export function DynamicVariantSelector({ product }: DynamicVariantSelectorProps)
             </>
           ) : (
             <>
-              Buy now <ArrowRight className="w-4 h-4 text-[var(--ember)] group-hover:translate-x-0.5 transition-transform" />
+              Buy now <ArrowRight className="w-4 h-4 text-[var(--brand)] group-hover:translate-x-0.5 transition-transform" />
             </>
           )}
         </button>
@@ -293,7 +293,7 @@ export function DynamicVariantSelector({ product }: DynamicVariantSelectorProps)
       {addedToast && (
         <div className="p-3 border border-border bg-card text-xs flex items-center justify-between">
           <span className="flex items-center gap-2 text-foreground">
-            <Check className="w-4 h-4 text-[var(--ember)]" />
+            <Check className="w-4 h-4 text-[var(--brand)]" />
             Added {quantity}× {selectedVariant.name} to cart
           </span>
           <Link href="/cart" className="text-foreground link-underline flex items-center gap-1">

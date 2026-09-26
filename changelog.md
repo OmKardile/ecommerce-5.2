@@ -425,3 +425,53 @@ A ground-up visual rework of the storefront, transforming the prior AI-template 
 - Ingested and parsed `CCTV_Security_Ecommerce_Website_Plan.docx`.
 - Ingested and analyzed the 8-phase implementation roadmap (`Phases 0 through 7`).
 - Initial creation of `readme.md`, `business-documentation.md`, `technical-dcoumentation.md`, and `changelog.md`.
+
+
+---
+
+## [1.5.0] - 2026-09-26
+
+### Changed (Palette Swap: Ember → Controlled Blue + Product Detail / Cart Rework)
+Per user direction, the single controlled accent was changed from ember/orange (`#C2410C`) to a deep authoritative **blue** (`#1E40AF` light / `#60A5FA` dark), completing the white / off-white / black + blue palette. The editorial structure (Fraunces serif, sharp corners, hairline borders) is preserved.
+
+#### Palette Migration (`src/app/globals.css`)
+- Renamed the brand accent CSS variable `--ember` → `--brand` (semantically correct now that it is blue; avoids collision with shadcn's `--accent` semantic var).
+- Light mode: `--brand: #1E40AF` (blue-800, deep authoritative), `--brand-soft: #3B82F6`, `--brand-tint: #EFF6FF` (blue-50 whisper for hover backgrounds).
+- Dark mode: `--brand: #60A5FA` (blue-400, brighter for dark bg), `--brand-soft: #93C5FD`, `--brand-tint: #1E293B`.
+- Updated `--ring`, `--accent-foreground`, chart colors, sidebar ring → `var(--brand)`.
+- Migrated all `var(--ember)` references across 8 component/page files to `var(--brand)`; renamed Badge `ember` variant → `brand`. Verified: zero `ember` references remain in `src/`.
+
+#### Product Detail Page Reworked (`src/app/products/[slug]/page.tsx`)
+- Editorial gallery (sharp hairline frame, brand corner mark, sharp thumbnails).
+- Info column: meta line (model/HSN in mono), serif display title, short description.
+- Specs as a hairline-row definition table with mono values; GST rate row highlighted in brand blue.
+- Breadcrumb refined; "Need a spec clarification?" link.
+- Preserves JSON-LD structured data (Product + BreadcrumbList) for SEO.
+
+#### DynamicVariantSelector Reworked (`src/components/storefront/DynamicVariantSelector.tsx`)
+- Price block: hairline card, mono pricing, GST breakdown, ITC-eligible dot.
+- Variant chips: sharp `gap-px` grid, selected = solid ink (black), sold-out = muted.
+- Quantity stepper: sharp border, mono count.
+- Add to cart = solid ink button; Buy now = ghost button with brand-blue arrow.
+- Stock/COD status as plain text (no colored pills).
+- Mobile sticky bar: solid (no glassmorphism).
+
+#### Cart Page Reworked (`src/app/cart/page.tsx`)
+- Editorial hairline-row item list (no rounded cards).
+- Sticky order summary sidebar with hairline price table, ITC notice, COD warning.
+- Empty state: editorial card with dot-rec + dual CTAs.
+- **Lint fix**: refactored the `useEffect` so `setLoading` is only called inside the async callback (after `await`), not synchronously in the effect body — resolves the `react-hooks/set-state-in-effect` error.
+
+#### Reveal Component Hardened (`src/components/storefront/Reveal.tsx`)
+- Refactored the early-return fallback branches to schedule `setVisible` via `setTimeout(…, 0)` instead of calling it synchronously in the effect body — resolves the `react-hooks/set-state-in-effect` lint error.
+- `bun run lint` now passes with **zero errors**.
+
+### Verified
+- All routes HTTP 200 (`/`, `/products`, `/products/[slug]`, `/cart`).
+- Lint: 0 errors (previously 1).
+- Blue `--brand` var present; old ember `#C2410C` fully removed.
+- VLM review: blue accent "controlled and premium… Institutional and Technical rather than Generic"; product detail page "Excellent balance of Editorial Style and Conversion Optimization"; "feels like a site built for engineers who appreciate good design."
+
+### Known / Next
+- Remaining storefront pages still on the old aesthetic: `/checkout`, `/kit-builder`, `/about`, `/contact`, `/faq`, `/shipping-policy`, `/return-policy`, `/privacy-policy`, `/terms`, `/account/login`, `/order-success`, plus `B2BContractorCallout`, `B2BQuoteModal`, `PincodeChecker`, `AccountPortalClient` components. (Next cron round.)
+- Some DB product images are generic Unsplash stock — photography audit remains a content follow-up.

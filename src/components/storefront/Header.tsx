@@ -164,7 +164,7 @@ export function Header() {
           {/* Logo lockup — editorial */}
           <Link href="/" className="flex items-baseline gap-2 shrink-0 group" aria-label="Patel Networks home">
             <span className="display text-[22px] sm:text-[26px] leading-none text-foreground">
-              Patel<span className="text-[var(--ember)]">.</span>Networks
+              Patel<span className="text-[var(--brand)]">.</span>Networks
             </span>
             <span className="hidden sm:inline eyebrow text-stone-500 dark:text-stone-500 ml-1">
               Security Hardware
@@ -216,7 +216,7 @@ export function Header() {
                             className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-accent transition-colors group"
                           >
                             <div className="min-w-0">
-                              <div className="text-sm text-foreground group-hover:text-[var(--ember)] transition-colors truncate">
+                              <div className="text-sm text-foreground group-hover:text-[var(--brand)] transition-colors truncate">
                                 {item.name}
                               </div>
                               <div className="text-[11px] text-stone-500 font-mono mt-0.5 truncate">
@@ -291,7 +291,7 @@ export function Header() {
               <ShoppingCart className="w-4 h-4" />
               <span className="hidden sm:inline">Cart</span>
               {cartCount > 0 && (
-                <span className="text-[var(--ember)] font-mono text-xs leading-none">
+                <span className="text-[var(--brand)] font-mono text-xs leading-none">
                   {String(cartCount).padStart(2, '0')}
                 </span>
               )}

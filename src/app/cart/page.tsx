@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { Badge } from '@/components/ui/Badge';
 import { formatPrice } from '@/lib/utils';
 import {
   getCartAction,
@@ -13,233 +12,278 @@ import {
   removeFromCartAction,
 } from '@/app/actions/cart.actions';
 import {
-  ShoppingCart,
-  Trash2,
   ArrowRight,
-  ShieldCheck,
-  FileText,
+  ArrowUpRight,
   AlertCircle,
-  Truck,
+  Loader2,
+  Trash2,
 } from 'lucide-react';
 
+interface CartItem {
+  id: string;
+  productName: string;
+  brandName: string;
+  variantName: string;
+  skuCode: string;
+  imageUrl: string;
+  unitPrice: number | string;
+  lineTotal: number | string;
+  quantity: number;
+  availableStock: number;
+}
+interface CartData {
+  items: CartItem[];
+  itemCount: number;
+  subtotal: number | string;
+  gstAmount: number | string;
+  totalAmount: number | string;
+  isCodAllowed: boolean;
+}
+
 export default function CartPage() {
-  const [cart, setCart] = useState<any>(null);
+  const [cart, setCart] = useState<CartData | null>(null);
+  // loading defaults to true — the effect never calls setState synchronously
+  // in its body, only inside the async callback after the await resolves.
   const [loading, setLoading] = useState<boolean>(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const fetchCart = async () => {
-    setLoading(true);
-    const data = await getCartAction();
-    setCart(data);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchCart();
+    let active = true;
+    (async () => {
+      try {
+        const data = (await getCartAction()) as CartData;
+        if (active) {
+          setCart(data);
+          setLoading(false);
+        }
+      } catch {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
+
+  const refetch = async () => {
+    const data = (await getCartAction()) as CartData;
+    setCart(data);
+  };
 
   const handleUpdateQty = async (itemId: string, newQty: number) => {
     setUpdatingId(itemId);
     await updateCartItemAction(itemId, newQty);
-    await fetchCart();
+    await refetch();
     setUpdatingId(null);
   };
 
   const handleRemove = async (itemId: string) => {
     setUpdatingId(itemId);
     await removeFromCartAction(itemId);
-    await fetchCart();
+    await refetch();
     setUpdatingId(null);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="mb-6">
-          <nav className="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-slate-900 dark:hover:text-white">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-slate-900 dark:text-white font-medium">Shopping Cart</span>
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 lg:px-10 py-10 sm:py-14">
+        {/* Breadcrumb + heading */}
+        <div className="mb-10">
+          <nav className="text-[11px] text-stone-500 mb-3 flex items-center gap-2">
+            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <span className="text-stone-300 dark:text-stone-600">/</span>
+            <span className="text-foreground">Cart</span>
           </nav>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-            <ShoppingCart className="w-7 h-7 text-sky-500" />
-            Surveillance Hardware Cart
-          </h1>
+          <div className="flex items-baseline justify-between gap-4">
+            <h1 className="display text-[clamp(1.8rem,4vw,2.8rem)] leading-none text-foreground">
+              Your cart
+            </h1>
+            {cart && cart.items.length > 0 && (
+              <span className="eyebrow text-stone-500">
+                {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+              </span>
+            )}
+          </div>
         </div>
 
         {loading ? (
-          <div className="py-24 text-center">
-            <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-xs font-semibold text-slate-500">Loading your cart items...</p>
+          <div className="py-32 text-center">
+            <Loader2 className="w-5 h-5 animate-spin text-stone-400 mx-auto mb-4" />
+            <p className="text-xs text-stone-500">Loading your cart…</p>
           </div>
         ) : !cart || cart.items.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-12 text-center max-w-md mx-auto my-12 shadow-xs">
-            <div className="w-16 h-16 rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center mx-auto mb-4">
-              <ShoppingCart className="w-8 h-8" />
+          /* Empty state — editorial */
+          <div className="border border-border bg-card p-12 sm:p-16 text-center max-w-lg mx-auto my-8">
+            <div className="flex items-center justify-center mb-6">
+              <span className="dot-rec" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Your Cart is Empty</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <h3 className="display text-2xl text-foreground">Your cart is empty</h3>
+            <p className="text-sm text-stone-500 mt-2 max-w-sm mx-auto">
               You haven&apos;t added any surveillance equipment or networking hardware yet.
             </p>
-            <div className="mt-6 flex flex-col gap-2">
-              <Link
-                href="/products"
-                className="py-2.5 px-5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-xs"
-              >
-                Browse Surveillance Catalog
+            <div className="mt-8 flex flex-col sm:flex-row gap-2 justify-center">
+              <Link href="/products" className="btn-ink">
+                Browse the catalog <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                href="/kit-builder"
-                className="py-2.5 px-5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs"
-              >
-                Build Custom CCTV Kit
+              <Link href="/kit-builder" className="btn-ghost">
+                Build a CCTV kit <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Cart Items List (Left 2 cols) */}
-            <div className="lg:col-span-2 space-y-4">
-              {cart.items.map((item: any) => (
-                <div
-                  key={item.id}
-                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-20 h-20 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shrink-0 overflow-hidden">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.productName}
-                        fill
-                        className="object-contain p-2"
-                      />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
-                        {item.brandName}
-                      </span>
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                        {item.productName}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>Variant: <strong>{item.variantName}</strong></span>
-                        <span>•</span>
-                        <span className="font-mono text-[11px]">SKU: {item.skuCode}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            {/* Items — editorial hairline rows */}
+            <div className="lg:col-span-8">
+              <div className="border-t border-border">
+                {cart.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="border-b border-border py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
+                  >
+                    <div className="flex items-center gap-5 min-w-0">
+                      <div className="relative w-20 h-20 bg-card border border-border shrink-0 overflow-hidden">
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.productName}
+                          fill
+                          className="object-contain p-2"
+                        />
                       </div>
-                      <span className="block text-xs font-semibold text-slate-900 dark:text-white mt-1">
-                        {formatPrice(item.unitPrice)} each
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Quantity & Line Total */}
-                  <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 pt-3 sm:pt-0 border-t sm:border-0 border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-800 p-0.5">
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateQty(item.id, item.quantity - 1)}
-                        disabled={updatingId === item.id}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
-                      >
-                        -
-                      </button>
-                      <span className="w-8 text-center text-xs font-bold text-slate-900 dark:text-white">
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateQty(item.id, item.quantity + 1)}
-                        disabled={updatingId === item.id || item.quantity >= item.availableStock}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-40"
-                      >
-                        +
-                      </button>
+                      <div className="min-w-0">
+                        <div className="eyebrow text-stone-500 mb-1">{item.brandName}</div>
+                        <Link
+                          href={`/products`}
+                          className="display text-lg text-foreground hover:text-[var(--brand)] transition-colors leading-tight"
+                        >
+                          {item.productName}
+                        </Link>
+                        <div className="flex items-center gap-2 mt-1.5 text-[11px] text-stone-500 flex-wrap">
+                          <span>{item.variantName}</span>
+                          <span className="text-stone-300 dark:text-stone-600">/</span>
+                          <span className="font-mono">{item.skuCode}</span>
+                        </div>
+                        <div className="text-xs font-mono text-foreground mt-1">
+                          {formatPrice(item.unitPrice)} each
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-extrabold text-slate-900 dark:text-white">
-                        {formatPrice(item.lineTotal)}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemove(item.id)}
-                        disabled={updatingId === item.id}
-                        className="text-slate-400 hover:text-rose-600 transition-colors p-1"
-                        title="Remove item"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    {/* Quantity + line total + remove */}
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-3 w-full sm:w-auto sm:min-w-[150px]">
+                      <div className="flex items-center border border-border bg-background">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateQty(item.id, item.quantity - 1)}
+                          disabled={updatingId === item.id}
+                          className="w-9 h-10 flex items-center justify-center text-stone-500 hover:text-foreground hover:bg-accent disabled:opacity-30 transition-colors text-lg leading-none"
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </button>
+                        <span className="w-9 text-center text-sm font-mono text-foreground">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateQty(item.id, item.quantity + 1)}
+                          disabled={updatingId === item.id || item.quantity >= item.availableStock}
+                          className="w-9 h-10 flex items-center justify-center text-stone-500 hover:text-foreground hover:bg-accent disabled:opacity-30 transition-colors text-lg leading-none"
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm font-mono text-foreground">
+                          {formatPrice(item.lineTotal)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemove(item.id)}
+                          disabled={updatingId === item.id}
+                          className="text-stone-400 hover:text-foreground transition-colors p-1"
+                          aria-label="Remove item"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-1.5 mt-8 text-sm text-foreground link-underline"
+              >
+                Continue browsing <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
-            {/* Order Summary (Right 1 col) */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-6 lg:sticky lg:top-24">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Price Calculation
-                </span>
-                <h4 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
-                  Order Summary
-                </h4>
+            {/* Order summary — sticky */}
+            <div className="lg:col-span-4 lg:sticky lg:top-24">
+              <div className="border border-border bg-card p-7 space-y-6">
+                <div>
+                  <div className="eyebrow text-stone-500 mb-1">Order summary</div>
+                  <div className="display text-xl text-foreground">Price calculation</div>
+                </div>
+
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between text-stone-600 dark:text-stone-400">
+                    <span>Taxable base value</span>
+                    <span className="font-mono text-foreground">{formatPrice(cart.subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-stone-600 dark:text-stone-400">
+                    <span>GST (18%)</span>
+                    <span className="font-mono text-foreground">{formatPrice(cart.gstAmount)}</span>
+                  </div>
+                  <div className="flex justify-between text-stone-600 dark:text-stone-400">
+                    <span>Shipping &amp; handling</span>
+                    <span className="text-[var(--brand)]">Free</span>
+                  </div>
+                  <div className="pt-3 mt-1 border-t border-border flex justify-between items-baseline">
+                    <span className="text-foreground font-medium">Total</span>
+                    <span className="text-xl font-mono text-[var(--brand)]">
+                      {formatPrice(cart.totalAmount)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* ITC notice */}
+                <div className="p-3.5 border border-border bg-accent/40 text-[11px] space-y-1">
+                  <div className="text-foreground font-medium flex items-center gap-1.5">
+                    <span className="dot-rec" /> GST input tax credit
+                  </div>
+                  <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
+                    Claim back <strong className="font-mono">{formatPrice(cart.gstAmount)}</strong> in
+                    GST input credit by entering your company GSTIN at checkout.
+                  </p>
+                </div>
+
+                {/* COD warning */}
+                {!cart.isCodAllowed && (
+                  <div className="p-3 border border-amber-300/60 dark:border-amber-700/40 bg-amber-50/40 dark:bg-amber-950/20 text-[11px] flex items-start gap-2 text-amber-800 dark:text-amber-200">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>
+                      One or more items require prepaid payment. Cash on delivery is disabled for this order.
+                    </span>
+                  </div>
+                )}
+
+                {/* Checkout — solid ink */}
+                <Link
+                  href="/checkout"
+                  className="btn-ink w-full justify-center"
+                >
+                  Proceed to checkout <ArrowRight className="w-4 h-4" />
+                </Link>
+                <div className="text-[11px] text-center text-stone-500">
+                  {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+                </div>
               </div>
-
-              <div className="space-y-3 text-xs divide-y divide-slate-100 dark:divide-slate-800">
-                <div className="pt-2 flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Taxable Base Value:</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">
-                    {formatPrice(cart.subtotal)}
-                  </span>
-                </div>
-                <div className="pt-2 flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Goods & Services Tax (18% GST):</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">
-                    {formatPrice(cart.gstAmount)}
-                  </span>
-                </div>
-                <div className="pt-2 flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Shipping & Handling:</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">FREE</span>
-                </div>
-                <div className="pt-3 flex justify-between text-lg font-extrabold text-slate-900 dark:text-white border-t border-slate-200 dark:border-slate-800">
-                  <span>Total Amount:</span>
-                  <span className="text-sky-600 dark:text-sky-400">{formatPrice(cart.totalAmount)}</span>
-                </div>
-              </div>
-
-              {/* B2B Input Credit Notice */}
-              <div className="p-3.5 rounded-xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900 text-[11px] space-y-1">
-                <span className="font-bold text-sky-800 dark:text-sky-300 flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-sky-600" /> GST Input Tax Credit
-                </span>
-                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Claim back <strong>{formatPrice(cart.gstAmount)}</strong> in GST input credit by entering your company GSTIN during checkout.
-                </p>
-              </div>
-
-              {/* COD Availability Warning */}
-              {!cart.isCodAllowed && (
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] flex items-start gap-2 text-amber-800 dark:text-amber-200">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
-                  <span>
-                    One or more items in your cart require online prepaid payment. Cash on Delivery is disabled for this order.
-                  </span>
-                </div>
-              )}
-
-              {/* Checkout Button */}
-              <Link
-                href="/checkout"
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all hover:scale-[1.02]"
-              >
-                Proceed to Checkout ({cart.itemCount} Items) <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         )}

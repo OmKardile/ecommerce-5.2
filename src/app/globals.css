@@ -6,7 +6,8 @@
 /* ============================================================
    PATEL NETWORKS — Design System
    "Quiet Hardware / Editorial Security"
-   Restrained neutrals + one controlled accent (ember).
+   Restrained neutrals (white / off-white / black) + one
+   controlled blue accent.
    Sharp corners, hairline borders, no glow, no gradients.
    ============================================================ */
 
@@ -68,10 +69,10 @@
   --hairline: #DCD6C8;       /* light borders */
   --hairline-strong: #C9C2B2;
 
-  /* Accent — single controlled ember (the "recording light") */
-  --ember: #C2410C;          /* deep, refined orange */
-  --ember-soft: #E9651A;
-  --ember-tint: #F4E4D6;     /* whisper of accent for hover backgrounds */
+  /* Brand accent — single controlled blue */
+  --brand: #1E40AF;          /* deep, authoritative blue (blue-800) */
+  --brand-soft: #3B82F6;     /* blue-500, for dark-mode emphasis */
+  --brand-tint: #EFF6FF;     /* blue-50, whisper for hover backgrounds */
 
   /* Semantic mapping (shadcn-compatible) */
   --background: var(--paper);
@@ -86,17 +87,17 @@
   --secondary-foreground: var(--ink);
   --muted: var(--bone);
   --muted-foreground: var(--stone);
-  --accent: var(--ember-tint);
-  --accent-foreground: var(--ember);
+  --accent: var(--brand-tint);          /* shadcn hover bg */
+  --accent-foreground: var(--brand);   /* shadcn accent text */
   --destructive: #9F1239;            /* refined rose, not screaming red */
   --border: var(--hairline);
   --input: var(--hairline);
-  --ring: var(--ember);
+  --ring: var(--brand);
 
-  --chart-1: var(--ember);
+  --chart-1: var(--brand);
   --chart-2: #475569;
   --chart-3: #8B857A;
-  --chart-4: #B8651A;
+  --chart-4: #60A5FA;
   --chart-5: #1C1B17;
 
   --sidebar: #FFFFFF;
@@ -106,7 +107,7 @@
   --sidebar-accent: var(--bone);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--hairline);
-  --sidebar-ring: var(--ember);
+  --sidebar-ring: var(--brand);
 }
 
 /* ---------- DARK: cinematic ink ---------- */
@@ -119,9 +120,9 @@
   --hairline: #2A2823;
   --hairline-strong: #3A3830;
 
-  --ember: #E9651A;          /* brighter ember for dark bg */
-  --ember-soft: #FB923C;
-  --ember-tint: #2A1A10;
+  --brand: #60A5FA;          /* brighter blue for dark bg (blue-400) */
+  --brand-soft: #93C5FD;     /* blue-300 */
+  --brand-tint: #1E293B;     /* slate-800, whisper on dark */
 
   --background: var(--paper);
   --foreground: var(--ink);
@@ -135,14 +136,14 @@
   --secondary-foreground: var(--ink);
   --muted: var(--bone);
   --muted-foreground: var(--stone);
-  --accent: var(--ember-tint);
-  --accent-foreground: var(--ember-soft);
+  --accent: var(--brand-tint);
+  --accent-foreground: var(--brand-soft);
   --destructive: #F43F5E;
   --border: var(--hairline);
   --input: var(--hairline);
-  --ring: var(--ember);
+  --ring: var(--brand);
 
-  --chart-1: var(--ember-soft);
+  --chart-1: var(--brand-soft);
   --chart-2: #A8A294;
   --chart-3: #756F62;
   --chart-4: #FB923C;
@@ -155,7 +156,7 @@
   --sidebar-accent: var(--bone);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--hairline);
-  --sidebar-ring: var(--ember);
+  --sidebar-ring: var(--brand);
 }
 
 @layer base {
@@ -178,14 +179,14 @@
     font-optical-sizing: auto;
     letter-spacing: -0.02em;
   }
-  /* Selection — ember, the only flourish */
+  /* Selection — brand blue, the only flourish */
   ::selection {
-    background: var(--ember);
+    background: var(--brand);
     color: #FFFFFF;
   }
   /* Focus ring — refined, not a halo */
   :focus-visible {
-    outline: 2px solid var(--ember);
+    outline: 2px solid var(--brand);
     outline-offset: 2px;
   }
 }
@@ -217,7 +218,7 @@
 .display .ital {
   font-style: italic;
   font-weight: 400;
-  color: var(--ember);
+  color: var(--brand);
 }
 
 /* Hairline rule */
@@ -297,14 +298,14 @@
   width: 6px;
   height: 6px;
   border-radius: 9999px;
-  background: var(--ember);
+  background: var(--brand);
 }
 .dot-rec::after {
   content: "";
   position: absolute;
   inset: -3px;
   border-radius: 9999px;
-  border: 1px solid var(--ember);
+  border: 1px solid var(--brand);
   opacity: 0.35;
   animation: rec-pulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

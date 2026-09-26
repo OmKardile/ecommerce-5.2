@@ -223,8 +223,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   />
                 ))}
                 <div className="border-t border-border py-3 flex justify-between items-baseline bg-accent/30">
-                  <span className="eyebrow text-[var(--ember)]">GST rate</span>
-                  <span className="text-sm font-mono text-[var(--ember)]">
+                  <span className="eyebrow text-[var(--brand)]">GST rate</span>
+                  <span className="text-sm font-mono text-[var(--brand)]">
                     18% · HSN {product.category.hsnCode || '8525'}
                   </span>
                 </div>

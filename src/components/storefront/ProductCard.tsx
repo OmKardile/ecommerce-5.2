@@ -94,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Title — editorial serif */}
-        <h3 className="display text-[17px] leading-snug text-foreground line-clamp-2 group-hover:text-[var(--ember)] transition-colors">
+        <h3 className="display text-[17px] leading-snug text-foreground line-clamp-2 group-hover:text-[var(--brand)] transition-colors">
           {product.name}
         </h3>
 
@@ -132,11 +132,11 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            {/* Stock — tiny status, ember only when low */}
+            {/* Stock — tiny status, brand only when low */}
             {totalAvailableStock > 5 ? (
               <span className="text-[10px] text-stone-500">In stock</span>
             ) : totalAvailableStock > 0 ? (
-              <span className="text-[10px] text-[var(--ember)] flex items-center gap-1.5">
+              <span className="text-[10px] text-[var(--brand)] flex items-center gap-1.5">
                 <span className="dot-rec" /> {totalAvailableStock} left
               </span>
             ) : (

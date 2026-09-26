@@ -198,7 +198,7 @@ export default async function HomePage() {
                   <span className="col-span-2 sm:col-span-1 font-mono text-xs text-stone-400">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
-                  <span className="col-span-7 sm:col-span-5 display text-xl sm:text-2xl text-foreground group-hover:text-[var(--ember)] transition-colors">
+                  <span className="col-span-7 sm:col-span-5 display text-xl sm:text-2xl text-foreground group-hover:text-[var(--brand)] transition-colors">
                     {cat!.name}
                   </span>
                   <span className="hidden sm:block col-span-5 text-sm text-stone-500">
@@ -341,7 +341,7 @@ export default async function HomePage() {
                   href={`/products?brand=${b.slug}`}
                   className="group flex items-center justify-center py-8 px-4 border-r border-b border-border hover:bg-accent/50 transition-colors"
                 >
-                  <span className="display text-xl text-foreground group-hover:text-[var(--ember)] transition-colors">
+                  <span className="display text-xl text-foreground group-hover:text-[var(--brand)] transition-colors">
                     {b.name}
                   </span>
                 </Link>

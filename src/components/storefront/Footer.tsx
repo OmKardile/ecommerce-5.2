@@ -31,7 +31,7 @@ export function Footer() {
           <div className="md:col-span-5 space-y-5">
             <div className="flex items-baseline gap-3">
               <span className="display text-[28px] leading-none text-foreground">
-                Patel<span className="text-[var(--ember)]">.</span>Networks
+                Patel<span className="text-[var(--brand)]">.</span>Networks
               </span>
               <span className="eyebrow text-stone-500">Mega-Tech</span>
             </div>
@@ -84,7 +84,7 @@ export function Footer() {
             <div className="eyebrow text-stone-500 mb-4">Customer & Tools</div>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/kit-builder" className="text-foreground hover:text-[var(--ember)] transition-colors flex items-center gap-1.5">
+                <Link href="/kit-builder" className="text-foreground hover:text-[var(--brand)] transition-colors flex items-center gap-1.5">
                   CCTV Kit Builder <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </li>

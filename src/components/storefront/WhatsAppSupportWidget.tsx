@@ -60,7 +60,7 @@ export function WhatsAppSupportWidget() {
             <div className="flex items-center gap-3">
               <div className="relative w-9 h-9 border border-background/30 flex items-center justify-center">
                 <MessageSquare className="w-4 h-4" />
-                <span className="absolute -bottom-1 -right-1 w-2 h-2 bg-[var(--ember)] border border-foreground" />
+                <span className="absolute -bottom-1 -right-1 w-2 h-2 bg-[var(--brand)] border border-foreground" />
               </div>
               <div>
                 <h4 className="text-sm font-medium leading-tight">Patel Networks Helpdesk</h4>
@@ -98,7 +98,7 @@ export function WhatsAppSupportWidget() {
                     className="w-full text-left p-2.5 border border-border hover:border-foreground hover:bg-accent text-xs font-medium text-foreground transition-colors flex items-center justify-between group"
                   >
                     <span className="flex items-center gap-2.5">
-                      <Icon className="w-3.5 h-3.5 text-stone-500 group-hover:text-[var(--ember)] transition-colors" />
+                      <Icon className="w-3.5 h-3.5 text-stone-500 group-hover:text-[var(--brand)] transition-colors" />
                       <span>{prompt.label}</span>
                     </span>
                     <ArrowUpRight className="w-3 h-3 text-stone-400 group-hover:text-foreground transition-colors" />

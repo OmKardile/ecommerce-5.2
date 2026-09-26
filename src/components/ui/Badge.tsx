@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'tech' | 'outline' | 'ember';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'tech' | 'outline' | 'brand';
 }
 
 /**
@@ -23,8 +23,8 @@ export function Badge({ className, variant = 'default', children, ...props }: Ba
       'bg-transparent text-stone-700 dark:text-stone-300 border-[var(--hairline-strong)] font-mono tracking-tight',
     outline:
       'bg-transparent text-stone-600 dark:text-stone-400 border-[var(--hairline-strong)]',
-    ember:
-      'bg-transparent text-[var(--ember)] border-[var(--ember)]/40',
+    brand:
+      'bg-transparent text-[var(--brand)] border-[var(--brand)]/40',
   };
 
   return (

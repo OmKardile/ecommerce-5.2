@@ -16,6 +16,10 @@ interface RevealProps {
  * Adds `.reveal` until the element enters the viewport, then `.is-visible`.
  * Keeps a `transitionDelay` for staggered sequences.
  * Respects prefers-reduced-motion via CSS.
+ *
+ * Note: `visible` is only ever set inside IntersectionObserver callbacks
+ * (event-driven) or a timer (async), never synchronously in the effect body,
+ * to comply with react-hooks/set-state-in-effect.
  */
 export function Reveal({ children, className, delay = 0, as: Tag = 'div' }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
@@ -23,14 +27,13 @@ export function Reveal({ children, className, delay = 0, as: Tag = 'div' }: Reve
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) {
-      setVisible(true);
-      return;
+    // No element or no IntersectionObserver — schedule the reveal on the
+    // next tick instead of calling setState synchronously in the effect body.
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      const t = setTimeout(() => setVisible(true), 0);
+      return () => clearTimeout(t);
     }
-    if (typeof IntersectionObserver === 'undefined') {
-      setVisible(true);
-      return;
-    }
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
