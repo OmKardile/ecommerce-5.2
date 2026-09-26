@@ -418,4 +418,34 @@
   .marquee-track { animation: none !important; }
   .btn-ink:hover, .btn-ghost:hover { transform: none !important; }
   .btn-ink:active, .btn-ghost:active { transform: none !important; }
+  .animate-fade-in-up { animation: none !important; opacity: 1 !important; }
+  .animate-pulse-slow { animation: none !important; }
+  .animate-scroll-line { animation: none !important; }
+}
+
+/* ============================================================
+   Cinematic VFX animations
+   ============================================================ */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+@keyframes scroll-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-scroll-line {
+  animation: scroll-line 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

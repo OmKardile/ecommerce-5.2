@@ -10,6 +10,7 @@ import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
 import { ProductCard } from '@/components/storefront/ProductCard';
 import { Reveal } from '@/components/storefront/Reveal';
+import { CinematicHero } from '@/components/storefront/CinematicHero';
 import {
   getFeaturedProducts,
   getCategories,
@@ -44,81 +45,9 @@ export default async function HomePage() {
 
       <main className="flex-1">
         {/* ============================================================ */}
-        {/* HERO — bright, product-forward, split layout */}
+        {/* CINEMATIC HERO — VFX, parallax, immersive */}
         {/* ============================================================ */}
-        <section className="bg-background border-b border-border">
-          <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center min-h-[80vh] py-16 lg:py-24">
-              {/* Text — left */}
-              <div className="lg:col-span-6 order-2 lg:order-1">
-                <Reveal>
-                  <div className="flex items-center gap-3 mb-8">
-                    <span className="dot-rec" />
-                    <span className="text-[12px] tracking-[0.2em] uppercase font-medium text-stone-500">
-                      Authorized Indian distributor
-                    </span>
-                  </div>
-                </Reveal>
-                <Reveal delay={60}>
-                  {/* The ONE place serif is allowed — the hero headline */}
-                  <h1 className="display text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.02] text-foreground max-w-xl">
-                    Surveillance hardware,{' '}
-                    <span className="ital">precisely</span> specified.
-                  </h1>
-                </Reveal>
-                <Reveal delay={120}>
-                  <p className="mt-7 text-base sm:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-lg">
-                    Certified HD analog cameras, AI AcuSense recorders, 24/7
-                    surveillance drives and Cat6 cabling — with verified 18%
-                    GST invoicing and immediate pan-India dispatch.
-                  </p>
-                </Reveal>
-                <Reveal delay={180}>
-                  <div className="mt-9 flex flex-wrap items-center gap-3">
-                    <Link href="/products" className="btn-ink">
-                      Browse the catalog
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <Link href="/kit-builder" className="btn-ghost">
-                      <Wrench className="w-4 h-4" />
-                      Build a kit
-                    </Link>
-                  </div>
-                </Reveal>
-                {/* Trust stats — clean, sans, mono numbers */}
-                <Reveal delay={240}>
-                  <div className="mt-12 pt-8 border-t border-border grid grid-cols-3 gap-6 max-w-md">
-                    <div>
-                      <div className="text-2xl font-mono text-foreground">{brands.length}</div>
-                      <div className="text-[11px] text-stone-500 mt-1">brands</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-mono text-foreground">{categories.length}</div>
-                      <div className="text-[11px] text-stone-500 mt-1">categories</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-mono text-foreground">{featuredProducts.length}+</div>
-                      <div className="text-[11px] text-stone-500 mt-1">models</div>
-                    </div>
-                  </div>
-                </Reveal>
-              </div>
-              {/* Product image — right, fills the viewport */}
-              <Reveal variant="up" delay={100} className="lg:col-span-6 order-1 lg:order-2">
-                <div className="relative aspect-square sm:aspect-[4/5] lg:aspect-[5/6] bg-bone">
-                  <Image
-                    src="/editorial/product-dome-camera.jpg"
-                    alt="Premium dome CCTV security camera — studio product photography"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
+        <CinematicHero />
 
         {/* ============================================================ */}
         {/* CATEGORIES — clean hairline index, sans-serif */}
