@@ -3,13 +3,12 @@ import Link from 'next/link';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
 import { ProductCard } from '@/components/storefront/ProductCard';
-import { Badge } from '@/components/ui/Badge';
 import {
   getFilteredProducts,
   getAllCategoriesFlat,
   getPopularBrands,
 } from '@/server/services/catalog.service';
-import { Filter, X, SlidersHorizontal, Check } from 'lucide-react';
+import { ArrowUpRight, Check } from 'lucide-react';
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -30,7 +29,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const brandSlug = params.brand;
   const searchQuery = params.search;
   const inStockOnly = params.inStock === 'true';
-  const sortBy = (params.sort as any) || 'featured';
+  const sortBy = (params.sort as string) || 'featured';
 
   const [products, categories, brands] = await Promise.all([
     getFilteredProducts({
@@ -46,137 +45,119 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const hasActiveFilters = !!(categorySlug || brandSlug || searchQuery || inStockOnly);
 
+  const heading = searchQuery
+    ? `“${searchQuery}”`
+    : categorySlug
+    ? categories.find((c) => c.slug === categorySlug)?.name || 'Catalog'
+    : brandSlug
+    ? `${brands.find((b) => b.slug === brandSlug)?.name || 'Brand'} Hardware`
+    : 'Surveillance & Security Catalog';
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {/* Breadcrumb & Header */}
-        <div className="mb-8">
-          <nav className="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-slate-900 dark:hover:text-white">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-slate-900 dark:text-white font-medium">Catalog</span>
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 lg:px-10 py-10 sm:py-14">
+        {/* Breadcrumb + heading */}
+        <div className="mb-10">
+          <nav className="text-[11px] text-stone-500 mb-3 flex items-center gap-2">
+            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <span className="text-stone-300 dark:text-stone-600">/</span>
+            <span className="text-foreground">Catalog</span>
             {categorySlug && (
               <>
-                <span>/</span>
-                <span className="text-sky-600 dark:text-sky-400 capitalize">
-                  {categorySlug.replace(/-/g, ' ')}
-                </span>
+                <span className="text-stone-300 dark:text-stone-600">/</span>
+                <span className="text-foreground capitalize">{categorySlug.replace(/-/g, ' ')}</span>
               </>
             )}
           </nav>
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                {searchQuery
-                  ? `Search results for "${searchQuery}"`
-                  : categorySlug
-                  ? categories.find((c) => c.slug === categorySlug)?.name || 'Category Products'
-                  : brandSlug
-                  ? `${brands.find((b) => b.slug === brandSlug)?.name || 'Brand'} Hardware`
-                  : 'All Surveillance & Security Products'}
+              <h1 className="display text-[clamp(1.8rem,4vw,2.8rem)] leading-tight text-foreground">
+                {heading}
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Showing {products.length} genuine commercial hardware items
+              <p className="text-sm text-stone-500 mt-2">
+                {products.length} {products.length === 1 ? 'item' : 'items'} · genuine commercial hardware
               </p>
             </div>
 
-            {/* Clear filters badge if active */}
             {hasActiveFilters && (
               <Link
                 href="/products"
-                className="inline-flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400 font-semibold hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm text-foreground link-underline shrink-0"
               >
-                <X className="w-3.5 h-3.5" /> Clear All Filters
+                Clear filters <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             )}
           </div>
         </div>
 
-        {/* Layout: Sidebar + Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-          {/* ============================================================ */}
-          {/* FILTER SIDEBAR */}
-          {/* ============================================================ */}
-          <aside className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs space-y-6 lg:sticky lg:top-24">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                <SlidersHorizontal className="w-3.5 h-3.5 text-sky-500" /> Filter Hardware
-              </span>
-            </div>
-
-            {/* Categories */}
-            <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2.5">
-                Category
-              </h4>
-              <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
+        {/* Layout: sidebar + grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Filter sidebar — hairline, sharp */}
+          <aside className="lg:col-span-3 lg:sticky lg:top-24 space-y-8">
+            <div className="border-t border-border pt-5">
+              <div className="eyebrow text-stone-500 mb-3">Category</div>
+              <div className="space-y-px">
                 <Link
                   href={`/products${brandSlug ? `?brand=${brandSlug}` : ''}`}
-                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                  className={`block py-2 text-sm transition-colors ${
                     !categorySlug
-                      ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-semibold'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      ? 'text-foreground font-medium'
+                      : 'text-stone-500 hover:text-foreground'
                   }`}
                 >
-                  <span>All Categories</span>
+                  All categories
                 </Link>
                 {categories.map((cat) => (
                   <Link
                     key={cat.id}
                     href={`/products?category=${cat.slug}${brandSlug ? `&brand=${brandSlug}` : ''}`}
-                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                    className={`flex items-center justify-between py-2 text-sm transition-colors ${
                       categorySlug === cat.slug
-                        ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-semibold'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        ? 'text-foreground font-medium'
+                        : 'text-stone-500 hover:text-foreground'
                     }`}
                   >
                     <span>{cat.name}</span>
-                    <span className="text-[10px] text-slate-400">({cat._count.products})</span>
+                    <span className="text-[11px] font-mono text-stone-400">{cat._count.products}</span>
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Brands */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2.5">
-                Brand
-              </h4>
-              <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
+            <div className="border-t border-border pt-5">
+              <div className="eyebrow text-stone-500 mb-3">Brand</div>
+              <div className="space-y-px">
                 <Link
                   href={`/products${categorySlug ? `?category=${categorySlug}` : ''}`}
-                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                  className={`block py-2 text-sm transition-colors ${
                     !brandSlug
-                      ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-semibold'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      ? 'text-foreground font-medium'
+                      : 'text-stone-500 hover:text-foreground'
                   }`}
                 >
-                  <span>All Brands</span>
+                  All brands
                 </Link>
                 {brands.map((b) => (
                   <Link
                     key={b.id}
                     href={`/products?brand=${b.slug}${categorySlug ? `&category=${categorySlug}` : ''}`}
-                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
+                    className={`flex items-center justify-between py-2 text-sm transition-colors ${
                       brandSlug === b.slug
-                        ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-semibold'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                        ? 'text-foreground font-medium'
+                        : 'text-stone-500 hover:text-foreground'
                     }`}
                   >
                     <span>{b.name}</span>
-                    <span className="text-[10px] text-slate-400">({b._count.products})</span>
+                    <span className="text-[11px] font-mono text-stone-400">{b._count.products}</span>
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Availability Toggle */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div className="border-t border-border pt-5">
               <Link
                 href={`/products?${new URLSearchParams({
                   ...(categorySlug && { category: categorySlug }),
@@ -184,48 +165,41 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   ...(searchQuery && { search: searchQuery }),
                   inStock: inStockOnly ? 'false' : 'true',
                 }).toString()}`}
-                className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
+                className="flex items-center gap-2.5 text-sm text-stone-600 dark:text-stone-400 hover:text-foreground transition-colors"
               >
-                <div
-                  className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                    inStockOnly
-                      ? 'bg-sky-600 border-sky-600 text-white'
-                      : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'
-                  }`}
-                >
-                  {inStockOnly && <Check className="w-3 h-3 stroke-[3]" />}
-                </div>
-                <span>In-Stock Items Only</span>
+                <span className={`w-4 h-4 border flex items-center justify-center transition-colors ${
+                  inStockOnly
+                    ? 'bg-foreground border-foreground text-background'
+                    : 'border-stone-400 dark:border-stone-600'
+                }`}>
+                  {inStockOnly && <Check className="w-3 h-3" />}
+                </span>
+                <span>In-stock items only</span>
               </Link>
             </div>
           </aside>
 
-          {/* ============================================================ */}
-          {/* PRODUCT GRID */}
-          {/* ============================================================ */}
-          <div className="lg:col-span-3">
+          {/* Product grid */}
+          <div className="lg:col-span-9">
             {products.length === 0 ? (
-              <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-8 shadow-xs">
-                <div className="w-16 h-16 rounded-2xl bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center mx-auto mb-4">
-                  <Filter className="w-8 h-8" />
+              <div className="border border-border bg-card p-16 text-center max-w-md mx-auto">
+                <div className="flex items-center justify-center mb-6">
+                  <span className="dot-rec" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  No matching surveillance products
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                  Try clearing some filters or searching with different terms like &quot;4MP&quot;, &quot;Hikvision&quot;, or &quot;DVR&quot;.
+                <h3 className="display text-2xl text-foreground">No matching products</h3>
+                <p className="text-sm text-stone-500 mt-2 max-w-sm mx-auto">
+                  Try clearing filters or searching for “4MP”, “Hikvision”, or “DVR”.
                 </p>
-                <Link
-                  href="/products"
-                  className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-xs shadow-xs"
-                >
-                  View All Products
+                <Link href="/products" className="btn-ink mt-8">
+                  View all products <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <div key={product.id} className="bg-background">
+                    <ProductCard product={product} />
+                  </div>
                 ))}
               </div>
             )}

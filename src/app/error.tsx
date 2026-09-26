@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, RefreshCw, Home, MessageSquare } from 'lucide-react';
+import { RefreshCw, ArrowLeft } from 'lucide-react';
 
 export default function GlobalError({
   error,
@@ -12,55 +12,49 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log unexpected client exceptions
     console.error('Unhandled platform error boundary:', error);
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-          <AlertTriangle className="w-8 h-8 animate-pulse" />
+    <div className="min-h-screen bg-background flex items-center justify-center px-6 lg:px-10 py-20">
+      <div className="max-w-md w-full text-center">
+        <div className="flex items-center justify-center mb-8">
+          <span className="dot-rec" />
         </div>
 
-        <div className="space-y-2">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-800/40">
-            System Alert • Application Exception
-          </span>
-          <h1 className="text-xl font-black text-white">Temporary System Interruption</h1>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            An unexpected error occurred while communicating with the surveillance servers. Your session and cart data remain safe.
+        <div className="eyebrow text-stone-500 mb-4">System alert</div>
+
+        <h1 className="display text-2xl sm:text-3xl text-foreground mb-4">
+          Temporary system interruption.
+        </h1>
+        <p className="text-sm text-stone-500 leading-relaxed max-w-sm mx-auto">
+          An unexpected error occurred while communicating with our servers.
+          Your session and cart data remain safe.
+        </p>
+
+        {error.digest && (
+          <p className="mt-6 text-[11px] font-mono text-stone-400 border border-border inline-block px-3 py-1.5">
+            Error digest: {error.digest}
           </p>
-          {error.digest && (
-            <p className="text-[10px] font-mono text-slate-600 bg-slate-950 px-2 py-1 rounded inline-block">
-              Error Digest: {error.digest}
-            </p>
-          )}
-        </div>
+        )}
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={() => reset()}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-all shadow-md shadow-sky-600/20"
-          >
-            <RefreshCw className="w-3.5 h-3.5" /> Try Again
+        <div className="mt-10 flex flex-col sm:flex-row gap-2 justify-center">
+          <button onClick={() => reset()} className="btn-ink">
+            <RefreshCw className="w-4 h-4" /> Try again
           </button>
-          <Link
-            href="/"
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-all border border-slate-700"
-          >
-            <Home className="w-3.5 h-3.5" /> Return Home
+          <Link href="/" className="btn-ghost">
+            <ArrowLeft className="w-4 h-4" /> Return home
           </Link>
         </div>
 
-        <div className="pt-4 border-t border-slate-800/80">
+        <div className="mt-12 pt-8 border-t border-border text-xs text-stone-500">
           <a
             href="https://wa.me/919876543210?text=Hello%20Patel%20Networks,%20I%20encountered%20an%20error%20on%20the%20platform."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+            className="text-foreground link-underline"
           >
-            <MessageSquare className="w-3.5 h-3.5" /> Emergency Support via WhatsApp →
+            Contact emergency support via WhatsApp
           </a>
         </div>
       </div>

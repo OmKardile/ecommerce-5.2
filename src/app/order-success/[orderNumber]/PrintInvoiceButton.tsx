@@ -14,9 +14,9 @@ export function PrintInvoiceButton() {
     <button
       type="button"
       onClick={handlePrint}
-      className="py-2.5 px-4 rounded-xl bg-white text-emerald-800 hover:bg-emerald-50 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all hover:scale-[1.02]"
+      className="btn-ink"
     >
-      <Printer className="w-4 h-4" />
+      <Printer className="w-3.5 h-3.5" />
       <span>Print / Save Tax Invoice</span>
     </button>
   );

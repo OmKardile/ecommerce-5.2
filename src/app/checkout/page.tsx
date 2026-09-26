@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { Badge } from '@/components/ui/Badge';
 import { formatPrice } from '@/lib/utils';
 import { getCartAction } from '@/app/actions/cart.actions';
 import { getCurrentUserAction } from '@/app/actions/auth.actions';
@@ -17,23 +16,15 @@ import {
 import { checkPincodeAction } from '@/app/actions/shipping.actions';
 import { PincodeServiceability } from '@/lib/pincodes';
 import {
-  ShieldCheck,
   Truck,
-  FileText,
   AlertCircle,
   CreditCard,
   Banknote,
-  CheckCircle2,
-  Lock,
+  Check,
   ArrowRight,
   Loader2,
-  Building2,
-  MapPin,
-  Phone,
-  Mail,
-  User,
-  ExternalLink,
   XCircle,
+  Lock,
 } from 'lucide-react';
 
 const INDIAN_STATES = [
@@ -103,31 +94,44 @@ export default function CheckoutPage() {
   } | null>(null);
   const [simulatingProcessing, setSimulatingProcessing] = useState<boolean>(false);
 
-  // Real-time Pincode Validation and COD eligibility check (ADR-012)
+  // Real-time Pincode Validation and COD eligibility check (ADR-012).
+  // All setState calls happen inside the async callback (after await or in
+  // the synchronous-but-nested IIFE body), never directly in the effect
+  // body — keeps react-hooks/set-state-in-effect satisfied.
   useEffect(() => {
-    async function validatePin() {
+    let active = true;
+    (async () => {
       if (/^[1-9][0-9]{5}$/.test(pincode)) {
-        const res = await checkPincodeAction(pincode, cart?.total || 0);
-        if (res.success && res.data) {
-          setPincodeInfo(res.data);
-          if (!res.data.isCodAvailable && paymentMethod === 'CASH_ON_DELIVERY') {
-            setPaymentMethod('RAZORPAY');
+        try {
+          const res = await checkPincodeAction(pincode, cart?.total || 0);
+          if (!active) return;
+          if (res.success && res.data) {
+            setPincodeInfo(res.data);
+            if (!res.data.isCodAvailable && paymentMethod === 'CASH_ON_DELIVERY') {
+              setPaymentMethod('RAZORPAY');
+            }
+          } else {
+            setPincodeInfo(null);
           }
-        } else {
-          setPincodeInfo(null);
+        } catch {
+          if (active) setPincodeInfo(null);
         }
       } else {
         setPincodeInfo(null);
       }
-    }
-    validatePin();
+    })();
+    return () => {
+      active = false;
+    };
   }, [pincode, cart?.total]);
 
   useEffect(() => {
-    async function load() {
+    let active = true;
+    (async () => {
       try {
         setLoadingCart(true);
         const data = await getCartAction();
+        if (!active) return;
         setCart(data);
         if (data && !data.isCodAllowed) {
           setPaymentMethod('RAZORPAY');
@@ -135,6 +139,7 @@ export default function CheckoutPage() {
 
         // Check if user is logged in and prefill profile
         const userRes = await getCurrentUserAction();
+        if (!active) return;
         if (userRes?.success && userRes.user) {
           const u = userRes.user;
           if (u.customer?.fullName && u.customer.fullName !== 'Valued Customer') {
@@ -160,13 +165,15 @@ export default function CheckoutPage() {
             if (u.customer.gstin) setGstin(u.customer.gstin);
           }
         }
-      } catch (err: any) {
-        setErrorMessage('Failed to load cart for checkout.');
+      } catch {
+        if (active) setErrorMessage('Failed to load cart for checkout.');
       } finally {
-        setLoadingCart(false);
+        if (active) setLoadingCart(false);
       }
-    }
-    load();
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -280,7 +287,7 @@ export default function CheckoutPage() {
             contact: phone,
           },
           theme: {
-            color: '#0284c7',
+            color: '#1E40AF',
           },
         };
 
@@ -321,117 +328,134 @@ export default function CheckoutPage() {
     }
   };
 
+  const inputCls =
+    'w-full bg-transparent border-b border-border focus:border-foreground focus:outline-none text-foreground text-sm py-2.5 placeholder:text-stone-400';
+  const monoInputCls =
+    'w-full bg-transparent border-b border-border focus:border-foreground focus:outline-none font-mono text-foreground text-sm py-2.5 tracking-wider placeholder:text-stone-400';
+
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Breadcrumb & Header */}
-        <div className="mb-8">
-          <nav className="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
-            <Link href="/" className="hover:text-slate-900 dark:hover:text-white">
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/cart" className="hover:text-slate-900 dark:hover:text-white">
-              Cart
-            </Link>
-            <span>/</span>
-            <span className="text-slate-900 dark:text-white font-medium">Checkout</span>
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 lg:px-10 py-10 sm:py-14">
+        {/* Breadcrumb + heading */}
+        <div className="mb-10">
+          <nav className="text-[11px] text-stone-500 mb-3 flex items-center gap-2">
+            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <span className="text-stone-300 dark:text-stone-600">/</span>
+            <Link href="/cart" className="hover:text-foreground transition-colors">Cart</Link>
+            <span className="text-stone-300 dark:text-stone-600">/</span>
+            <span className="text-foreground">Checkout</span>
           </nav>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-                <Lock className="w-6 h-6 text-emerald-500" />
-                Secure Checkout & Dispatch
+              <div className="eyebrow text-stone-500 mb-3 flex items-center gap-2">
+                <span className="dot-rec" />
+                256-bit SSL · Verified GST invoicing · Pan-India dispatch
+              </div>
+              <h1 className="display text-[clamp(1.8rem,4vw,2.8rem)] leading-none text-foreground">
+                Secure checkout & dispatch
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                256-Bit SSL Encrypted • Verified GST Invoicing • Rapid Indian Courier Transit
-              </p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-full w-fit">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Direct Manufacturer Warranty Included</span>
+            <div className="text-xs text-stone-500 max-w-xs sm:text-right">
+              Direct manufacturer warranty included. Real-time inventory locks applied on order placement.
             </div>
           </div>
         </div>
 
+        {/* Step index — editorial hairline table-of-contents */}
+        {!loadingCart && cart && cart.items.length > 0 && (
+          <div className="border-t border-border mb-12">
+            <div className="grid grid-cols-3 border-b border-border">
+              {([
+                ['01', 'Recipient & shipping'],
+                ['02', 'B2B GST invoicing'],
+                ['03', 'Payment method'],
+              ] as const).map(([num, label], i) => (
+                <div
+                  key={num}
+                  className={`py-4 px-3 ${i > 0 ? 'border-l border-border' : ''}`}
+                >
+                  <div className="font-mono text-xs text-stone-400 mb-1">{num}</div>
+                  <div className="text-sm text-foreground">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {loadingCart ? (
-          <div className="py-24 text-center">
-            <Loader2 className="w-10 h-10 animate-spin text-sky-500 mx-auto mb-4" />
-            <p className="text-xs font-semibold text-slate-500">Preparing your order details...</p>
+          <div className="py-32 text-center">
+            <Loader2 className="w-5 h-5 animate-spin text-stone-400 mx-auto mb-4" />
+            <p className="text-xs text-stone-500">Preparing your order details…</p>
           </div>
         ) : !cart || cart.items.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-12 text-center max-w-md mx-auto my-12 shadow-xs">
-            <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Cart is Empty</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Your cart has no items to checkout. Please add products before placing an order.
+          /* Empty state — editorial */
+          <div className="border border-border bg-card p-12 sm:p-16 text-center max-w-lg mx-auto my-8">
+            <div className="flex items-center justify-center mb-6">
+              <AlertCircle className="w-6 h-6 text-stone-400" />
+            </div>
+            <h3 className="display text-2xl text-foreground">Cart is empty</h3>
+            <p className="text-sm text-stone-500 mt-2 max-w-sm mx-auto">
+              Your cart has no items to checkout. Add surveillance hardware before placing an order.
             </p>
-            <Link
-              href="/products"
-              className="inline-block mt-6 py-2.5 px-6 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-xs"
-            >
-              Browse Catalog
-            </Link>
+            <div className="mt-8 flex flex-col sm:flex-row gap-2 justify-center">
+              <Link href="/products" className="btn-ink">
+                Browse the catalog <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link href="/kit-builder" className="btn-ghost">
+                Build a CCTV kit
+              </Link>
+            </div>
           </div>
         ) : (
-          <form onSubmit={handleFormSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Left 2 Columns: Forms */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Error Alert */}
+          <form onSubmit={handleFormSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+            {/* Left col: forms */}
+            <div className="lg:col-span-8 space-y-12">
+              {/* Error */}
               {errorMessage && (
-                <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-start gap-3 animate-in fade-in">
-                  <XCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <div className="p-4 border border-rose-300/70 dark:border-rose-700/50 bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-3">
+                  <XCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold block">Checkout Attention Required:</span>
+                    <span className="font-bold block mb-0.5">Checkout attention required</span>
                     <span>{errorMessage}</span>
                   </div>
                 </div>
               )}
 
-              {/* 1. Contact & Shipping Address Card */}
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
-                <div className="flex items-center gap-3 pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
-                  <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-sm">
-                    1
-                  </div>
+              {/* 01 — Recipient & Shipping Address */}
+              <section>
+                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-6 pb-3 border-b border-border">
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      Recipient & Shipping Address
-                    </h3>
-                    <p className="text-xs text-slate-500">Where should we deliver your surveillance hardware?</p>
+                    <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+                      <span className="font-mono">01</span>
+                      <span className="text-stone-300 dark:text-stone-600">/</span>
+                      <span>Step one</span>
+                    </div>
+                    <h2 className="display text-2xl text-foreground">Recipient & shipping address</h2>
                   </div>
+                  <span className="hidden sm:block text-[11px] text-stone-500">Where we deliver your surveillance hardware</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Recipient Full Name */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {/* Recipient name */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Recipient Full Name *
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        required
-                        value={recipientName}
-                        onChange={(e) => setRecipientName(e.target.value)}
-                        placeholder="e.g. Ramesh Patel"
-                        className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
-                      />
-                      <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    </div>
+                    <label className="block eyebrow text-stone-500 mb-2">Recipient full name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      placeholder="e.g. Ramesh Patel"
+                      className={inputCls}
+                    />
                   </div>
 
-                  {/* Phone Number */}
+                  {/* Phone */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Mobile Number (For Courier OTP & Tracking) *
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3 text-xs font-bold text-slate-500 select-none">
-                        +91
-                      </span>
+                    <label className="block eyebrow text-stone-500 mb-2">Mobile number (courier OTP) *</label>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xs font-mono text-stone-400">+91</span>
                       <input
                         type="tel"
                         required
@@ -439,98 +463,80 @@ export default function CheckoutPage() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                         placeholder="9876543210"
-                        className="w-full pl-12 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono text-slate-900 dark:text-white tracking-wider"
+                        className={`flex-1 ${monoInputCls}`}
                       />
                     </div>
                   </div>
 
-                  {/* Email Address */}
+                  {/* Email */}
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Email Address (Optional, for GST Tax Invoice PDF)
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@business.com"
-                        className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
-                      />
-                      <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    </div>
+                    <label className="block eyebrow text-stone-500 mb-2">Email address (optional, for GST invoice PDF)</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@business.com"
+                      className={inputCls}
+                    />
                   </div>
 
-                  {/* Address Line 1 */}
+                  {/* Address line 1 */}
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Street Address / Flat / Floor / Building *
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        required
-                        value={addressLine1}
-                        onChange={(e) => setAddressLine1(e.target.value)}
-                        placeholder="e.g. Shop #4, Patel Complex, Station Road"
-                        className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
-                      />
-                      <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    </div>
+                    <label className="block eyebrow text-stone-500 mb-2">Street address / flat / floor / building *</label>
+                    <input
+                      type="text"
+                      required
+                      value={addressLine1}
+                      onChange={(e) => setAddressLine1(e.target.value)}
+                      placeholder="e.g. Shop #4, Patel Complex, Station Road"
+                      className={inputCls}
+                    />
                   </div>
 
-                  {/* Address Line 2 */}
+                  {/* Address line 2 */}
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Landmark / Area (Optional)
-                    </label>
+                    <label className="block eyebrow text-stone-500 mb-2">Landmark / area (optional)</label>
                     <input
                       type="text"
                       value={addressLine2}
                       onChange={(e) => setAddressLine2(e.target.value)}
                       placeholder="Near Sardar Chowk"
-                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+                      className={inputCls}
                     />
                   </div>
 
                   {/* City */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      City / District *
-                    </label>
+                    <label className="block eyebrow text-stone-500 mb-2">City / district *</label>
                     <input
                       type="text"
                       required
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="Ahmedabad"
-                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+                      className={inputCls}
                     />
                   </div>
 
-                  {/* State Dropdown */}
+                  {/* State */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      State / UT *
-                    </label>
+                    <label className="block eyebrow text-stone-500 mb-2">State / UT *</label>
                     <select
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+                      className="w-full bg-transparent border-b border-border focus:border-foreground focus:outline-none text-foreground text-sm py-2.5"
                     >
                       {INDIAN_STATES.map((st) => (
-                        <option key={st} value={st}>
+                        <option key={st} value={st} className="bg-background text-foreground">
                           {st}
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {/* PIN Code */}
+                  {/* Pincode */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      PIN Code (6 Digits) *
-                    </label>
+                    <label className="block eyebrow text-stone-500 mb-2">PIN code (6 digits) *</label>
                     <input
                       type="text"
                       required
@@ -538,90 +544,87 @@ export default function CheckoutPage() {
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
                       placeholder="380001"
-                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono text-slate-900 dark:text-white"
+                      className={monoInputCls}
                     />
                   </div>
 
-                  {/* Delivery SLA & Carrier Banner if PIN is valid */}
+                  {/* Pincode serviceability banner */}
                   {pincodeInfo && (
-                    <div className="sm:col-span-2 p-3.5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-in fade-in">
-                      <div className="flex items-center gap-2">
-                        <Truck className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
-                          Est. Delivery by <strong className="text-sky-700 dark:text-sky-300">{pincodeInfo.estimatedDeliveryDate}</strong> ({pincodeInfo.estimatedDaysMin}-{pincodeInfo.estimatedDaysMax} days via {pincodeInfo.carrierPartner})
+                    <div className="sm:col-span-2 p-4 border border-border bg-card text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <Truck className="w-4 h-4 text-stone-400 shrink-0" />
+                        <span className="text-stone-600 dark:text-stone-400">
+                          Est. delivery by{' '}
+                          <strong className="text-[var(--brand)] font-medium">
+                            {pincodeInfo.estimatedDeliveryDate}
+                          </strong>{' '}
+                          ({pincodeInfo.estimatedDaysMin}–{pincodeInfo.estimatedDaysMax} days via {pincodeInfo.carrierPartner})
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold text-slate-500 bg-white/70 dark:bg-slate-800 px-2.5 py-1 rounded-lg w-fit">
-                        {pincodeInfo.city} ({pincodeInfo.isCodAvailable ? 'COD Available' : 'Prepaid Only'})
+                      <span className="text-[11px] text-stone-500 font-mono shrink-0">
+                        {pincodeInfo.city} · {pincodeInfo.isCodAvailable ? 'COD available' : 'Prepaid only'}
                       </span>
                     </div>
                   )}
                 </div>
-              </div>
+              </section>
 
-              {/* 2. B2B GST Billing Card (Option B) */}
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
-                <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm">
-                      2
+              {/* 02 — B2B GST invoicing */}
+              <section>
+                <div className="flex items-start sm:items-center justify-between gap-4 mb-6 pb-3 border-b border-border">
+                  <div>
+                    <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+                      <span className="font-mono">02</span>
+                      <span className="text-stone-300 dark:text-stone-600">/</span>
+                      <span>Step two</span>
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        B2B GST Invoicing
-                        <Badge variant="tech" className="text-[10px]">
-                          Input Tax Credit (18%)
-                        </Badge>
-                      </h3>
-                      <p className="text-xs text-slate-500">
-                        Claim 18% GST Input Credit on surveillance & networking purchases
-                      </p>
-                    </div>
+                    <h2 className="display text-2xl text-foreground">B2B GST invoicing</h2>
+                    <p className="text-xs text-stone-500 mt-1">Claim 18% GST input credit on surveillance & networking purchases.</p>
                   </div>
-
-                  {/* Toggle Switch */}
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isB2B}
-                      onChange={(e) => setIsB2B(e.target.checked)}
-                      className="sr-only peer"
+                  {/* Sharp toggle */}
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={isB2B}
+                    onClick={() => setIsB2B(!isB2B)}
+                    className={`relative w-12 h-6 border border-border transition-colors shrink-0 ${
+                      isB2B ? 'bg-foreground' : 'bg-transparent'
+                    }`}
+                    aria-label="Toggle B2B GST invoicing"
+                  >
+                    <span
+                      className={`absolute top-0.5 w-4 h-4 transition-transform ${
+                        isB2B
+                          ? 'translate-x-[24px] bg-background'
+                          : 'translate-x-[2px] bg-foreground'
+                      }`}
                     />
-                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
+                  </button>
                 </div>
 
                 {isB2B ? (
-                  <div className="space-y-4 pt-2 animate-in fade-in">
-                    <div className="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-xs text-purple-900 dark:text-purple-200 flex items-start gap-2.5">
-                      <FileText className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+                  <div className="space-y-6">
+                    <div className="p-3.5 border border-border bg-accent/40 text-[11px] text-stone-600 dark:text-stone-400 leading-relaxed flex items-start gap-2.5">
+                      <span className="dot-rec mt-1 shrink-0" />
                       <span>
-                        Enter your registered GST details below. A formal GST Tax Invoice with HSN breakdown will be generated and filed under GSTR-1 for your direct Input Tax Credit.
+                        Enter your registered GST details below. A formal GST tax invoice with HSN breakdown will be generated and filed under GSTR-1 for your direct input tax credit.
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                          Registered Business / Company Name *
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            required={isB2B}
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                            placeholder="e.g. Patel Security Systems Pvt Ltd"
-                            className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-slate-900 dark:text-white"
-                          />
-                          <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        </div>
+                        <label className="block eyebrow text-stone-500 mb-2">Registered business / company name *</label>
+                        <input
+                          type="text"
+                          required={isB2B}
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          placeholder="e.g. Patel Security Systems Pvt Ltd"
+                          className={inputCls}
+                        />
                       </div>
-
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                          15-Character Indian GSTIN *
-                        </label>
+                        <label className="block eyebrow text-stone-500 mb-2">15-character Indian GSTIN *</label>
                         <input
                           type="text"
                           required={isB2B}
@@ -629,217 +632,211 @@ export default function CheckoutPage() {
                           value={gstin}
                           onChange={(e) => setGstin(e.target.value.toUpperCase())}
                           placeholder="24AAAAA0000A1Z5"
-                          className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono uppercase tracking-wider text-slate-900 dark:text-white"
+                          className={`${monoInputCls} uppercase`}
                         />
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-stone-500">
                     Buying for individual or home surveillance? Keep this disabled to generate a standard retail consumer tax invoice.
                   </p>
                 )}
-              </div>
+              </section>
 
-              {/* 3. Payment Method Card */}
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
-                <div className="flex items-center gap-3 pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
-                    3
+              {/* 03 — Payment method */}
+              <section>
+                <div className="mb-6 pb-3 border-b border-border">
+                  <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+                    <span className="font-mono">03</span>
+                    <span className="text-stone-300 dark:text-stone-600">/</span>
+                    <span>Step three</span>
                   </div>
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      Payment Method Selection
-                    </h3>
-                    <p className="text-xs text-slate-500">Choose your preferred payment mode</p>
-                  </div>
+                  <h2 className="display text-2xl text-foreground">Payment method</h2>
+                  <p className="text-xs text-stone-500 mt-1">Choose your preferred payment mode.</p>
                 </div>
 
-                <div className="space-y-3">
-                  {/* Option 1: Razorpay Online */}
+                {/* Sharp radio cards — selected = solid ink */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border">
+                  {/* Razorpay */}
                   <label
-                    className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all ${
+                    className={`flex flex-col p-5 cursor-pointer transition-colors ${
                       paymentMethod === 'RAZORPAY'
-                        ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/30 ring-2 ring-sky-500/20'
-                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                        ? 'bg-foreground text-background'
+                        : 'bg-background text-foreground hover:bg-accent/50'
                     }`}
                   >
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="RAZORPAY"
-                      checked={paymentMethod === 'RAZORPAY'}
-                      onChange={() => setPaymentMethod('RAZORPAY')}
-                      className="mt-1 text-sky-600 focus:ring-sky-500"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                          <CreditCard className="w-4 h-4 text-sky-600" />
-                          Razorpay Online Gateway (Recommended)
-                        </span>
-                        <Badge variant="success" className="text-[10px]">
-                          Instant Dispatch
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        UPI (GPay, PhonePe, Paytm), NetBanking (50+ Banks), Credit / Debit Cards, EMI & Corporate Cards.
-                      </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="RAZORPAY"
+                        checked={paymentMethod === 'RAZORPAY'}
+                        onChange={() => setPaymentMethod('RAZORPAY')}
+                        className="sr-only"
+                      />
+                      <span className="text-sm font-medium flex items-center gap-2">
+                        <CreditCard className="w-4 h-4" /> Razorpay online
+                      </span>
+                      {paymentMethod === 'RAZORPAY' && <Check className="w-4 h-4" />}
+                    </div>
+                    <p className={`text-xs leading-relaxed ${paymentMethod === 'RAZORPAY' ? 'text-background/70' : 'text-stone-500'}`}>
+                      UPI (GPay, PhonePe, Paytm), NetBanking (50+ banks), Credit / Debit cards, EMI & corporate cards.
+                    </p>
+                    <div className={`mt-3 pt-3 border-t ${paymentMethod === 'RAZORPAY' ? 'border-background/20' : 'border-border'} flex items-center justify-between text-[10px] uppercase tracking-[0.16em]`}>
+                      <span className={paymentMethod === 'RAZORPAY' ? 'text-background/60' : 'text-stone-400'}>Recommended</span>
+                      <span className="font-mono normal-case tracking-normal">Instant dispatch</span>
                     </div>
                   </label>
 
-                  {/* Option 2: Cash on Delivery (COD) */}
+                  {/* COD */}
                   {(() => {
                     const isCodAvailableForOrder = Boolean(
                       cart.isCodAllowed && (!pincodeInfo || pincodeInfo.isCodAvailable)
                     );
-
                     return (
                       <label
-                        className={`flex items-start gap-4 p-4 rounded-2xl border transition-all ${
+                        className={`flex flex-col p-5 transition-colors ${
                           !isCodAvailableForOrder
-                            ? 'opacity-60 bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 cursor-not-allowed'
+                            ? 'bg-background text-stone-400 cursor-not-allowed'
                             : paymentMethod === 'CASH_ON_DELIVERY'
-                            ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/30 ring-2 ring-sky-500/20 cursor-pointer'
-                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 cursor-pointer'
+                            ? 'bg-foreground text-background cursor-pointer'
+                            : 'bg-background text-foreground hover:bg-accent/50 cursor-pointer'
                         }`}
                       >
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="CASH_ON_DELIVERY"
-                          disabled={!isCodAvailableForOrder}
-                          checked={paymentMethod === 'CASH_ON_DELIVERY'}
-                          onChange={() => setPaymentMethod('CASH_ON_DELIVERY')}
-                          className="mt-1 text-sky-600 focus:ring-sky-500 disabled:opacity-40"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                              <Banknote className="w-4 h-4 text-emerald-600" />
-                              Cash on Delivery (COD)
-                            </span>
-                            {!isCodAvailableForOrder && (
-                              <Badge variant="danger" className="text-[10px]">
-                                Unavailable
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            {!cart.isCodAllowed
-                              ? 'One or more items in your cart (e.g. bulky Cat6 drum or high-value NVR) require prepaid online payment.'
-                              : pincodeInfo && !pincodeInfo.isCodAvailable
-                              ? `Cash on Delivery is restricted for PIN ${pincode} (${pincodeInfo.city} - Special Logistics/Air Cargo Zone). Please pay via Razorpay Online.`
-                              : 'Pay via cash or UPI directly to delivery agent upon parcel arrival.'}
-                          </p>
+                        <div className="flex items-center justify-between mb-2">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="CASH_ON_DELIVERY"
+                            disabled={!isCodAvailableForOrder}
+                            checked={paymentMethod === 'CASH_ON_DELIVERY'}
+                            onChange={() => setPaymentMethod('CASH_ON_DELIVERY')}
+                            className="sr-only"
+                          />
+                          <span className="text-sm font-medium flex items-center gap-2">
+                            <Banknote className="w-4 h-4" /> Cash on delivery
+                          </span>
+                          {paymentMethod === 'CASH_ON_DELIVERY' && <Check className="w-4 h-4" />}
+                        </div>
+                        <p className={`text-xs leading-relaxed ${paymentMethod === 'CASH_ON_DELIVERY' ? 'text-background/70' : !isCodAvailableForOrder ? 'text-stone-400' : 'text-stone-500'}`}>
+                          {!cart.isCodAllowed
+                            ? 'One or more items (e.g. bulky Cat6 drum or high-value NVR) require prepaid online payment.'
+                            : pincodeInfo && !pincodeInfo.isCodAvailable
+                            ? `COD restricted for PIN ${pincode} (${pincodeInfo.city} — special logistics / air cargo zone).`
+                            : 'Pay via cash or UPI directly to the delivery agent on arrival.'}
+                        </p>
+                        <div className={`mt-3 pt-3 border-t ${paymentMethod === 'CASH_ON_DELIVERY' ? 'border-background/20' : 'border-border'} flex items-center justify-between text-[10px] uppercase tracking-[0.16em]`}>
+                          <span className={!isCodAvailableForOrder ? 'text-stone-400' : paymentMethod === 'CASH_ON_DELIVERY' ? 'text-background/60' : 'text-stone-400'}>
+                            {!isCodAvailableForOrder ? 'Unavailable' : 'Pay on arrival'}
+                          </span>
+                          <span className="font-mono normal-case tracking-normal">₹0 advance</span>
                         </div>
                       </label>
                     );
                   })()}
                 </div>
-              </div>
+              </section>
             </div>
 
-            {/* Right 1 Column: Sticky Order Summary & Submit Button */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs space-y-6 lg:sticky lg:top-24">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Review & Finalize
-                </span>
-                <h4 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
-                  Order Summary ({cart.itemCount} Items)
-                </h4>
-              </div>
+            {/* Right col: sticky order summary */}
+            <div className="lg:col-span-4 lg:sticky lg:top-24">
+              <div className="border border-border bg-card p-7 space-y-6">
+                <div>
+                  <div className="eyebrow text-stone-500 mb-1">Review & finalize</div>
+                  <div className="display text-xl text-foreground">Order summary</div>
+                  <div className="text-[11px] text-stone-500 mt-1">
+                    {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+                  </div>
+                </div>
 
-              {/* Items Preview */}
-              <div className="space-y-3 max-h-56 overflow-y-auto pr-1 text-xs divide-y divide-slate-100 dark:divide-slate-800">
-                {cart.items.map((item: any) => (
-                  <div key={item.id} className="pt-2.5 flex items-center gap-3">
-                    <div className="relative w-12 h-12 rounded-lg bg-slate-50 dark:bg-slate-800 shrink-0 overflow-hidden border border-slate-100 dark:border-slate-800">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.productName}
-                        fill
-                        className="object-contain p-1"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h5 className="font-semibold text-slate-900 dark:text-white truncate">
-                        {item.productName}
-                      </h5>
-                      <span className="text-[11px] text-slate-500">
-                        {item.quantity}x • {item.variantName}
+                {/* Items preview */}
+                <div className="space-y-3 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+                  {cart.items.map((item: any) => (
+                    <div key={item.id} className="flex items-center gap-3">
+                      <div className="relative w-12 h-12 bg-background border border-border shrink-0 overflow-hidden">
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.productName}
+                          fill
+                          className="object-contain p-1"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-foreground truncate">{item.productName}</div>
+                        <div className="text-[10px] text-stone-500 mt-0.5">
+                          {item.quantity}× · {item.variantName}
+                        </div>
+                      </div>
+                      <span className="text-xs font-mono text-foreground shrink-0">
+                        {formatPrice(item.lineTotal)}
                       </span>
                     </div>
-                    <span className="font-bold text-slate-900 dark:text-white shrink-0">
-                      {formatPrice(item.lineTotal)}
+                  ))}
+                </div>
+
+                {/* Price breakdown */}
+                <div className="space-y-2.5 text-xs pt-4 border-t border-border">
+                  <div className="flex justify-between text-stone-600 dark:text-stone-400">
+                    <span>Taxable base value</span>
+                    <span className="font-mono text-foreground">{formatPrice(cart.subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-stone-600 dark:text-stone-400">
+                    <span>GST (18%)</span>
+                    <span className="font-mono text-foreground">{formatPrice(cart.gstAmount)}</span>
+                  </div>
+                  <div className="flex justify-between text-stone-600 dark:text-stone-400">
+                    <span>Shipping & transit insurance</span>
+                    <span className="text-[var(--brand)]">Free</span>
+                  </div>
+                  <div className="pt-3 mt-1 border-t border-border flex justify-between items-baseline">
+                    <span className="text-foreground font-medium">Total amount</span>
+                    <span className="text-xl font-mono text-[var(--brand)]">
+                      {formatPrice(cart.totalAmount)}
                     </span>
                   </div>
-                ))}
-              </div>
+                  <div className="text-[10px] text-stone-500 text-right">
+                    All taxes & 18% GST included
+                  </div>
+                </div>
 
-              {/* Price Breakdown */}
-              <div className="space-y-2.5 text-xs pt-4 border-t border-slate-100 dark:border-slate-800">
-                <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Taxable Base Value:</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">
-                    {formatPrice(cart.subtotal)}
-                  </span>
+                {/* ITC notice */}
+                <div className="p-3.5 border border-border bg-accent/40 text-[11px] space-y-1">
+                  <div className="text-foreground font-medium flex items-center gap-1.5">
+                    <span className="dot-rec" /> GST input tax credit
+                  </div>
+                  <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
+                    Claim back <strong className="font-mono">{formatPrice(cart.gstAmount)}</strong> in
+                    GST input credit by entering your company GSTIN above.
+                  </p>
                 </div>
-                <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Goods & Services Tax (18% GST):</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">
-                    {formatPrice(cart.gstAmount)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                  <span>Shipping & Transit Insurance:</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">FREE</span>
-                </div>
-                <div className="pt-3 flex justify-between text-lg font-extrabold text-slate-900 dark:text-white border-t border-slate-200 dark:border-slate-800">
-                  <span>Total Amount:</span>
-                  <span className="text-sky-600 dark:text-sky-400">{formatPrice(cart.totalAmount)}</span>
-                </div>
-                <span className="block text-[10px] text-slate-400 text-right">
-                  (All Taxes & 18% GST Included)
-                </span>
-              </div>
 
-              {/* Submit CTA */}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    Securing Order & Inventory...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-4 h-4" />
-                    {paymentMethod === 'RAZORPAY'
-                      ? `Pay ${formatPrice(cart.totalAmount)} Online`
-                      : `Place Order via COD (${formatPrice(cart.totalAmount)})`}
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+                {/* Place order — solid ink */}
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="btn-ink w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Securing order & inventory…
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      {paymentMethod === 'RAZORPAY'
+                        ? `Pay ${formatPrice(cart.totalAmount)} online`
+                        : `Place COD order (${formatPrice(cart.totalAmount)})`}
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
 
-              {/* Trust Features */}
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-2">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>3-Year Direct Manufacturer Replacement Warranty</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-sky-500 shrink-0" />
-                  <span>Express Transit via Bluedart / Delhivery / DTDC</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-purple-500 shrink-0" />
-                  <span>Compliant B2B Tax Invoice with HSN & GSTIN</span>
+                {/* Trust features */}
+                <div className="pt-4 border-t border-border text-[11px] text-stone-500 space-y-1.5">
+                  <div>3-year direct manufacturer replacement warranty</div>
+                  <div>Express transit via Bluedart / Delhivery / DTDC</div>
+                  <div>Compliant B2B tax invoice with HSN & GSTIN</div>
                 </div>
               </div>
             </div>
@@ -849,74 +846,67 @@ export default function CheckoutPage() {
 
       {/* Simulated Razorpay Payment Dialog (ADR-007) */}
       {simulatedModal?.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full overflow-hidden">
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-sky-600 to-blue-700 p-6 text-white text-center">
-              <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-2 text-white">
-                <CreditCard className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/80 p-4">
+          <div className="bg-background border border-border max-w-md w-full overflow-hidden">
+            {/* Header */}
+            <div className="p-6 border-b border-border">
+              <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+                <span className="dot-rec" /> Razorpay sandbox
               </div>
-              <h3 className="text-lg font-bold">Razorpay Test Gateway</h3>
-              <p className="text-xs text-sky-100 mt-0.5">
-                Simulated Payment Portal (ADR-007)
+              <h3 className="display text-xl text-foreground">Simulated payment portal</h3>
+              <p className="text-[11px] text-stone-500 mt-1">
+                ADR-007 · placeholder mode for end-to-end order lifecycle verification
               </p>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-4">
-              <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+            {/* Body */}
+            <div className="p-6 space-y-5">
+              <div className="border border-border bg-card p-4 text-xs space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Order Reference:</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white">
-                    {simulatedModal.orderNumber}
-                  </span>
+                  <span className="text-stone-500">Order reference</span>
+                  <span className="font-mono text-foreground">{simulatedModal.orderNumber}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Total Payable:</span>
-                  <span className="text-base font-extrabold text-sky-600 dark:text-sky-400">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-stone-500">Total payable</span>
+                  <span className="text-lg font-mono text-[var(--brand)]">
                     {formatPrice(simulatedModal.totalAmount)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Mode:</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-semibold">
-                    Razorpay Sandbox (Placeholder Mode)
-                  </span>
+                  <span className="text-stone-500">Mode</span>
+                  <span className="text-stone-600 dark:text-stone-400">Razorpay sandbox (placeholder)</span>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center">
-                Live Razorpay procurement is in progress. You can simulate an instant successful payment or cancellation to verify order lifecycle transitions.
+              <p className="text-[11px] text-stone-500 leading-relaxed text-center">
+                Live Razorpay procurement is in progress. You can simulate an instant successful
+                payment or cancel to verify order lifecycle transitions.
               </p>
 
-              {/* Action Buttons */}
-              <div className="space-y-2.5 pt-2">
+              <div className="space-y-2">
                 <button
                   type="button"
                   disabled={simulatingProcessing}
                   onClick={handleSimulatedPaymentSuccess}
-                  className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
+                  className="btn-ink w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {simulatingProcessing ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      Capturing Payment & Generating Invoice...
+                      <Loader2 className="w-4 h-4 animate-spin" /> Capturing payment & generating invoice…
                     </>
                   ) : (
                     <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      Simulate Successful Payment (Instant Confirm)
+                      <Check className="w-4 h-4" /> Simulate successful payment
                     </>
                   )}
                 </button>
-
                 <button
                   type="button"
                   disabled={simulatingProcessing}
                   onClick={() => setSimulatedModal(null)}
-                  className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors"
+                  className="btn-ghost w-full justify-center"
                 >
-                  Cancel / Close Simulation
+                  Cancel / close simulation
                 </button>
               </div>
             </div>

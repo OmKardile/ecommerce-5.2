@@ -475,3 +475,42 @@ Per user direction, the single controlled accent was changed from ember/orange (
 ### Known / Next
 - Remaining storefront pages still on the old aesthetic: `/checkout`, `/kit-builder`, `/about`, `/contact`, `/faq`, `/shipping-policy`, `/return-policy`, `/privacy-policy`, `/terms`, `/account/login`, `/order-success`, plus `B2BContractorCallout`, `B2BQuoteModal`, `PincodeChecker`, `AccountPortalClient` components. (Next cron round.)
 - Some DB product images are generic Unsplash stock — photography audit remains a content follow-up.
+
+
+---
+
+## [1.6.0] - 2026-09-26
+
+### Added (Full Storefront Aesthetic Migration Complete)
+All remaining storefront pages and components reworked to the "Quiet Hardware / Editorial Security" design system (white/off-white/black + controlled blue). The entire customer-facing storefront now speaks one consistent design language.
+
+#### Pages Reworked (11 + 2 bonus)
+- **`/checkout`** (930→722 lines) — editorial 3-step numbered index, hairline form inputs, sharp payment-method radio grid (selected = solid ink), sticky order summary, lint-safe useEffect refactor, simulated Razorpay modal reworked (Razorpay theme.color → #1E40AF).
+- **`/kit-builder`** (754→583 lines) — 5-step hairline numbered indicator (active = solid ink, completed = brand-blue check), sharp component selection cards, quantity steppers, sticky summary with brand-blue total, editorial review step. All kit logic + 5% bundle discount preserved.
+- **`/about`** — editorial hero with italic accent, brand partners grid, story section with operating principles, 4-pillar numbered index.
+- **`/contact`** — editorial hero, hairline form inputs, sidebar with hairline-row contact details, btn-ghost WhatsApp CTA, btn-ink submit.
+- **`/faq`** — hairline pill category filter (active = solid ink), accordion as hairline rows with mono numerals + rotating chevrons.
+- **`/shipping-policy`, `/return-policy`, `/privacy-policy`, `/terms`** — consistent editorial prose layout with hairline-row indexes, mono numerals, brand-blue accents.
+- **`/account/login`** — centered editorial card, hairline phone input with +91 prefix, hairline OTP input, btn-ink verify, lint-safe useEffect.
+- **`/order-success/[orderNumber]`** — editorial success header, hairline tax invoice, hairline line-item rows, brand-blue grand total. (+ reworked `PrintInvoiceButton` to btn-ink).
+- **Bonus: `/products` listing** — editorial heading, hairline filter sidebar (text links, no rounded cards), `gap-px` product grid, editorial empty state.
+- **Bonus: `not-found.tsx` (404)** — large Fraunces "404", dot-rec flourish, ink/ghost CTAs.
+- **Bonus: `error.tsx`** — editorial error boundary, dot-rec, btn-ink retry.
+
+#### Components Reworked (4)
+- **`B2BContractorCallout`** — hairline card, eyebrow label, btn-ink CTA.
+- **`B2BQuoteModal`** — sharp modal (no glass), shared hairline input class, btn-ink/btn-ghost buttons, brand-blue success state. Fixed `any` → typed.
+- **`PincodeChecker`** — hairline card, sharp mono input, btn-ink button, results as hairline-row definition list. Fixed `any` → `unknown`.
+- **`AccountPortalClient`** (766→786 lines) — full visual pass: sharp hairline cards, solid ink avatar, text tabs with border-b active state, orders as hairline articles, addresses as gap-px grid, sharp modal. All 13 state hooks + 4 actions preserved.
+
+### Verified
+- **All 17 routes HTTP 200** (16 real pages + 404 boundary renders correctly for nonexistent URLs).
+- **Lint: 0 errors, 0 warnings.**
+- **Pattern audit: 0 old-aesthetic matches** in storefront (gradients, rounded-2xl/3xl, glassmorphism, glow shadows, colored icon tiles — all removed). Only admin pages + OrderTrackingTimeline remain on old aesthetic (out of scope).
+- **VLM review** (checkout + kit-builder): 8.5/10 — "Almost zero SaaS-template patterns remaining", "intentional, disciplined, conversion-focused without being manipulative", "looks like a procurement portal for architects or enterprise IT managers."
+
+### Known / Remaining
+- Admin pages (`/admin/*`) still on the old dark-slate aesthetic — separate scope.
+- `OrderTrackingTimeline` component still on old aesthetic.
+- Pre-existing TS2339 type-narrowing errors in `checkout.actions.ts` (cosmetic, eslint doesn't flag, runtime works).
+- DB product photography audit (content, not code).

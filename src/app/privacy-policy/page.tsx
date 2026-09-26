@@ -1,115 +1,229 @@
 import React from 'react';
 import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { ShieldCheck, Lock, EyeOff, FileText, Database, UserCheck } from 'lucide-react';
+import { Reveal } from '@/components/storefront/Reveal';
 
 export const metadata = {
   title: 'Privacy Policy | Patel Networks Security Data Protection',
   description: 'Compliance with Information Technology Act 2000, SPDI rules, 15-character GSTIN handling, and Razorpay PCI-DSS encryption protocols.',
 };
 
+const PILLARS = [
+  {
+    label: 'Zero Payment Storage',
+    body: 'We never store your credit/debit card numbers, CVVs, or UPI PINs. All payments are encrypted via Razorpay’s certified PCI-DSS Level 1 infrastructure.',
+  },
+  {
+    label: 'B2B Tax Data Protection',
+    body: 'Company GSTINs and legal billing names are stored securely in PostgreSQL with row-level access controls solely for GSTR-1 tax compliance.',
+  },
+  {
+    label: 'No Third-Party Selling',
+    body: 'Your contact numbers and addresses are strictly shared with carrier partners (Delhivery / Shiprocket) for delivery dispatch and never sold to third-party telemarketers.',
+  },
+];
+
+const COLLECTED = [
+  {
+    label: 'Primary Identity',
+    body: 'Mobile phone number verified via 6-digit SMS OTP (ADR-003, ADR-011).',
+  },
+  {
+    label: 'Dispatch Information',
+    body: 'Recipient name, complete shipping address, postal PIN code, and contact number.',
+  },
+  {
+    label: 'Commercial B2B Credentials',
+    body: 'Company trade name and 15-character Indian GSTIN for 18% Input Tax Credit.',
+  },
+  {
+    label: 'Hardware Traceability',
+    body: 'Individual hardware serial numbers linked to your order records for RMA warranty enforcement.',
+  },
+];
+
+const NOTIFICATIONS = [
+  'OTP verification codes for customer authentication.',
+  'Order confirmation notifications with total INR amounts and links to your 18% GST Tax Invoice.',
+  'Real-time courier AWB dispatch alerts and out-for-delivery notices.',
+  'B2B contractor wholesale quote responses requested via our quote desks.',
+];
+
 export default function PrivacyPolicyPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5">
-          <Link href="/" className="hover:text-slate-900 dark:hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-slate-900 dark:text-white font-medium">Privacy Policy</span>
-        </nav>
+      <main className="flex-1">
+        {/* ============================================================ */}
+        {/* HEADER BAND */}
+        {/* ============================================================ */}
+        <section className="border-b border-border">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pt-10 lg:pt-14 pb-12 lg:pb-16">
+            <nav className="text-[11px] text-stone-500 dark:text-stone-500 mb-8 flex items-center gap-2">
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <span className="text-stone-300 dark:text-stone-600">/</span>
+              <span className="text-foreground">Privacy Policy</span>
+            </nav>
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-white border border-slate-800 shadow-xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold mb-4">
-            <Lock className="w-3.5 h-3.5" />
-            Indian IT Act 2000 & SPDI Compliant
+            <Reveal>
+              <div className="flex items-center gap-4 mb-8">
+                <span className="dot-rec" aria-hidden />
+                <span className="eyebrow text-stone-500">Indian IT Act 2000 &amp; SPDI compliant</span>
+              </div>
+            </Reveal>
+
+            <Reveal delay={60}>
+              <h1 className="display text-[clamp(2.4rem,5.5vw,4rem)] leading-[1.02] text-foreground max-w-4xl">
+                Privacy &amp; <span className="ital">data security</span> policy.
+              </h1>
+            </Reveal>
+
+            <Reveal delay={120}>
+              <p className="mt-8 text-base sm:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
+                Patel Networks (MegaTech) is committed to protecting the privacy, corporate
+                tax data, and financial transactions of all retail consumers and commercial
+                surveillance contractors.
+              </p>
+            </Reveal>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Privacy & Data Security Policy
-          </h1>
-          <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
-            Patel Networks (MegaTech) is committed to protecting the privacy, corporate tax data, and financial transactions of all retail consumers and commercial surveillance contractors.
-          </p>
-        </div>
+        </section>
 
-        {/* 3 Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
-              <ShieldCheck className="w-5 h-5" />
+        {/* ============================================================ */}
+        {/* PILLARS */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 border-t border-l border-border">
+            {PILLARS.map((p, i) => (
+              <Reveal key={p.label} delay={i * 60}>
+                <div className="border-r border-b border-border p-8 lg:p-10 h-full">
+                  <div className="font-mono text-[11px] text-stone-400 mb-4">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="display text-xl text-foreground mb-3">{p.label}</h3>
+                  <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                    {p.body}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* PROSE BODY */}
+        {/* ============================================================ */}
+        <section className="border-t border-border bg-card/30">
+          <div className="max-w-3xl mx-auto px-6 lg:px-10 py-16 lg:py-24">
+
+            {/* Section 1 — Information Collected */}
+            <Reveal>
+              <div className="eyebrow text-stone-500 mb-3">01 — Information collected</div>
+              <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+                Information we collect.
+              </h2>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-8">
+                When using Patel Networks, we collect only the necessary data points to
+                fulfill hardware procurement:
+              </p>
+              <div className="border-t border-border">
+                {COLLECTED.map((c, i) => (
+                  <div
+                    key={c.label}
+                    className="grid grid-cols-[auto_1fr] gap-6 py-5 border-b border-border"
+                  >
+                    <span className="font-mono text-[11px] text-stone-400 mt-0.5">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div>
+                      <div className="text-sm text-foreground font-medium mb-1">{c.label}</div>
+                      <div className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                        {c.body}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+
+            <div className="rule my-14" />
+
+            {/* Section 2 — Transactional Communications */}
+            <Reveal>
+              <div className="eyebrow text-stone-500 mb-3">02 — Transactional communications</div>
+              <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+                WhatsApp &amp; SMS notifications.
+              </h2>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-6">
+                By checking out or placing an inquiry on our platform, you consent to receive
+                critical transactional updates via the official{' '}
+                <span className="text-foreground font-medium">Meta WhatsApp Cloud API</span>{' '}
+                and SMS gateways. These notifications are limited strictly to:
+              </p>
+              <ul className="space-y-3 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                {NOTIFICATIONS.map((n, i) => (
+                  <li key={i} className="grid grid-cols-[auto_1fr] gap-4">
+                    <span className="font-mono text-[11px] text-[var(--brand)] mt-0.5">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span>{n}</span>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+
+            <div className="rule my-14" />
+
+            {/* Section 3 — Cookies */}
+            <Reveal>
+              <div className="eyebrow text-stone-500 mb-3">03 — Cookies &amp; sessions</div>
+              <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+                Cookies and session management.
+              </h2>
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                We employ strict, HTTP-only, secure, SameSite cookies{' '}
+                (<code className="font-mono text-foreground">pn_session</code>,{' '}
+                <code className="font-mono text-foreground">pn_cart_id</code>) to maintain
+                shopping carts across visits and secure customer logins without exposing
+                tokens to client-side scripts.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CTA */}
+        {/* ============================================================ */}
+        <section className="border-t border-border">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <Reveal>
+                <div>
+                  <div className="eyebrow text-stone-500 mb-3">Data &amp; security desk</div>
+                  <h2 className="display text-[clamp(1.7rem,3.2vw,2.4rem)] leading-tight text-foreground max-w-lg">
+                    Questions about how your data is handled?
+                  </h2>
+                  <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-4 max-w-md">
+                    Our team can clarify what is stored, what is shared with carrier
+                    partners, and how your B2B credentials are protected.
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal delay={80}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link href="/contact" className="btn-ink">
+                    Contact the desk <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <Link href="/terms" className="btn-ghost">
+                    Terms of service <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </Reveal>
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">Zero Payment Storage</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              We never store your credit/debit card numbers, CVVs, or UPI PINs. All payments are encrypted via Razorpay&apos;s certified PCI-DSS Level 1 infrastructure.
-            </p>
           </div>
-
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-4">
-              <FileText className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">B2B Tax Data Protection</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Company GSTINs and legal billing names are stored securely in PostgreSQL with row-level access controls solely for GSTR-1 tax compliance.
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
-              <EyeOff className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">No Third-Party Selling</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Your contact numbers and addresses are strictly shared with carrier partners (Delhivery/Shiprocket) for delivery dispatch and never sold to third-party telemarketers.
-            </p>
-          </div>
-        </div>
-
-        {/* Policy Content */}
-        <div className="space-y-8 text-sm text-slate-700 dark:text-slate-300">
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              1. Information We Collect
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              When using Patel Networks, we collect only the necessary data points to fulfill hardware procurement:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pl-2">
-              <li><strong className="text-slate-900 dark:text-white">Primary Identity:</strong> Mobile phone number verified via 6-digit SMS OTP (ADR-003, ADR-011).</li>
-              <li><strong className="text-slate-900 dark:text-white">Dispatch Information:</strong> Recipient name, complete shipping address, postal PIN code, and contact number.</li>
-              <li><strong className="text-slate-900 dark:text-white">Commercial B2B Credentials:</strong> Company trade name and 15-character Indian GSTIN for 18% Input Tax Credit.</li>
-              <li><strong className="text-slate-900 dark:text-white">Hardware Traceability:</strong> Individual hardware serial numbers linked to your order records for RMA warranty enforcement.</li>
-            </ul>
-          </section>
-
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              2. Transactional Communications (WhatsApp & SMS)
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              By checking out or placing an inquiry on our platform, you consent to receive critical transactional updates via the official <strong>Meta WhatsApp Cloud API</strong> and SMS gateways. These notifications are limited strictly to:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pl-2">
-              <li>OTP Verification codes for customer authentication.</li>
-              <li>Order Confirmation notifications with total INR amounts and links to your 18% GST Tax Invoice.</li>
-              <li>Real-time Courier AWB dispatch alerts and Out-for-Delivery notices.</li>
-              <li>B2B contractor wholesale quote responses requested via our quote desks.</li>
-            </ul>
-          </section>
-
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              3. Cookies and Session Management
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              We employ strict, HTTP-only, secure, SameSite cookies (<code className="font-mono text-slate-800 dark:text-slate-200">pn_session</code>, <code className="font-mono text-slate-800 dark:text-slate-200">pn_cart_id</code>) to maintain shopping carts across visits and secure customer logins without exposing tokens to client-side scripts.
-            </p>
-          </section>
-        </div>
+        </section>
       </main>
 
       <Footer />

@@ -1,0 +1,931 @@
+     1→'use client';
+     2→
+     3→import React, { useState, useEffect } from 'react';
+     4→import Link from 'next/link';
+     5→import Image from 'next/image';
+     6→import { useRouter } from 'next/navigation';
+     7→import { Header } from '@/components/storefront/Header';
+     8→import { Footer } from '@/components/storefront/Footer';
+     9→import { Badge } from '@/components/ui/Badge';
+    10→import { formatPrice } from '@/lib/utils';
+    11→import { getCartAction } from '@/app/actions/cart.actions';
+    12→import { getCurrentUserAction } from '@/app/actions/auth.actions';
+    13→import {
+    14→  processCheckoutAction,
+    15→  confirmPaymentAction,
+    16→} from '@/app/actions/checkout.actions';
+    17→import { checkPincodeAction } from '@/app/actions/shipping.actions';
+    18→import { PincodeServiceability } from '@/lib/pincodes';
+    19→import {
+    20→  ShieldCheck,
+    21→  Truck,
+    22→  FileText,
+    23→  AlertCircle,
+    24→  CreditCard,
+    25→  Banknote,
+    26→  CheckCircle2,
+    27→  Lock,
+    28→  ArrowRight,
+    29→  Loader2,
+    30→  Building2,
+    31→  MapPin,
+    32→  Phone,
+    33→  Mail,
+    34→  User,
+    35→  ExternalLink,
+    36→  XCircle,
+    37→} from 'lucide-react';
+    38→
+    39→const INDIAN_STATES = [
+    40→  'Andhra Pradesh',
+    41→  'Arunachal Pradesh',
+    42→  'Assam',
+    43→  'Bihar',
+    44→  'Chhattisgarh',
+    45→  'Goa',
+    46→  'Gujarat',
+    47→  'Haryana',
+    48→  'Himachal Pradesh',
+    49→  'Jharkhand',
+    50→  'Karnataka',
+    51→  'Kerala',
+    52→  'Madhya Pradesh',
+    53→  'Maharashtra',
+    54→  'Manipur',
+    55→  'Meghalaya',
+    56→  'Mizoram',
+    57→  'Nagaland',
+    58→  'Odisha',
+    59→  'Punjab',
+    60→  'Rajasthan',
+    61→  'Sikkim',
+    62→  'Tamil Nadu',
+    63→  'Telangana',
+    64→  'Tripura',
+    65→  'Uttar Pradesh',
+    66→  'Uttarakhand',
+    67→  'West Bengal',
+    68→  'Delhi NCR',
+    69→  'Chandigarh',
+    70→];
+    71→
+    72→export default function CheckoutPage() {
+    73→  const router = useRouter();
+    74→
+    75→  const [cart, setCart] = useState<any>(null);
+    76→  const [loadingCart, setLoadingCart] = useState<boolean>(true);
+    77→  const [submitting, setSubmitting] = useState<boolean>(false);
+    78→  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    79→
+    80→  // Form Fields
+    81→  const [recipientName, setRecipientName] = useState('');
+    82→  const [phone, setPhone] = useState('');
+    83→  const [email, setEmail] = useState('');
+    84→  const [addressLine1, setAddressLine1] = useState('');
+    85→  const [addressLine2, setAddressLine2] = useState('');
+    86→  const [city, setCity] = useState('');
+    87→  const [state, setState] = useState('Gujarat');
+    88→  const [pincode, setPincode] = useState('');
+    89→  const [pincodeInfo, setPincodeInfo] = useState<PincodeServiceability | null>(null);
+    90→  const [paymentMethod, setPaymentMethod] = useState<'RAZORPAY' | 'CASH_ON_DELIVERY'>('RAZORPAY');
+    91→
+    92→  // B2B GSTIN States
+    93→  const [isB2B, setIsB2B] = useState<boolean>(false);
+    94→  const [companyName, setCompanyName] = useState('');
+    95→  const [gstin, setGstin] = useState('');
+    96→
+    97→  // Simulated Payment Modal State (ADR-007)
+    98→  const [simulatedModal, setSimulatedModal] = useState<{
+    99→    open: boolean;
+   100→    orderNumber: string;
+   101→    totalAmount: number;
+   102→    razorpayOrderId?: string;
+   103→  } | null>(null);
+   104→  const [simulatingProcessing, setSimulatingProcessing] = useState<boolean>(false);
+   105→
+   106→  // Real-time Pincode Validation and COD eligibility check (ADR-012)
+   107→  useEffect(() => {
+   108→    async function validatePin() {
+   109→      if (/^[1-9][0-9]{5}$/.test(pincode)) {
+   110→        const res = await checkPincodeAction(pincode, cart?.total || 0);
+   111→        if (res.success && res.data) {
+   112→          setPincodeInfo(res.data);
+   113→          if (!res.data.isCodAvailable && paymentMethod === 'CASH_ON_DELIVERY') {
+   114→            setPaymentMethod('RAZORPAY');
+   115→          }
+   116→        } else {
+   117→          setPincodeInfo(null);
+   118→        }
+   119→      } else {
+   120→        setPincodeInfo(null);
+   121→      }
+   122→    }
+   123→    validatePin();
+   124→  }, [pincode, cart?.total]);
+   125→
+   126→  useEffect(() => {
+   127→    async function load() {
+   128→      try {
+   129→        setLoadingCart(true);
+   130→        const data = await getCartAction();
+   131→        setCart(data);
+   132→        if (data && !data.isCodAllowed) {
+   133→          setPaymentMethod('RAZORPAY');
+   134→        }
+   135→
+   136→        // Check if user is logged in and prefill profile
+   137→        const userRes = await getCurrentUserAction();
+   138→        if (userRes?.success && userRes.user) {
+   139→          const u = userRes.user;
+   140→          if (u.customer?.fullName && u.customer.fullName !== 'Valued Customer') {
+   141→            setRecipientName(u.customer.fullName);
+   142→          }
+   143→          if (u.phone) {
+   144→            setPhone(u.phone.replace('+91', ''));
+   145→          }
+   146→          const addrs = u.customer?.addresses || [];
+   147→          if (addrs.length > 0) {
+   148→            const defAddr = addrs.find((a: any) => a.isDefault) || addrs[0];
+   149→            if (defAddr) {
+   150→              setAddressLine1(defAddr.addressLine1);
+   151→              if (defAddr.addressLine2) setAddressLine2(defAddr.addressLine2);
+   152→              setCity(defAddr.city);
+   153→              setState(defAddr.state);
+   154→              setPincode(defAddr.pincode);
+   155→            }
+   156→          }
+   157→          if (u.customer?.companyName || u.customer?.gstin) {
+   158→            setIsB2B(true);
+   159→            if (u.customer.companyName) setCompanyName(u.customer.companyName);
+   160→            if (u.customer.gstin) setGstin(u.customer.gstin);
+   161→          }
+   162→        }
+   163→      } catch (err: any) {
+   164→        setErrorMessage('Failed to load cart for checkout.');
+   165→      } finally {
+   166→        setLoadingCart(false);
+   167→      }
+   168→    }
+   169→    load();
+   170→  }, []);
+   171→
+   172→  const handleFormSubmit = async (e: React.FormEvent) => {
+   173→    e.preventDefault();
+   174→    if (!cart || cart.items.length === 0) return;
+   175→
+   176→    // Client-side validations
+   177→    if (!recipientName.trim()) {
+   178→      setErrorMessage('Please enter recipient full name.');
+   179→      return;
+   180→    }
+   181→    if (!/^[6-9]\d{9}$/.test(phone.trim())) {
+   182→      setErrorMessage('Please enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9).');
+   183→      return;
+   184→    }
+   185→    if (!addressLine1.trim() || addressLine1.trim().length < 5) {
+   186→      setErrorMessage('Please provide a complete street address.');
+   187→      return;
+   188→    }
+   189→    if (!city.trim()) {
+   190→      setErrorMessage('Please enter city name.');
+   191→      return;
+   192→    }
+   193→    if (!/^\d{6}$/.test(pincode.trim())) {
+   194→      setErrorMessage('Please enter a valid 6-digit Indian PIN code.');
+   195→      return;
+   196→    }
+   197→    if (isB2B) {
+   198→      if (!companyName.trim()) {
+   199→        setErrorMessage('Please enter legal registered business name for B2B invoice.');
+   200→        return;
+   201→      }
+   202→      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+   203→      if (!gstinRegex.test(gstin.trim().toUpperCase())) {
+   204→        setErrorMessage('Invalid 15-character GSTIN format (e.g. 24AAAAA0000A1Z5).');
+   205→        return;
+   206→      }
+   207→    }
+   208→
+   209→    try {
+   210→      setSubmitting(true);
+   211→      setErrorMessage(null);
+   212→
+   213→      const payload = {
+   214→        cartId: cart.id,
+   215→        recipientName: recipientName.trim(),
+   216→        phone: phone.trim(),
+   217→        email: email.trim() || undefined,
+   218→        addressLine1: addressLine1.trim(),
+   219→        addressLine2: addressLine2.trim() || undefined,
+   220→        city: city.trim(),
+   221→        state,
+   222→        pincode: pincode.trim(),
+   223→        paymentMethod,
+   224→        isB2B,
+   225→        companyName: isB2B ? companyName.trim() : undefined,
+   226→        gstin: isB2B ? gstin.trim().toUpperCase() : undefined,
+   227→      };
+   228→
+   229→      const result = await processCheckoutAction(payload);
+   230→
+   231→      if (!result.success) {
+   232→        setErrorMessage(result.error || 'Checkout failed. Please check form inputs.');
+   233→        setSubmitting(false);
+   234→        return;
+   235→      }
+   236→
+   237→      // If Cash On Delivery, redirect directly to order confirmation
+   238→      if (paymentMethod === 'CASH_ON_DELIVERY') {
+   239→        if (typeof window !== 'undefined') {
+   240→          window.dispatchEvent(new Event('cart-updated'));
+   241→        }
+   242→        router.push(`/order-success/${result.orderNumber}`);
+   243→        return;
+   244→      }
+   245→
+   246→      // If Razorpay Online Payment
+   247→      if (result.razorpayOrder?.isSimulated) {
+   248→        // Open Simulated Payment Dialog (ADR-007)
+   249→        setSimulatedModal({
+   250→          open: true,
+   251→          orderNumber: result.orderNumber!,
+   252→          totalAmount: result.totalAmount!,
+   253→          razorpayOrderId: result.razorpayOrder.id,
+   254→        });
+   255→        setSubmitting(false);
+   256→      } else if (result.razorpayOrder) {
+   257→        // Live Razorpay Script Launch
+   258→        const options = {
+   259→          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+   260→          amount: result.razorpayOrder.amount,
+   261→          currency: 'INR',
+   262→          name: 'Patel Networks & MegaTech',
+   263→          description: `Order #${result.orderNumber}`,
+   264→          order_id: result.razorpayOrder.id,
+   265→          handler: async function (response: any) {
+   266→            await confirmPaymentAction({
+   267→              orderNumber: result.orderNumber!,
+   268→              razorpayPaymentId: response.razorpay_payment_id,
+   269→              razorpayOrderId: response.razorpay_order_id,
+   270→              razorpaySignature: response.razorpay_signature,
+   271→            });
+   272→            if (typeof window !== 'undefined') {
+   273→              window.dispatchEvent(new Event('cart-updated'));
+   274→            }
+   275→            router.push(`/order-success/${result.orderNumber}`);
+   276→          },
+   277→          prefill: {
+   278→            name: recipientName,
+   279→            email: email,
+   280→            contact: phone,
+   281→          },
+   282→          theme: {
+   283→            color: '#0284c7',
+   284→          },
+   285→        };
+   286→
+   287→        const rzp = new (window as any).Razorpay(options);
+   288→        rzp.open();
+   289→        setSubmitting(false);
+   290→      }
+   291→    } catch (err: any) {
+   292→      setErrorMessage(err.message || 'An unexpected error occurred during checkout.');
+   293→      setSubmitting(false);
+   294→    }
+   295→  };
+   296→
+   297→  // Handle Simulated Payment Completion (ADR-007)
+   298→  const handleSimulatedPaymentSuccess = async () => {
+   299→    if (!simulatedModal) return;
+   300→    try {
+   301→      setSimulatingProcessing(true);
+   302→      const res = await confirmPaymentAction({
+   303→        orderNumber: simulatedModal.orderNumber,
+   304→        razorpayPaymentId: `pay_sim_${Date.now()}`,
+   305→        razorpayOrderId: simulatedModal.razorpayOrderId,
+   306→        razorpaySignature: 'simulated_signature',
+   307→      });
+   308→
+   309→      if (res.success) {
+   310→        if (typeof window !== 'undefined') {
+   311→          window.dispatchEvent(new Event('cart-updated'));
+   312→        }
+   313→        router.push(`/order-success/${simulatedModal.orderNumber}`);
+   314→      } else {
+   315→        setErrorMessage(res.error || 'Payment confirmation failed.');
+   316→        setSimulatingProcessing(false);
+   317→      }
+   318→    } catch (err: any) {
+   319→      setErrorMessage(err.message || 'Payment simulation error.');
+   320→      setSimulatingProcessing(false);
+   321→    }
+   322→  };
+   323→
+   324→  return (
+   325→    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+   326→      <Header />
+   327→
+   328→      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+   329→        {/* Breadcrumb & Header */}
+   330→        <div className="mb-8">
+   331→          <nav className="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
+   332→            <Link href="/" className="hover:text-slate-900 dark:hover:text-white">
+   333→              Home
+   334→            </Link>
+   335→            <span>/</span>
+   336→            <Link href="/cart" className="hover:text-slate-900 dark:hover:text-white">
+   337→              Cart
+   338→            </Link>
+   339→            <span>/</span>
+   340→            <span className="text-slate-900 dark:text-white font-medium">Checkout</span>
+   341→          </nav>
+   342→          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+   343→            <div>
+   344→              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+   345→                <Lock className="w-6 h-6 text-emerald-500" />
+   346→                Secure Checkout & Dispatch
+   347→              </h1>
+   348→              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+   349→                256-Bit SSL Encrypted • Verified GST Invoicing • Rapid Indian Courier Transit
+   350→              </p>
+   351→            </div>
+   352→            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-full w-fit">
+   353→              <ShieldCheck className="w-4 h-4" />
+   354→              <span>Direct Manufacturer Warranty Included</span>
+   355→            </div>
+   356→          </div>
+   357→        </div>
+   358→
+   359→        {loadingCart ? (
+   360→          <div className="py-24 text-center">
+   361→            <Loader2 className="w-10 h-10 animate-spin text-sky-500 mx-auto mb-4" />
+   362→            <p className="text-xs font-semibold text-slate-500">Preparing your order details...</p>
+   363→          </div>
+   364→        ) : !cart || cart.items.length === 0 ? (
+   365→          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-12 text-center max-w-md mx-auto my-12 shadow-xs">
+   366→            <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+   367→            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Cart is Empty</h3>
+   368→            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+   369→              Your cart has no items to checkout. Please add products before placing an order.
+   370→            </p>
+   371→            <Link
+   372→              href="/products"
+   373→              className="inline-block mt-6 py-2.5 px-6 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-xs"
+   374→            >
+   375→              Browse Catalog
+   376→            </Link>
+   377→          </div>
+   378→        ) : (
+   379→          <form onSubmit={handleFormSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+   380→            {/* Left 2 Columns: Forms */}
+   381→            <div className="lg:col-span-2 space-y-6">
+   382→              {/* Error Alert */}
+   383→              {errorMessage && (
+   384→                <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-start gap-3 animate-in fade-in">
+   385→                  <XCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+   386→                  <div>
+   387→                    <span className="font-bold block">Checkout Attention Required:</span>
+   388→                    <span>{errorMessage}</span>
+   389→                  </div>
+   390→                </div>
+   391→              )}
+   392→
+   393→              {/* 1. Contact & Shipping Address Card */}
+   394→              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
+   395→                <div className="flex items-center gap-3 pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+   396→                  <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-sm">
+   397→                    1
+   398→                  </div>
+   399→                  <div>
+   400→                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+   401→                      Recipient & Shipping Address
+   402→                    </h3>
+   403→                    <p className="text-xs text-slate-500">Where should we deliver your surveillance hardware?</p>
+   404→                  </div>
+   405→                </div>
+   406→
+   407→                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   408→                  {/* Recipient Full Name */}
+   409→                  <div>
+   410→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   411→                      Recipient Full Name *
+   412→                    </label>
+   413→                    <div className="relative">
+   414→                      <input
+   415→                        type="text"
+   416→                        required
+   417→                        value={recipientName}
+   418→                        onChange={(e) => setRecipientName(e.target.value)}
+   419→                        placeholder="e.g. Ramesh Patel"
+   420→                        className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+   421→                      />
+   422→                      <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+   423→                    </div>
+   424→                  </div>
+   425→
+   426→                  {/* Phone Number */}
+   427→                  <div>
+   428→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   429→                      Mobile Number (For Courier OTP & Tracking) *
+   430→                    </label>
+   431→                    <div className="relative flex items-center">
+   432→                      <span className="absolute left-3 text-xs font-bold text-slate-500 select-none">
+   433→                        +91
+   434→                      </span>
+   435→                      <input
+   436→                        type="tel"
+   437→                        required
+   438→                        maxLength={10}
+   439→                        value={phone}
+   440→                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+   441→                        placeholder="9876543210"
+   442→                        className="w-full pl-12 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono text-slate-900 dark:text-white tracking-wider"
+   443→                      />
+   444→                    </div>
+   445→                  </div>
+   446→
+   447→                  {/* Email Address */}
+   448→                  <div className="sm:col-span-2">
+   449→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   450→                      Email Address (Optional, for GST Tax Invoice PDF)
+   451→                    </label>
+   452→                    <div className="relative">
+   453→                      <input
+   454→                        type="email"
+   455→                        value={email}
+   456→                        onChange={(e) => setEmail(e.target.value)}
+   457→                        placeholder="name@business.com"
+   458→                        className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+   459→                      />
+   460→                      <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+   461→                    </div>
+   462→                  </div>
+   463→
+   464→                  {/* Address Line 1 */}
+   465→                  <div className="sm:col-span-2">
+   466→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   467→                      Street Address / Flat / Floor / Building *
+   468→                    </label>
+   469→                    <div className="relative">
+   470→                      <input
+   471→                        type="text"
+   472→                        required
+   473→                        value={addressLine1}
+   474→                        onChange={(e) => setAddressLine1(e.target.value)}
+   475→                        placeholder="e.g. Shop #4, Patel Complex, Station Road"
+   476→                        className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+   477→                      />
+   478→                      <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+   479→                    </div>
+   480→                  </div>
+   481→
+   482→                  {/* Address Line 2 */}
+   483→                  <div className="sm:col-span-2">
+   484→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   485→                      Landmark / Area (Optional)
+   486→                    </label>
+   487→                    <input
+   488→                      type="text"
+   489→                      value={addressLine2}
+   490→                      onChange={(e) => setAddressLine2(e.target.value)}
+   491→                      placeholder="Near Sardar Chowk"
+   492→                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+   493→                    />
+   494→                  </div>
+   495→
+   496→                  {/* City */}
+   497→                  <div>
+   498→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   499→                      City / District *
+   500→                    </label>
+   501→                    <input
+   502→                      type="text"
+   503→                      required
+   504→                      value={city}
+   505→                      onChange={(e) => setCity(e.target.value)}
+   506→                      placeholder="Ahmedabad"
+   507→                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+   508→                    />
+   509→                  </div>
+   510→
+   511→                  {/* State Dropdown */}
+   512→                  <div>
+   513→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   514→                      State / UT *
+   515→                    </label>
+   516→                    <select
+   517→                      value={state}
+   518→                      onChange={(e) => setState(e.target.value)}
+   519→                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
+   520→                    >
+   521→                      {INDIAN_STATES.map((st) => (
+   522→                        <option key={st} value={st}>
+   523→                          {st}
+   524→                        </option>
+   525→                      ))}
+   526→                    </select>
+   527→                  </div>
+   528→
+   529→                  {/* PIN Code */}
+   530→                  <div>
+   531→                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   532→                      PIN Code (6 Digits) *
+   533→                    </label>
+   534→                    <input
+   535→                      type="text"
+   536→                      required
+   537→                      maxLength={6}
+   538→                      value={pincode}
+   539→                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+   540→                      placeholder="380001"
+   541→                      className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono text-slate-900 dark:text-white"
+   542→                    />
+   543→                  </div>
+   544→
+   545→                  {/* Delivery SLA & Carrier Banner if PIN is valid */}
+   546→                  {pincodeInfo && (
+   547→                    <div className="sm:col-span-2 p-3.5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-in fade-in">
+   548→                      <div className="flex items-center gap-2">
+   549→                        <Truck className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
+   550→                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+   551→                          Est. Delivery by <strong className="text-sky-700 dark:text-sky-300">{pincodeInfo.estimatedDeliveryDate}</strong> ({pincodeInfo.estimatedDaysMin}-{pincodeInfo.estimatedDaysMax} days via {pincodeInfo.carrierPartner})
+   552→                        </span>
+   553→                      </div>
+   554→                      <span className="text-[11px] font-bold text-slate-500 bg-white/70 dark:bg-slate-800 px-2.5 py-1 rounded-lg w-fit">
+   555→                        {pincodeInfo.city} ({pincodeInfo.isCodAvailable ? 'COD Available' : 'Prepaid Only'})
+   556→                      </span>
+   557→                    </div>
+   558→                  )}
+   559→                </div>
+   560→              </div>
+   561→
+   562→              {/* 2. B2B GST Billing Card (Option B) */}
+   563→              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
+   564→                <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+   565→                  <div className="flex items-center gap-3">
+   566→                    <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm">
+   567→                      2
+   568→                    </div>
+   569→                    <div>
+   570→                      <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+   571→                        B2B GST Invoicing
+   572→                        <Badge variant="tech" className="text-[10px]">
+   573→                          Input Tax Credit (18%)
+   574→                        </Badge>
+   575→                      </h3>
+   576→                      <p className="text-xs text-slate-500">
+   577→                        Claim 18% GST Input Credit on surveillance & networking purchases
+   578→                      </p>
+   579→                    </div>
+   580→                  </div>
+   581→
+   582→                  {/* Toggle Switch */}
+   583→                  <label className="relative inline-flex items-center cursor-pointer">
+   584→                    <input
+   585→                      type="checkbox"
+   586→                      checked={isB2B}
+   587→                      onChange={(e) => setIsB2B(e.target.checked)}
+   588→                      className="sr-only peer"
+   589→                    />
+   590→                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+   591→                  </label>
+   592→                </div>
+   593→
+   594→                {isB2B ? (
+   595→                  <div className="space-y-4 pt-2 animate-in fade-in">
+   596→                    <div className="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-xs text-purple-900 dark:text-purple-200 flex items-start gap-2.5">
+   597→                      <FileText className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+   598→                      <span>
+   599→                        Enter your registered GST details below. A formal GST Tax Invoice with HSN breakdown will be generated and filed under GSTR-1 for your direct Input Tax Credit.
+   600→                      </span>
+   601→                    </div>
+   602→
+   603→                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   604→                      <div>
+   605→                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   606→                          Registered Business / Company Name *
+   607→                        </label>
+   608→                        <div className="relative">
+   609→                          <input
+   610→                            type="text"
+   611→                            required={isB2B}
+   612→                            value={companyName}
+   613→                            onChange={(e) => setCompanyName(e.target.value)}
+   614→                            placeholder="e.g. Patel Security Systems Pvt Ltd"
+   615→                            className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-slate-900 dark:text-white"
+   616→                          />
+   617→                          <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+   618→                        </div>
+   619→                      </div>
+   620→
+   621→                      <div>
+   622→                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+   623→                          15-Character Indian GSTIN *
+   624→                        </label>
+   625→                        <input
+   626→                          type="text"
+   627→                          required={isB2B}
+   628→                          maxLength={15}
+   629→                          value={gstin}
+   630→                          onChange={(e) => setGstin(e.target.value.toUpperCase())}
+   631→                          placeholder="24AAAAA0000A1Z5"
+   632→                          className="w-full px-3 py-2.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono uppercase tracking-wider text-slate-900 dark:text-white"
+   633→                        />
+   634→                      </div>
+   635→                    </div>
+   636→                  </div>
+   637→                ) : (
+   638→                  <p className="text-xs text-slate-500 dark:text-slate-400">
+   639→                    Buying for individual or home surveillance? Keep this disabled to generate a standard retail consumer tax invoice.
+   640→                  </p>
+   641→                )}
+   642→              </div>
+   643→
+   644→              {/* 3. Payment Method Card */}
+   645→              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs">
+   646→                <div className="flex items-center gap-3 pb-4 mb-5 border-b border-slate-100 dark:border-slate-800">
+   647→                  <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+   648→                    3
+   649→                  </div>
+   650→                  <div>
+   651→                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+   652→                      Payment Method Selection
+   653→                    </h3>
+   654→                    <p className="text-xs text-slate-500">Choose your preferred payment mode</p>
+   655→                  </div>
+   656→                </div>
+   657→
+   658→                <div className="space-y-3">
+   659→                  {/* Option 1: Razorpay Online */}
+   660→                  <label
+   661→                    className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all ${
+   662→                      paymentMethod === 'RAZORPAY'
+   663→                        ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/30 ring-2 ring-sky-500/20'
+   664→                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+   665→                    }`}
+   666→                  >
+   667→                    <input
+   668→                      type="radio"
+   669→                      name="paymentMethod"
+   670→                      value="RAZORPAY"
+   671→                      checked={paymentMethod === 'RAZORPAY'}
+   672→                      onChange={() => setPaymentMethod('RAZORPAY')}
+   673→                      className="mt-1 text-sky-600 focus:ring-sky-500"
+   674→                    />
+   675→                    <div className="flex-1">
+   676→                      <div className="flex items-center justify-between">
+   677→                        <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+   678→                          <CreditCard className="w-4 h-4 text-sky-600" />
+   679→                          Razorpay Online Gateway (Recommended)
+   680→                        </span>
+   681→                        <Badge variant="success" className="text-[10px]">
+   682→                          Instant Dispatch
+   683→                        </Badge>
+   684→                      </div>
+   685→                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+   686→                        UPI (GPay, PhonePe, Paytm), NetBanking (50+ Banks), Credit / Debit Cards, EMI & Corporate Cards.
+   687→                      </p>
+   688→                    </div>
+   689→                  </label>
+   690→
+   691→                  {/* Option 2: Cash on Delivery (COD) */}
+   692→                  {(() => {
+   693→                    const isCodAvailableForOrder = Boolean(
+   694→                      cart.isCodAllowed && (!pincodeInfo || pincodeInfo.isCodAvailable)
+   695→                    );
+   696→
+   697→                    return (
+   698→                      <label
+   699→                        className={`flex items-start gap-4 p-4 rounded-2xl border transition-all ${
+   700→                          !isCodAvailableForOrder
+   701→                            ? 'opacity-60 bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 cursor-not-allowed'
+   702→                            : paymentMethod === 'CASH_ON_DELIVERY'
+   703→                            ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/30 ring-2 ring-sky-500/20 cursor-pointer'
+   704→                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 cursor-pointer'
+   705→                        }`}
+   706→                      >
+   707→                        <input
+   708→                          type="radio"
+   709→                          name="paymentMethod"
+   710→                          value="CASH_ON_DELIVERY"
+   711→                          disabled={!isCodAvailableForOrder}
+   712→                          checked={paymentMethod === 'CASH_ON_DELIVERY'}
+   713→                          onChange={() => setPaymentMethod('CASH_ON_DELIVERY')}
+   714→                          className="mt-1 text-sky-600 focus:ring-sky-500 disabled:opacity-40"
+   715→                        />
+   716→                        <div className="flex-1">
+   717→                          <div className="flex items-center justify-between">
+   718→                            <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+   719→                              <Banknote className="w-4 h-4 text-emerald-600" />
+   720→                              Cash on Delivery (COD)
+   721→                            </span>
+   722→                            {!isCodAvailableForOrder && (
+   723→                              <Badge variant="danger" className="text-[10px]">
+   724→                                Unavailable
+   725→                              </Badge>
+   726→                            )}
+   727→                          </div>
+   728→                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+   729→                            {!cart.isCodAllowed
+   730→                              ? 'One or more items in your cart (e.g. bulky Cat6 drum or high-value NVR) require prepaid online payment.'
+   731→                              : pincodeInfo && !pincodeInfo.isCodAvailable
+   732→                              ? `Cash on Delivery is restricted for PIN ${pincode} (${pincodeInfo.city} - Special Logistics/Air Cargo Zone). Please pay via Razorpay Online.`
+   733→                              : 'Pay via cash or UPI directly to delivery agent upon parcel arrival.'}
+   734→                          </p>
+   735→                        </div>
+   736→                      </label>
+   737→                    );
+   738→                  })()}
+   739→                </div>
+   740→              </div>
+   741→            </div>
+   742→
+   743→            {/* Right 1 Column: Sticky Order Summary & Submit Button */}
+   744→            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-7 shadow-xs space-y-6 lg:sticky lg:top-24">
+   745→              <div>
+   746→                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+   747→                  Review & Finalize
+   748→                </span>
+   749→                <h4 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+   750→                  Order Summary ({cart.itemCount} Items)
+   751→                </h4>
+   752→              </div>
+   753→
+   754→              {/* Items Preview */}
+   755→              <div className="space-y-3 max-h-56 overflow-y-auto pr-1 text-xs divide-y divide-slate-100 dark:divide-slate-800">
+   756→                {cart.items.map((item: any) => (
+   757→                  <div key={item.id} className="pt-2.5 flex items-center gap-3">
+   758→                    <div className="relative w-12 h-12 rounded-lg bg-slate-50 dark:bg-slate-800 shrink-0 overflow-hidden border border-slate-100 dark:border-slate-800">
+   759→                      <Image
+   760→                        src={item.imageUrl}
+   761→                        alt={item.productName}
+   762→                        fill
+   763→                        className="object-contain p-1"
+   764→                      />
+   765→                    </div>
+   766→                    <div className="flex-1 min-w-0">
+   767→                      <h5 className="font-semibold text-slate-900 dark:text-white truncate">
+   768→                        {item.productName}
+   769→                      </h5>
+   770→                      <span className="text-[11px] text-slate-500">
+   771→                        {item.quantity}x • {item.variantName}
+   772→                      </span>
+   773→                    </div>
+   774→                    <span className="font-bold text-slate-900 dark:text-white shrink-0">
+   775→                      {formatPrice(item.lineTotal)}
+   776→                    </span>
+   777→                  </div>
+   778→                ))}
+   779→              </div>
+   780→
+   781→              {/* Price Breakdown */}
+   782→              <div className="space-y-2.5 text-xs pt-4 border-t border-slate-100 dark:border-slate-800">
+   783→                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+   784→                  <span>Taxable Base Value:</span>
+   785→                  <span className="font-semibold text-slate-900 dark:text-white">
+   786→                    {formatPrice(cart.subtotal)}
+   787→                  </span>
+   788→                </div>
+   789→                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+   790→                  <span>Goods & Services Tax (18% GST):</span>
+   791→                  <span className="font-semibold text-slate-900 dark:text-white">
+   792→                    {formatPrice(cart.gstAmount)}
+   793→                  </span>
+   794→                </div>
+   795→                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+   796→                  <span>Shipping & Transit Insurance:</span>
+   797→                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">FREE</span>
+   798→                </div>
+   799→                <div className="pt-3 flex justify-between text-lg font-extrabold text-slate-900 dark:text-white border-t border-slate-200 dark:border-slate-800">
+   800→                  <span>Total Amount:</span>
+   801→                  <span className="text-sky-600 dark:text-sky-400">{formatPrice(cart.totalAmount)}</span>
+   802→                </div>
+   803→                <span className="block text-[10px] text-slate-400 text-right">
+   804→                  (All Taxes & 18% GST Included)
+   805→                </span>
+   806→              </div>
+   807→
+   808→              {/* Submit CTA */}
+   809→              <button
+   810→                type="submit"
+   811→                disabled={submitting}
+   812→                className="w-full py-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-sky-500/25 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+   813→              >
+   814→                {submitting ? (
+   815→                  <>
+   816→                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+   817→                    Securing Order & Inventory...
+   818→                  </>
+   819→                ) : (
+   820→                  <>
+   821→                    <Lock className="w-4 h-4" />
+   822→                    {paymentMethod === 'RAZORPAY'
+   823→                      ? `Pay ${formatPrice(cart.totalAmount)} Online`
+   824→                      : `Place Order via COD (${formatPrice(cart.totalAmount)})`}
+   825→                    <ArrowRight className="w-4 h-4" />
+   826→                  </>
+   827→                )}
+   828→              </button>
+   829→
+   830→              {/* Trust Features */}
+   831→              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-2">
+   832→                <div className="flex items-center gap-2">
+   833→                  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+   834→                  <span>3-Year Direct Manufacturer Replacement Warranty</span>
+   835→                </div>
+   836→                <div className="flex items-center gap-2">
+   837→                  <Truck className="w-4 h-4 text-sky-500 shrink-0" />
+   838→                  <span>Express Transit via Bluedart / Delhivery / DTDC</span>
+   839→                </div>
+   840→                <div className="flex items-center gap-2">
+   841→                  <FileText className="w-4 h-4 text-purple-500 shrink-0" />
+   842→                  <span>Compliant B2B Tax Invoice with HSN & GSTIN</span>
+   843→                </div>
+   844→              </div>
+   845→            </div>
+   846→          </form>
+   847→        )}
+   848→      </main>
+   849→
+   850→      {/* Simulated Razorpay Payment Dialog (ADR-007) */}
+   851→      {simulatedModal?.open && (
+   852→        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+   853→          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full overflow-hidden">
+   854→            {/* Modal Header */}
+   855→            <div className="bg-gradient-to-r from-sky-600 to-blue-700 p-6 text-white text-center">
+   856→              <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mx-auto mb-2 text-white">
+   857→                <CreditCard className="w-6 h-6" />
+   858→              </div>
+   859→              <h3 className="text-lg font-bold">Razorpay Test Gateway</h3>
+   860→              <p className="text-xs text-sky-100 mt-0.5">
+   861→                Simulated Payment Portal (ADR-007)
+   862→              </p>
+   863→            </div>
+   864→
+   865→            {/* Modal Body */}
+   866→            <div className="p-6 space-y-4">
+   867→              <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+   868→                <div className="flex justify-between">
+   869→                  <span className="text-slate-500">Order Reference:</span>
+   870→                  <span className="font-mono font-bold text-slate-900 dark:text-white">
+   871→                    {simulatedModal.orderNumber}
+   872→                  </span>
+   873→                </div>
+   874→                <div className="flex justify-between">
+   875→                  <span className="text-slate-500">Total Payable:</span>
+   876→                  <span className="text-base font-extrabold text-sky-600 dark:text-sky-400">
+   877→                    {formatPrice(simulatedModal.totalAmount)}
+   878→                  </span>
+   879→                </div>
+   880→                <div className="flex justify-between">
+   881→                  <span className="text-slate-500">Mode:</span>
+   882→                  <span className="text-amber-600 dark:text-amber-400 font-semibold">
+   883→                    Razorpay Sandbox (Placeholder Mode)
+   884→                  </span>
+   885→                </div>
+   886→              </div>
+   887→
+   888→              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center">
+   889→                Live Razorpay procurement is in progress. You can simulate an instant successful payment or cancellation to verify order lifecycle transitions.
+   890→              </p>
+   891→
+   892→              {/* Action Buttons */}
+   893→              <div className="space-y-2.5 pt-2">
+   894→                <button
+   895→                  type="button"
+   896→                  disabled={simulatingProcessing}
+   897→                  onClick={handleSimulatedPaymentSuccess}
+   898→                  className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50"
+   899→                >
+   900→                  {simulatingProcessing ? (
+   901→                    <>
+   902→                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+   903→                      Capturing Payment & Generating Invoice...
+   904→                    </>
+   905→                  ) : (
+   906→                    <>
+   907→                      <CheckCircle2 className="w-4 h-4" />
+   908→                      Simulate Successful Payment (Instant Confirm)
+   909→                    </>
+   910→                  )}
+   911→                </button>
+   912→
+   913→                <button
+   914→                  type="button"
+   915→                  disabled={simulatingProcessing}
+   916→                  onClick={() => setSimulatedModal(null)}
+   917→                  className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors"
+   918→                >
+   919→                  Cancel / Close Simulation
+   920→                </button>
+   921→              </div>
+   922→            </div>
+   923→          </div>
+   924→        </div>
+   925→      )}
+   926→
+   927→      <Footer />
+   928→    </div>
+   929→  );
+   930→}
+   931→

@@ -1,103 +1,250 @@
 import React from 'react';
 import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { ShieldCheck, Award, Truck, CheckCircle2, Users, Building, ArrowRight } from 'lucide-react';
+import { Reveal } from '@/components/storefront/Reveal';
 
 export const metadata = {
   title: 'About Patel Networks (MegaTech) | Authorized CCTV Distribution',
   description: 'Gujarat premier commercial security distributor for CP Plus, Hikvision, Dahua, and enterprise networking hardware.',
 };
 
+const BRAND_PARTNERS = [
+  { name: 'CP Plus', slug: 'cp-plus' },
+  { name: 'Hikvision', slug: 'hikvision' },
+  { name: 'Dahua Tech', slug: 'dahua' },
+  { name: 'WD Purple', slug: 'western-digital' },
+  { name: 'D-Link', slug: 'd-link' },
+];
+
+const PILLARS = [
+  {
+    no: '01',
+    label: 'Strict serial tracking',
+    body: 'Every surveillance camera, hard drive, and recorder leaving our warehouse has its unique factory serial number scanned and printed on your official 18% GST Tax Invoice, safeguarding genuine manufacturer warranty claims.',
+  },
+  {
+    no: '02',
+    label: 'Express same-day dispatch',
+    body: 'Equipped with a high-density warehouse in Surat, we dispatch orders before 4:00 PM IST on the same day via Delhivery Air and Surface logistics, ensuring 1–2 day delivery across Gujarat and 2–3 days across Indian metros.',
+  },
+  {
+    no: '03',
+    label: 'Engineer-vetted catalog',
+    body: 'Every SKU in our catalog is specified and deployed in the field by engineers who install these systems. No rebranded grey market, no mystery SKUs — only serial-tracked, manufacturer-warranted hardware.',
+  },
+  {
+    no: '04',
+    label: 'B2B GST compliance',
+    body: 'Enter your GSTIN at checkout and our system dynamically computes CGST/SGST or IGST, issues an official Tax Invoice, and files it into GSTR-1 — enabling full 18% Input Tax Credit on your business returns.',
+  },
+];
+
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5">
-          <Link href="/" className="hover:text-slate-900 dark:hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-slate-900 dark:text-white font-medium">About Patel Networks</span>
-        </nav>
+      <main className="flex-1">
+        {/* ============================================================ */}
+        {/* HERO — editorial ink band, no gradient */}
+        {/* ============================================================ */}
+        <section className="relative overflow-hidden bg-foreground text-background">
+          <div
+            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)',
+              backgroundSize: '64px 64px',
+            }}
+          />
+          <div className="relative max-w-[1400px] mx-auto px-6 lg:px-10 pt-16 pb-20 lg:pt-24 lg:pb-28">
+            <Reveal>
+              <div className="flex items-center gap-4 mb-10">
+                <span className="dot-rec" aria-hidden />
+                <span className="text-[12px] tracking-[0.24em] uppercase font-medium text-background/55">
+                  Authorized surveillance &amp; networking distributor
+                </span>
+              </div>
+            </Reveal>
 
-        {/* Hero */}
-        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-white border border-slate-800 shadow-xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-semibold mb-4">
-            <Award className="w-3.5 h-3.5" />
-            Authorized Surveillance & Networking Distributor
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Building India&apos;s Most Trusted Surveillance Supply Chain
-          </h1>
-          <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
-            Headquartered in Surat, Gujarat, Patel Networks (MegaTech) supplies commercial security cameras, AI-enabled NVRs, structured Cat6 cabling, and enterprise fiber equipment to security installers, electrical contractors, and corporate institutions.
-          </p>
-        </div>
+            <Reveal delay={60}>
+              <h1 className="display text-[clamp(2.6rem,6vw,5rem)] leading-[0.98] max-w-4xl text-background">
+                Building India&apos;s most trusted
+                <br />
+                <span className="ital">surveillance</span> supply chain.
+              </h1>
+            </Reveal>
 
-        {/* Brand Partners */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs mb-12">
-          <h2 className="text-base font-bold text-slate-900 dark:text-white text-center mb-6">
-            Direct Authorized Brand Alliances
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 text-center text-xs font-bold text-slate-700 dark:text-slate-300">
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center">
-              CP PLUS
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center">
-              HIKVISION
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center">
-              DAHUA TECH
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center">
-              WD PURPLE
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-center">
-              D-LINK
-            </div>
-          </div>
-        </div>
+            <Reveal delay={120}>
+              <p className="mt-8 text-base sm:text-lg text-background/70 leading-relaxed max-w-xl">
+                Headquartered in Surat, Gujarat, Patel Networks (MegaTech) supplies
+                commercial security cameras, AI-enabled NVRs, structured Cat6 cabling, and
+                enterprise fiber equipment to security installers, electrical contractors,
+                and corporate institutions.
+              </p>
+            </Reveal>
 
-        {/* Narrative & Value Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-7 shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Strict Serial Tracking</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Every surveillance camera, hard drive, and recorder leaving our warehouse has its unique factory serial number scanned and printed on your official 18% GST Tax Invoice, safeguarding genuine manufacturer warranty claims.
-            </p>
+            {/* Trust line */}
+            <Reveal delay={180}>
+              <div className="mt-14 pt-8 border-t border-background/15 grid grid-cols-2 md:grid-cols-4 gap-y-5 gap-x-8 max-w-3xl">
+                {[
+                  ['Headquarters', 'Surat, Gujarat'],
+                  ['Brand alliances', '5 authorized'],
+                  ['Pincode coverage', '19,000+'],
+                  ['Dispatch SLA', 'Same-day, 4 PM IST'],
+                ].map(([a, b]) => (
+                  <div key={a}>
+                    <div className="text-sm text-background font-medium">{a}</div>
+                    <div className="text-[11px] text-background/50 mt-0.5">{b}</div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
           </div>
+        </section>
 
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-7 shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Truck className="w-5 h-5" />
+        {/* ============================================================ */}
+        {/* BRAND PARTNERS — hairline grid */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+          <Reveal>
+            <div className="eyebrow text-stone-500 mb-3 text-center">Direct authorized brand alliances</div>
+          </Reveal>
+          <Reveal delay={60}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 border-t border-l border-border">
+              {BRAND_PARTNERS.map((b) => (
+                <Link
+                  key={b.slug}
+                  href={`/products?brand=${b.slug}`}
+                  className="group flex items-center justify-center py-10 px-4 border-r border-b border-border hover:bg-accent/50 transition-colors"
+                >
+                  <span className="display text-xl text-foreground group-hover:text-[var(--brand)] transition-colors">
+                    {b.name}
+                  </span>
+                </Link>
+              ))}
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Express Same-Day Dispatch</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Equipped with a high-density warehouse in Surat, we dispatch orders before 4:00 PM IST on the same day via Delhivery Air and Surface logistics, ensuring 1-2 day delivery across Gujarat and 2-3 days across Indian metros.
-            </p>
-          </div>
-        </div>
+          </Reveal>
+        </section>
 
-        {/* CTA to Kit Builder */}
-        <div className="bg-gradient-to-r from-sky-600 to-indigo-600 rounded-3xl p-8 sm:p-10 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-xl font-bold">Try Our Interactive CCTV Kit Builder</h3>
-            <p className="text-xs text-sky-100 mt-1 max-w-md">
-              Configure compatible cameras, DVR/NVR recorders, hard drives, and power supplies in 5 simple steps with an automatic 5% bundle discount.
-            </p>
+        {/* ============================================================ */}
+        {/* STORY — editorial still-life band */}
+        {/* ============================================================ */}
+        <section className="border-y border-border bg-card/30">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <Reveal className="lg:col-span-7 order-1">
+                <div className="eyebrow text-stone-500 mb-5">The discipline</div>
+                <h2 className="display text-[clamp(1.9rem,3.5vw,2.8rem)] leading-tight text-foreground max-w-xl">
+                  Hardware chosen by people who <span className="ital">install it.</span>
+                </h2>
+                <div className="mt-8 space-y-5 text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-xl">
+                  <p>
+                    Patel Networks was founded by engineers who specify, deploy, and service
+                    these systems in the field. That origin informs every part of the
+                    operation — from the SKUs we stock to the way serials are recorded on
+                    every invoice.
+                  </p>
+                  <p>
+                    The catalog is intentionally narrow: only commercial-grade hardware from
+                    the brands Indian installers already trust. No rebranded grey market, no
+                    mystery SKUs — only serial-tracked, manufacturer-warranted equipment
+                    shipped from our central warehouse in Surat.
+                  </p>
+                </div>
+                <Link
+                  href="/products"
+                  className="inline-flex items-center gap-1.5 mt-8 text-sm text-foreground link-underline"
+                >
+                  Browse the catalog <ArrowUpRight className="w-4 h-4" />
+                </Link>
+              </Reveal>
+
+              <Reveal delay={80} className="lg:col-span-5 order-2">
+                <div className="border border-border p-8 lg:p-10 bg-background">
+                  <div className="eyebrow text-stone-500 mb-6">Operating principles</div>
+                  <ul className="space-y-5">
+                    {[
+                      ['Genuine serials', 'Every unit scanned, every invoice serial-attached.'],
+                      ['Same-day dispatch', 'Cut-off 4:00 PM IST, Mon–Sat.'],
+                      ['B2B GST invoicing', 'CGST/SGST or IGST, filed to GSTR-1.'],
+                      ['RMA accountability', '7-day DOA replacement guarantee.'],
+                    ].map(([k, v]) => (
+                      <li key={k} className="border-b border-border pb-4 last:border-b-0 last:pb-0">
+                        <div className="text-sm text-foreground font-medium">{k}</div>
+                        <div className="text-[12px] text-stone-500 mt-1 leading-relaxed">{v}</div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            </div>
           </div>
-          <Link
-            href="/kit-builder"
-            className="shrink-0 py-3 px-6 rounded-xl bg-white text-slate-900 font-bold text-xs hover:bg-slate-100 transition-colors flex items-center gap-2"
-          >
-            Launch Kit Builder <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* PILLARS — numbered editorial rows */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
+          <Reveal>
+            <div className="mb-12">
+              <div className="eyebrow text-stone-500 mb-3">What we hold to</div>
+              <h2 className="display text-[clamp(1.9rem,4vw,2.8rem)] leading-tight text-foreground max-w-xl">
+                Four commitments behind every shipment.
+              </h2>
+            </div>
+          </Reveal>
+
+          <div className="border-t border-border">
+            {PILLARS.map((p, i) => (
+              <Reveal key={p.no} delay={i * 50}>
+                <div className="grid grid-cols-12 gap-4 py-8 border-b border-border items-start">
+                  <span className="col-span-2 sm:col-span-1 font-mono text-xs text-stone-400">
+                    {p.no}
+                  </span>
+                  <div className="col-span-10 sm:col-span-4">
+                    <h3 className="display text-xl sm:text-2xl text-foreground">
+                      {p.label}
+                    </h3>
+                  </div>
+                  <p className="col-span-12 sm:col-span-7 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                    {p.body}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CTA — kit builder */}
+        {/* ============================================================ */}
+        <section className="border-t border-border bg-foreground text-background">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <Reveal className="lg:col-span-8">
+                <div className="eyebrow text-background/50 mb-4">Configuration tool</div>
+                <h2 className="display text-[clamp(1.9rem,4vw,3rem)] leading-tight">
+                  Try our interactive CCTV <span className="ital">kit builder.</span>
+                </h2>
+                <p className="mt-5 text-base text-background/70 leading-relaxed max-w-xl">
+                  Configure compatible cameras, DVR/NVR recorders, hard drives, and power
+                  supplies in five simple steps with an automatic 5% bundle discount.
+                </p>
+              </Reveal>
+              <Reveal delay={80} className="lg:col-span-4">
+                <Link
+                  href="/kit-builder"
+                  className="inline-flex items-center gap-2.5 bg-background text-foreground px-7 py-4 text-sm font-medium rounded-sm transition-transform hover:-translate-y-0.5"
+                >
+                  Launch kit builder <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Reveal>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

@@ -4,12 +4,9 @@ import React, { useState, useEffect } from 'react';
 import {
   MapPin,
   Truck,
-  CheckCircle2,
+  Check,
   AlertCircle,
-  Clock,
-  Banknote,
   Loader2,
-  ShieldAlert,
 } from 'lucide-react';
 import { checkPincodeAction } from '@/app/actions/shipping.actions';
 import { PincodeServiceability } from '@/lib/pincodes';
@@ -69,8 +66,9 @@ export function PincodeChecker({
         setErrorMsg(res.error || 'Pincode not serviceable.');
         setServiceInfo(null);
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error validating delivery location.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error validating delivery location.';
+      setErrorMsg(msg);
       setServiceInfo(null);
     } finally {
       setLoading(false);
@@ -89,24 +87,22 @@ export function PincodeChecker({
   };
 
   return (
-    <div
-      className={`p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xs ${className}`}
-    >
-      <div className="flex items-center justify-between mb-2.5">
+    <div className={`border border-border bg-card p-5 ${className}`}>
+      <div className="flex items-center justify-between mb-3">
         <label
           htmlFor="pincode-input"
-          className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5"
+          className="eyebrow text-stone-500 flex items-center gap-2"
         >
-          <MapPin className="w-3.5 h-3.5 text-sky-500" /> Check Delivery & COD Availability
+          <MapPin className="w-3.5 h-3.5 text-[var(--brand)]" /> Check delivery & COD
         </label>
         {serviceInfo && (
-          <span className="text-[11px] font-semibold text-sky-600 dark:text-sky-400">
-            {serviceInfo.city}
+          <span className="text-[11px] font-mono text-foreground">
+            {serviceInfo.city} · {serviceInfo.state}
           </span>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-stretch gap-2">
         <div className="relative flex-1">
           <input
             id="pincode-input"
@@ -114,13 +110,13 @@ export function PincodeChecker({
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={6}
-            placeholder="Enter 6-digit Indian PIN (e.g. 395003)"
+            placeholder="Enter 6-digit PIN (e.g. 395003)"
             value={pincode}
             onChange={handleInputChange}
-            className="w-full text-xs font-mono font-medium py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition-all"
+            className="w-full text-sm font-mono py-2.5 px-3 bg-background border border-border text-foreground placeholder:text-stone-400 focus:outline-none focus:border-foreground transition-colors"
           />
           {loading && (
-            <div className="absolute right-3 top-2.5 text-sky-500">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400">
               <Loader2 className="w-4 h-4 animate-spin" />
             </div>
           )}
@@ -130,7 +126,7 @@ export function PincodeChecker({
           type="button"
           onClick={() => handleCheck()}
           disabled={loading || pincode.length !== 6}
-          className="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          className="btn-ink disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none shrink-0"
         >
           Check
         </button>
@@ -138,54 +134,52 @@ export function PincodeChecker({
 
       {/* Error state */}
       {errorMsg && (
-        <div className="mt-2.5 text-[11px] font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+        <div className="mt-3 text-xs text-destructive flex items-center gap-2">
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* Validated Results Banner */}
+      {/* Validated results — hairline data rows */}
       {serviceInfo && (
-        <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs animate-in fade-in duration-200">
-          <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Clock className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Est. Delivery:</span>
-            </span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400">
-              {serviceInfo.estimatedDeliveryDate} ({serviceInfo.estimatedDaysMin}-{serviceInfo.estimatedDaysMax} days)
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Banknote className="w-3.5 h-3.5 text-blue-500" />
-              <span>Cash on Delivery:</span>
-            </span>
-            <span
-              className={`font-bold ${
-                serviceInfo.isCodAvailable
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-amber-600 dark:text-amber-400'
-              }`}
-            >
-              {serviceInfo.isCodAvailable ? 'Available' : 'Prepaid Only (Special Zone)'}
+        <div className="mt-4 pt-4 border-t border-border space-y-2.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="eyebrow text-stone-500">Est. delivery</span>
+            <span className="font-mono text-foreground">
+              {serviceInfo.estimatedDeliveryDate}
+              <span className="text-stone-500 ml-2">
+                ({serviceInfo.estimatedDaysMin}–{serviceInfo.estimatedDaysMax} days)
+              </span>
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
+          <div className="flex items-center justify-between text-xs">
+            <span className="eyebrow text-stone-500">Cash on delivery</span>
             <span className="flex items-center gap-1.5 font-medium">
-              <Truck className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Carrier Partner:</span>
+              {serviceInfo.isCodAvailable ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[var(--brand)]" />
+                  <span className="text-foreground">Available</span>
+                </>
+              ) : (
+                <span className="text-stone-500">Prepaid only · special zone</span>
+              )}
             </span>
-            <span className="font-semibold text-slate-900 dark:text-white">
+          </div>
+
+          <div className="flex items-center justify-between text-xs">
+            <span className="eyebrow text-stone-500">Carrier partner</span>
+            <span className="font-medium text-foreground flex items-center gap-1.5">
+              <Truck className="w-3.5 h-3.5 text-stone-400" />
               {serviceInfo.carrierPartner}
             </span>
           </div>
 
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 italic pt-1">
-            {serviceInfo.notes}
-          </p>
+          {serviceInfo.notes && (
+            <p className="text-[11px] text-stone-500 leading-relaxed pt-2 border-t border-border mt-3">
+              {serviceInfo.notes}
+            </p>
+          )}
         </div>
       )}
     </div>

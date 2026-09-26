@@ -7,11 +7,9 @@ import {
   Phone,
   User,
   Package,
-  FileCheck,
-  CheckCircle2,
+  Check,
   Loader2,
   Send,
-  ExternalLink,
 } from 'lucide-react';
 import { submitB2BQuoteInquiryAction } from '@/app/actions/whatsapp.actions';
 
@@ -34,7 +32,9 @@ export function B2BQuoteModal({
   const [quantity, setQuantity] = useState(10);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [submittedData, setSubmittedData] = useState<any>(null);
+  const [submittedData, setSubmittedData] = useState<{
+    messageId: string;
+  } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -63,8 +63,9 @@ export function B2BQuoteModal({
       } else {
         setErrorMsg(res.error || 'Failed to submit quotation inquiry.');
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error submitting quote request.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error submitting quote request.';
+      setErrorMsg(msg);
     } finally {
       setSubmitting(false);
     }
@@ -80,19 +81,22 @@ export function B2BQuoteModal({
     onClose();
   };
 
+  const inputClass =
+    'w-full px-3 py-2.5 text-sm bg-background border border-border text-foreground placeholder:text-stone-400 focus:outline-none focus:border-foreground transition-colors';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/60">
+      <div className="w-full max-w-lg bg-card border border-border shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="p-6 bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white flex items-start justify-between">
+        <div className="p-6 border-b border-border flex items-start justify-between gap-4">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-sky-200 block mb-1">
+            <span className="eyebrow text-stone-500 block mb-2">
               B2B Commercial Dealer Desk
             </span>
-            <h3 className="text-lg font-extrabold tracking-tight">
-              Request Project Bulk Quotation
+            <h3 className="display text-[22px] leading-tight text-foreground">
+              Request project bulk quotation
             </h3>
-            <p className="text-xs text-sky-100 mt-0.5">
+            <p className="text-xs text-stone-500 mt-1.5 max-w-sm leading-relaxed">
               Unlock Tier-2 wholesale dealer pricing with formal GST tax invoicing.
             </p>
           </div>
@@ -100,7 +104,8 @@ export function B2BQuoteModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            aria-label="Close"
+            className="shrink-0 w-8 h-8 flex items-center justify-center text-stone-500 hover:text-foreground hover:bg-accent transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -109,67 +114,75 @@ export function B2BQuoteModal({
         {/* Content */}
         <div className="p-6">
           {submittedData ? (
-            <div className="text-center py-4 space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-800">
-                <CheckCircle2 className="w-8 h-8" />
+            <div className="py-2 space-y-5">
+              <div className="flex items-start gap-3">
+                <span className="mt-1 w-5 h-5 flex items-center justify-center border border-[var(--brand)] text-[var(--brand)]">
+                  <Check className="w-3 h-3" />
+                </span>
+                <div>
+                  <h4 className="display text-[18px] text-foreground leading-snug">
+                    Quotation request dispatched.
+                  </h4>
+                  <p className="text-xs text-stone-500 mt-1.5 max-w-sm leading-relaxed">
+                    We have queued your inquiry for{' '}
+                    <span className="font-mono text-foreground">{quantity} units</span>{' '}
+                    of {productName}. A WhatsApp confirmation has been dispatched to
+                    your mobile.
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  Quotation Request Dispatched!
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">
-                  We have queued your inquiry for <strong>{quantity} units</strong> of {productName}. A WhatsApp confirmation has been dispatched to your mobile.
-                </p>
+              <div className="border border-border bg-background p-3 text-left text-xs font-mono text-stone-500">
+                <span className="eyebrow text-stone-400 block mb-1.5">
+                  Inquiry Reference
+                </span>
+                <span className="text-foreground">{submittedData.messageId}</span>
               </div>
 
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left text-xs font-mono text-slate-600 dark:text-slate-300">
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Inquiry Reference</span>
-                <span>{submittedData.messageId}</span>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-2 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch gap-2 pt-1">
                 <button
                   type="button"
                   onClick={handleLaunchWhatsApp}
-                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+                  className="flex-1 btn-ink justify-center"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Chat on WhatsApp Directly</span>
+                  <span>Chat on WhatsApp</span>
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors"
+                  className="flex-1 btn-ghost justify-center"
                 >
-                  Close Window
+                  Close window
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {errorMsg && (
-                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/80 border border-rose-300 text-rose-800 dark:text-rose-200 font-semibold">
+                <div className="px-3 py-2.5 border border-destructive/40 bg-destructive/5 text-destructive text-xs">
                   {errorMsg}
                 </div>
               )}
 
-              {/* Product Badge */}
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center gap-2.5">
-                <Package className="w-4 h-4 text-sky-600 shrink-0" />
-                <div className="truncate">
-                  <span className="font-bold text-slate-900 dark:text-white block truncate">
-                    {productName}
-                  </span>
-                  {skuCode && <span className="text-[10px] font-mono text-slate-400">{skuCode}</span>}
+              {/* Product context — hairline row */}
+              <div className="border border-border bg-background p-3 flex items-center gap-3">
+                <Package className="w-4 h-4 text-stone-500 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-sm text-foreground truncate">{productName}</div>
+                  {skuCode && (
+                    <div className="text-[10px] font-mono text-stone-400 mt-0.5">
+                      {skuCode}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Contractor Name */}
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Your Full Name *
+                  <label className="eyebrow text-stone-500 block mb-2">
+                    Your full name *
                   </label>
                   <div className="relative">
                     <input
@@ -178,19 +191,19 @@ export function B2BQuoteModal({
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="e.g. Ramesh Patel"
-                      className="w-full pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-hidden text-slate-900 dark:text-white"
+                      className={`${inputClass} pl-9`}
                     />
-                    <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <User className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   </div>
                 </div>
 
                 {/* Mobile Number */}
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    WhatsApp Number *
+                  <label className="eyebrow text-stone-500 block mb-2">
+                    WhatsApp number *
                   </label>
                   <div className="relative flex items-center">
-                    <span className="absolute left-2.5 text-xs font-bold text-slate-500 select-none">
+                    <span className="absolute left-3 text-xs text-stone-400 select-none font-mono">
                       +91
                     </span>
                     <input
@@ -200,15 +213,16 @@ export function B2BQuoteModal({
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                       placeholder="9876543210"
-                      className="w-full pl-11 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-hidden font-mono text-slate-900 dark:text-white"
+                      className={`${inputClass} pl-11 font-mono`}
                     />
+                    <Phone className="w-3.5 h-3.5 text-stone-400 absolute right-3 top-1/2 -translate-y-1/2" />
                   </div>
                 </div>
 
                 {/* Company Name */}
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Security Agency / Company Name
+                  <label className="eyebrow text-stone-500 block mb-2">
+                    Security agency / company name
                   </label>
                   <div className="relative">
                     <input
@@ -216,16 +230,16 @@ export function B2BQuoteModal({
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
                       placeholder="e.g. Patel Security Systems"
-                      className="w-full pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-hidden text-slate-900 dark:text-white"
+                      className={`${inputClass} pl-9`}
                     />
-                    <Building2 className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <Building2 className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   </div>
                 </div>
 
                 {/* Quantity */}
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Required Quantity (Units) *
+                  <label className="eyebrow text-stone-500 block mb-2">
+                    Required quantity (units) *
                   </label>
                   <input
                     type="number"
@@ -233,47 +247,45 @@ export function B2BQuoteModal({
                     min={1}
                     value={quantity}
                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-hidden font-mono text-slate-900 dark:text-white"
+                    className={`${inputClass} font-mono`}
                   />
                 </div>
               </div>
 
               {/* Project / Site Notes */}
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Site Details / Tender Scope (Optional)
+                <label className="eyebrow text-stone-500 block mb-2">
+                  Site details / tender scope (optional)
                 </label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. 16-channel industrial factory deployment in Surat with outdoor night vision requirements"
-                  className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-hidden text-slate-900 dark:text-white resize-none"
+                  placeholder="e.g. 16-channel industrial factory deployment in Surat with outdoor night-vision requirements"
+                  className={`${inputClass} resize-none`}
                 />
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="py-2.5 px-4 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold transition-colors"
+                  className="btn-ghost"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="py-2.5 px-6 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold shadow-md shadow-sky-600/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                  className="btn-ink disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >
                   {submitting ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Dispatching Request...
+                      <Loader2 className="w-4 h-4 animate-spin" /> Dispatching…
                     </>
                   ) : (
                     <>
-                      <Send className="w-3.5 h-3.5" />
-                      Submit Quote Request
+                      <Send className="w-4 h-4" /> Submit request
                     </>
                   )}
                 </button>

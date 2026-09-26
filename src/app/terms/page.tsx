@@ -1,97 +1,196 @@
 import React from 'react';
 import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { Scale, FileText, AlertCircle, ShieldCheck, Building2, Gavel } from 'lucide-react';
+import { Reveal } from '@/components/storefront/Reveal';
 
 export const metadata = {
   title: 'Terms of Service & Sale | Patel Networks Commercial Platform',
   description: 'Legal terms of sale, 18% GST invoice generation, B2B Input Tax Credit liabilities, pricing policies, and jurisdiction guidelines.',
 };
 
+const GST_POINTS = [
+  'All displayed prices reflect both the base price and the applicable 18% GST breakdown.',
+  'Customers requesting B2B invoices must enter a valid 15-character Indian GSTIN and legal trade name at checkout.',
+  'Patel Networks files all B2B invoices into GSTR-1 by the statutory deadline, allowing verified registered businesses to claim 100% Input Tax Credit (ITC).',
+  'The purchaser is solely responsible for ensuring the accuracy of their GSTIN before placing an order. Once an invoice is generated and dispatched, retrospective amendments cannot be made.',
+];
+
+const VERIFICATION_POINTS = [
+  'Order placement does not constitute unconditional binding acceptance until our warehouse reserves stock and verifies payment status or COD serviceability.',
+  'In the rare event of concurrent inventory depletion or pricing inaccuracies, Patel Networks reserves the right to cancel the order and provide an immediate 100% refund.',
+];
+
+const LIABILITY_POINTS = [
+  'Loss of recorded video footage, data corruption on hard disk drives, or improper CCTV camera placement.',
+  'Improper installation, incorrect wiring polarities, or third-party electrical surge damage.',
+  'Any indirect, incidental, or consequential damages resulting from equipment downtime.',
+];
+
 export default function TermsPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5">
-          <Link href="/" className="hover:text-slate-900 dark:hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-slate-900 dark:text-white font-medium">Terms of Service</span>
-        </nav>
+      <main className="flex-1">
+        {/* ============================================================ */}
+        {/* HEADER BAND */}
+        {/* ============================================================ */}
+        <section className="border-b border-border">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pt-10 lg:pt-14 pb-12 lg:pb-16">
+            <nav className="text-[11px] text-stone-500 dark:text-stone-500 mb-8 flex items-center gap-2">
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <span className="text-stone-300 dark:text-stone-600">/</span>
+              <span className="text-foreground">Terms of Service</span>
+            </nav>
 
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-white border border-slate-800 shadow-xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-semibold mb-4">
-            <Scale className="w-3.5 h-3.5" />
-            Commercial E-Commerce Agreement
+            <Reveal>
+              <div className="flex items-center gap-4 mb-8">
+                <span className="dot-rec" aria-hidden />
+                <span className="eyebrow text-stone-500">Commercial e-commerce agreement</span>
+              </div>
+            </Reveal>
+
+            <Reveal delay={60}>
+              <h1 className="display text-[clamp(2.4rem,5.5vw,4rem)] leading-[1.02] text-foreground max-w-4xl">
+                Terms of <span className="ital">service</span> &amp; sale.
+              </h1>
+            </Reveal>
+
+            <Reveal delay={120}>
+              <p className="mt-8 text-base sm:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
+                These terms govern all purchases of security, surveillance, and networking
+                hardware made on Patel Networks (MegaTech) by retail consumers, electrical
+                contractors, and institutional buyers.
+              </p>
+            </Reveal>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Terms of Service & Sale
-          </h1>
-          <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
-            These terms govern all purchases of security, surveillance, and networking hardware made on Patel Networks (MegaTech) by retail consumers, electrical contractors, and institutional buyers.
-          </p>
-        </div>
+        </section>
 
-        {/* Terms Sections */}
-        <div className="space-y-8 text-sm text-slate-700 dark:text-slate-300">
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-sky-500" />
-              1. 18% GST Tax Invoicing & Input Tax Credit (ITC)
+        {/* ============================================================ */}
+        {/* PROSE BODY */}
+        {/* ============================================================ */}
+        <section className="max-w-3xl mx-auto px-6 lg:px-10 py-16 lg:py-24">
+
+          {/* Section 1 — GST Invoicing & ITC */}
+          <Reveal>
+            <div className="eyebrow text-stone-500 mb-3">01 — GST invoicing &amp; ITC</div>
+            <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+              18% GST tax invoicing &amp; Input Tax Credit.
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              All commercial hardware (Cameras, Recorders, Cabling, Optical Converters, Hard Drives) sold on Patel Networks is subject to the Indian Goods and Services Tax (GST) Act:
+            <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-6">
+              All commercial hardware — cameras, recorders, cabling, optical converters, hard
+              drives — sold on Patel Networks is subject to the Indian Goods and Services Tax
+              (GST) Act:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pl-2">
-              <li>All displayed prices reflect both the base price and the applicable 18% GST breakdown.</li>
-              <li>Customers requesting B2B invoices must enter a valid 15-character Indian GSTIN and legal trade name at checkout.</li>
-              <li>Patel Networks files all B2B invoices into GSTR-1 by the statutory deadline, allowing verified registered businesses to claim 100% Input Tax Credit (ITC).</li>
-              <li>The purchaser is solely responsible for ensuring the accuracy of their GSTIN before placing an order. Once an invoice is generated and dispatched, retrospective amendments cannot be made.</li>
+            <ul className="space-y-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+              {GST_POINTS.map((p, i) => (
+                <li key={i} className="grid grid-cols-[auto_1fr] gap-4">
+                  <span className="font-mono text-[11px] text-[var(--brand)] mt-0.5">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span>{p}</span>
+                </li>
+              ))}
             </ul>
-          </section>
+          </Reveal>
 
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-500" />
-              2. Order Verification & Concurrency Safeguards
+          <div className="rule my-14" />
+
+          {/* Section 2 — Order Verification */}
+          <Reveal>
+            <div className="eyebrow text-stone-500 mb-3">02 — Order verification</div>
+            <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+              Order verification &amp; concurrency safeguards.
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-6">
               Due to real-time physical warehouse inventory management (ADR-010):
             </p>
-            <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pl-2">
-              <li>Order placement does not constitute unconditional binding acceptance until our warehouse reserves stock and verifies payment status or COD serviceability.</li>
-              <li>In the rare event of concurrent inventory depletion or pricing inaccuracies, Patel Networks reserves the right to cancel the order and provide an immediate 100% refund.</li>
+            <ul className="space-y-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+              {VERIFICATION_POINTS.map((p, i) => (
+                <li key={i} className="grid grid-cols-[auto_1fr] gap-4">
+                  <span className="font-mono text-[11px] text-[var(--brand)] mt-0.5">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span>{p}</span>
+                </li>
+              ))}
             </ul>
-          </section>
+          </Reveal>
 
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Gavel className="w-5 h-5 text-indigo-500" />
-              3. Limitation of Liability for Surveillance Data
+          <div className="rule my-14" />
+
+          {/* Section 3 — Limitation of Liability */}
+          <Reveal>
+            <div className="eyebrow text-stone-500 mb-3">03 — Limitation of liability</div>
+            <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+              Liability for surveillance data.
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Patel Networks acts solely as an authorized commercial distributor of hardware. We are not liable for:
+            <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-6">
+              Patel Networks acts solely as an authorized commercial distributor of hardware.
+              We are not liable for:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pl-2">
-              <li>Loss of recorded video footage, data corruption on hard disk drives, or improper CCTV camera placement.</li>
-              <li>Improper installation, incorrect wiring polarities, or third-party electrical surge damage.</li>
-              <li>Any indirect, incidental, or consequential damages resulting from equipment downtime.</li>
+            <ul className="space-y-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+              {LIABILITY_POINTS.map((p, i) => (
+                <li key={i} className="grid grid-cols-[auto_1fr] gap-4">
+                  <span className="font-mono text-[11px] text-[var(--brand)] mt-0.5">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span>{p}</span>
+                </li>
+              ))}
             </ul>
-          </section>
+          </Reveal>
 
-          <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              4. Governing Law & Jurisdiction
+          <div className="rule my-14" />
+
+          {/* Section 4 — Governing Law */}
+          <Reveal>
+            <div className="eyebrow text-stone-500 mb-3">04 — Governing law</div>
+            <h2 className="display text-[clamp(1.6rem,3vw,2.2rem)] leading-tight text-foreground mb-5">
+              Governing law &amp; jurisdiction.
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              These terms of sale are governed by the laws of the Republic of India. Any legal disputes arising out of transactions on this platform shall be subject to the exclusive jurisdiction of the competent courts in <strong>Surat, Gujarat, India</strong>.
+            <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+              These terms of sale are governed by the laws of the Republic of India. Any
+              legal disputes arising out of transactions on this platform shall be subject to
+              the exclusive jurisdiction of the competent courts in{' '}
+              <span className="text-foreground font-medium">Surat, Gujarat, India</span>.
             </p>
-          </section>
-        </div>
+          </Reveal>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CTA */}
+        {/* ============================================================ */}
+        <section className="border-t border-border bg-card/30">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <Reveal>
+                <div>
+                  <div className="eyebrow text-stone-500 mb-3">Compliance desk</div>
+                  <h2 className="display text-[clamp(1.7rem,3.2vw,2.4rem)] leading-tight text-foreground max-w-lg">
+                    Need a clause clarified before ordering?
+                  </h2>
+                  <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-4 max-w-md">
+                    Our compliance desk can walk through GST invoicing, ITC claims, or
+                    liability terms before you place an institutional order.
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal delay={80}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link href="/contact" className="btn-ink">
+                    Contact the desk <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <Link href="/privacy-policy" className="btn-ghost">
+                    Privacy policy <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

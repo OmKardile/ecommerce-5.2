@@ -5,18 +5,12 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { Badge } from '@/components/ui/Badge';
 import { sendOtpAction, verifyOtpAction, getCurrentUserAction } from '@/app/actions/auth.actions';
 import {
-  Shield,
-  Smartphone,
-  KeyRound,
   ArrowRight,
-  CheckCircle2,
+  Check,
   AlertCircle,
   Loader2,
-  Lock,
-  Building2,
   RefreshCw,
   Edit2,
 } from 'lucide-react';
@@ -35,18 +29,28 @@ function LoginContent() {
   const [testOtp, setTestOtp] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState<number>(0);
 
-  // If already logged in, redirect
+  // If already logged in, redirect.
+  // setState is never called synchronously in the effect body — it happens
+  // inside the async callback after the await resolves (or never on catch).
   useEffect(() => {
-    async function checkAuth() {
-      const res = await getCurrentUserAction();
-      if (res.success && res.user) {
-        router.push(redirectUrl);
+    let active = true;
+    (async () => {
+      try {
+        const res = await getCurrentUserAction();
+        if (active && res.success && res.user) {
+          router.push(redirectUrl);
+        }
+      } catch {
+        // graceful
       }
-    }
-    checkAuth();
+    })();
+    return () => {
+      active = false;
+    };
   }, [redirectUrl, router]);
 
-  // Resend cooldown timer countdown
+  // Resend cooldown timer countdown — setState happens inside setInterval
+  // (event-driven callback), not synchronously in the effect body.
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const timer = setInterval(() => {
@@ -79,8 +83,9 @@ function LoginContent() {
       } else {
         setErrorMsg(res.error || 'Failed to dispatch verification code.');
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error communicating with SMS service.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error communicating with SMS service.';
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
@@ -107,72 +112,79 @@ function LoginContent() {
       } else {
         setErrorMsg(res.error || 'Invalid verification code entered.');
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Error verifying code.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error verifying code.';
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md w-full mx-auto my-8 sm:my-14">
-      {/* Brand Icon Header */}
-      <div className="text-center mb-8">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-white shadow-xl shadow-sky-500/20 mx-auto mb-4">
-          <Shield className="w-7 h-7" />
+    <div className="w-full max-w-md mx-auto my-10 sm:my-16">
+      {/* Header — editorial, centered */}
+      <div className="mb-8 text-center">
+        <div className="eyebrow text-stone-500 mb-4 flex items-center justify-center gap-2">
+          <span className="dot-rec" aria-hidden />
+          Patel Networks · Customer Portal
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Customer Portal Login
+        <h1 className="display text-[clamp(2rem,4.5vw,2.8rem)] leading-[1.02] text-foreground">
+          Sign in with <em>phone OTP.</em>
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Instant passwordless access via Phone Number + 6-digit SMS OTP
+        <p className="mt-3 text-xs text-stone-500 max-w-xs mx-auto leading-relaxed">
+          Instant passwordless access via your mobile number and a 6-digit SMS code.
         </p>
       </div>
 
-      {/* Main Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
-        {/* Error Feedback */}
+      {/* Card — hairline border, sharp corners */}
+      <div className="border border-border bg-card p-7 sm:p-9">
+        {/* Error feedback */}
         {errorMsg && (
-          <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+          <div className="mb-5 p-3.5 border border-rose-300/70 dark:border-rose-700/50 bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300 text-xs flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{errorMsg}</span>
           </div>
         )}
 
-        {/* Success Feedback */}
+        {/* Success feedback */}
         {successMsg && (
-          <div className="mb-5 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-start gap-2.5 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="mb-5 p-3.5 border border-border bg-accent/40 text-foreground text-xs flex items-start gap-2.5">
+            <Check className="w-4 h-4 text-[var(--brand)] shrink-0 mt-0.5" />
             <span>{successMsg}</span>
           </div>
         )}
 
-        {/* Test OTP Helper Banner (in dev / placeholder mode) */}
+        {/* Test OTP helper banner (dev / placeholder mode) */}
         {testOtp && step === 'OTP' && (
-          <div className="mb-5 p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between animate-in fade-in">
+          <div className="mb-5 p-3.5 border border-border bg-accent/40 text-xs flex items-center justify-between gap-3">
             <div>
-              <span className="font-bold block">Developer Sandbox Mode:</span>
-              <span>Test OTP: <strong className="font-mono text-sm tracking-widest">{testOtp}</strong></span>
+              <div className="eyebrow text-stone-500 mb-1">Developer Sandbox Mode</div>
+              <div className="text-foreground">
+                Test OTP:{' '}
+                <strong className="font-mono text-base tracking-[0.3em] text-[var(--brand)]">
+                  {testOtp}
+                </strong>
+              </div>
             </div>
             <button
               type="button"
               onClick={() => setOtpCode(testOtp)}
-              className="px-2.5 py-1 bg-amber-200 dark:bg-amber-800 rounded-lg text-[11px] font-bold hover:bg-amber-300"
+              className="btn-ghost py-1.5 px-3 text-[11px]"
             >
-              Auto-Fill
+              Auto-fill
             </button>
           </div>
         )}
 
         {step === 'PHONE' ? (
           /* STEP 1: ENTER PHONE NUMBER */
-          <form onSubmit={handleSendOtp} className="space-y-4">
+          <form onSubmit={handleSendOtp} className="space-y-7">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="eyebrow text-stone-500 block mb-3">
                 Indian Mobile Number
               </label>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-xs font-bold text-slate-500 select-none">
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 text-sm font-mono text-stone-400 select-none pointer-events-none">
                   +91
                 </span>
                 <input
@@ -183,28 +195,27 @@ function LoginContent() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                   placeholder="9876543210"
-                  className="w-full pl-12 pr-4 py-3 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono tracking-wider text-slate-900 dark:text-white"
+                  className="w-full pl-10 pr-0 py-3 text-base font-mono tracking-wider bg-transparent border-0 border-b border-border focus:outline-none focus:border-foreground transition-colors placeholder:text-stone-400 text-foreground"
                 />
-                <Smartphone className="w-4 h-4 text-slate-400 absolute right-3.5" />
               </div>
-              <span className="block text-[11px] text-slate-400 mt-1">
-                We will dispatch a secure 6-digit OTP code to this mobile number.
-              </span>
+              <p className="text-[11px] text-stone-500 mt-2 leading-relaxed">
+                We will dispatch a secure 6-digit code to this mobile number.
+              </p>
             </div>
 
             <button
               type="submit"
               disabled={loading || phone.length !== 10}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-ink w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  Dispatching OTP...
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Dispatching OTP…
                 </>
               ) : (
                 <>
-                  <span>Send Verification Code</span>
+                  Send verification code
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -212,11 +223,12 @@ function LoginContent() {
           </form>
         ) : (
           /* STEP 2: ENTER OTP */
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 pb-2">
-              <span>
-                Verifying: <strong className="font-mono text-slate-900 dark:text-white">+91 {phone}</strong>
-              </span>
+          <form onSubmit={handleVerifyOtp} className="space-y-7">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div>
+                <div className="eyebrow text-stone-500 mb-1">Verifying</div>
+                <span className="text-sm font-mono text-foreground">+91 {phone}</span>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -224,75 +236,83 @@ function LoginContent() {
                   setOtpCode('');
                   setErrorMsg(null);
                 }}
-                className="text-sky-600 dark:text-sky-400 font-semibold hover:underline flex items-center gap-1"
+                className="text-xs text-foreground link-underline inline-flex items-center gap-1.5"
               >
                 <Edit2 className="w-3 h-3" /> Change
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Enter 6-Digit OTP Code
+              <label className="eyebrow text-stone-500 block mb-3">
+                6-Digit Verification Code
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  required
-                  autoFocus
-                  maxLength={6}
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
-                  className="w-full px-4 py-3 text-center text-lg tracking-[0.5em] font-mono font-extrabold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none text-slate-900 dark:text-white"
-                />
-              </div>
+              <input
+                type="text"
+                required
+                autoFocus
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="••••••"
+                className="w-full px-0 py-3 text-center text-2xl tracking-[0.6em] font-mono bg-transparent border-0 border-b border-border focus:outline-none focus:border-foreground transition-colors placeholder:text-stone-300 text-foreground"
+              />
             </div>
 
             <button
               type="submit"
               disabled={loading || otpCode.length !== 6}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-ink w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  Verifying Session...
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Verifying…
                 </>
               ) : (
-                <>
-                  <KeyRound className="w-4 h-4" />
-                  Verify & Enter Account
-                </>
+                <>Verify &amp; enter account</>
               )}
             </button>
 
-            {/* Resend Cooldown */}
-            <div className="text-center pt-2">
+            {/* Resend cooldown */}
+            <div className="text-center pt-1">
               {resendCooldown > 0 ? (
-                <span className="text-xs text-slate-400">
-                  Resend code in <strong className="text-slate-600 dark:text-slate-300">{resendCooldown}s</strong>
+                <span className="text-[11px] text-stone-500">
+                  Resend code in{' '}
+                  <span className="font-mono text-foreground">{resendCooldown}s</span>
                 </span>
               ) : (
                 <button
                   type="button"
                   onClick={handleSendOtp}
                   disabled={loading}
-                  className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1.5 mx-auto"
+                  className="text-xs text-foreground link-underline inline-flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" /> Resend Verification Code
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Resend verification code
                 </button>
               )}
             </div>
           </form>
         )}
 
-        {/* B2B Contractor Notice */}
-        <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex items-start gap-3 text-xs text-slate-500 dark:text-slate-400">
-          <Building2 className="w-4 h-4 text-purple-500 shrink-0 mt-0.5" />
-          <span>
-            <strong>B2B System Integrators & Installers:</strong> Use your registered phone number to automatically load your company GSTIN and access your tax invoice archive.
-          </span>
+        {/* B2B contractor notice */}
+        <div className="mt-7 pt-6 border-t border-border text-[11px] text-stone-500 leading-relaxed">
+          <span className="eyebrow text-stone-400 block mb-2">B2B System Integrators</span>
+          <p>
+            Use your registered phone number to automatically load your company GSTIN and access
+            your tax invoice archive.
+          </p>
         </div>
+      </div>
+
+      {/* Continue as guest */}
+      <div className="mt-6 text-center">
+        <Link
+          href="/"
+          className="text-xs text-stone-500 hover:text-foreground link-underline transition-colors"
+        >
+          Continue browsing as guest
+        </Link>
       </div>
     </div>
   );
@@ -300,14 +320,14 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 flex items-center justify-center px-6 lg:px-10 py-10">
         <Suspense
           fallback={
             <div className="py-24 text-center">
-              <Loader2 className="w-10 h-10 animate-spin text-sky-500 mx-auto mb-4" />
-              <p className="text-xs font-semibold text-slate-500">Loading authentication...</p>
+              <Loader2 className="w-5 h-5 animate-spin text-stone-400 mx-auto mb-4" />
+              <p className="text-xs text-stone-500">Loading authentication…</p>
             </div>
           }
         >

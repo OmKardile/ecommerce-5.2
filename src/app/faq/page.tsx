@@ -2,14 +2,16 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { ChevronDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { HelpCircle, ChevronDown, ChevronUp, Wrench, Shield, FileText, Truck, ArrowRight } from 'lucide-react';
+import { Reveal } from '@/components/storefront/Reveal';
+import { cn } from '@/lib/utils';
 
 interface FaqItem {
   question: string;
   category: string;
-  answer: string | React.ReactNode;
+  answer: string;
 }
 
 const FAQS: FaqItem[] = [
@@ -57,114 +59,170 @@ const FAQS: FaqItem[] = [
   },
 ];
 
+const CATEGORIES = ['ALL', 'Product & Technical', 'B2B & GST Invoicing', 'Shipping & Payment', 'Warranty & RMA'] as const;
+
 export default function FaqPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
-
-  const categories = ['ALL', 'Product & Technical', 'B2B & GST Invoicing', 'Shipping & Payment', 'Warranty & RMA'];
 
   const filteredFaqs = selectedCategory === 'ALL'
     ? FAQS
     : FAQS.filter((f) => f.category === selectedCategory);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {/* Breadcrumb */}
-        <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5">
-          <Link href="/" className="hover:text-slate-900 dark:hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-slate-900 dark:text-white font-medium">Frequently Asked Questions</span>
-        </nav>
+      <main className="flex-1">
+        {/* ============================================================ */}
+        {/* HEADER BAND */}
+        {/* ============================================================ */}
+        <section className="border-b border-border">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 pt-10 lg:pt-14 pb-12 lg:pb-16">
+            <nav className="text-[11px] text-stone-500 dark:text-stone-500 mb-8 flex items-center gap-2">
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <span className="text-stone-300 dark:text-stone-600">/</span>
+              <span className="text-foreground">Frequently Asked Questions</span>
+            </nav>
 
-        {/* Hero */}
-        <div className="bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-white border border-slate-800 shadow-xl mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-semibold mb-4">
-            <HelpCircle className="w-3.5 h-3.5" />
-            Knowledge Base & Buying Guides
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Frequently Asked Questions
-          </h1>
-          <p className="mt-3 text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
-            Everything you need to know about CCTV camera resolutions, DVR/NVR matching, hard drive calculations, 18% GST Input Tax Credit, and shipping policies.
-          </p>
-        </div>
-
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 mb-8">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                selectedCategory === cat
-                  ? 'bg-sky-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              {cat === 'ALL' ? 'All Questions' : cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Accordion List */}
-        <div className="space-y-3.5">
-          {filteredFaqs.map((faq, idx) => {
-            const isOpen = openIndex === idx;
-            return (
-              <div
-                key={idx}
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs transition-colors"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full py-4 px-5 sm:px-6 flex items-center justify-between text-left gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
-                >
-                  <span className="text-sm font-bold text-slate-900 dark:text-white">
-                    {faq.question}
-                  </span>
-                  <span className="shrink-0 text-slate-400">
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-sky-500" /> : <ChevronDown className="w-4 h-4" />}
-                  </span>
-                </button>
-
-                {isOpen && (
-                  <div className="px-5 sm:px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800/60 animate-in fade-in">
-                    {faq.answer}
-                  </div>
-                )}
+            <Reveal>
+              <div className="flex items-center gap-4 mb-8">
+                <span className="dot-rec" aria-hidden />
+                <span className="eyebrow text-stone-500">Knowledge base &amp; buying guides</span>
               </div>
-            );
-          })}
-        </div>
+            </Reveal>
 
-        {/* Still have questions CTA */}
-        <div className="mt-12 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xs text-center space-y-3">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-            Have a Specific Project Requirement?
-          </h3>
-          <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Our surveillance solutions engineers can review your floor plan, camera count, and storage needs.
-          </p>
-          <div className="pt-2 flex items-center justify-center gap-3">
-            <Link
-              href="/contact"
-              className="py-2.5 px-5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-colors"
-            >
-              Contact Engineering Desk
-            </Link>
-            <Link
-              href="/kit-builder"
-              className="py-2.5 px-5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 transition-colors flex items-center gap-1.5"
-            >
-              <Wrench className="w-3.5 h-3.5" /> CCTV Kit Builder
-            </Link>
+            <Reveal delay={60}>
+              <h1 className="display text-[clamp(2.4rem,5.5vw,4rem)] leading-[1.02] text-foreground max-w-4xl">
+                Frequently asked <span className="ital">questions.</span>
+              </h1>
+            </Reveal>
+
+            <Reveal delay={120}>
+              <p className="mt-8 text-base sm:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
+                Everything you need to know about CCTV camera resolutions, DVR/NVR matching,
+                hard drive calculations, 18% GST Input Tax Credit, and shipping policies.
+              </p>
+            </Reveal>
           </div>
-        </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CATEGORY FILTER — hairline pill row */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-10">
+          <Reveal>
+            <div className="flex flex-wrap items-center gap-2 border-b border-border pb-6">
+              {CATEGORIES.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    className={cn(
+                      'px-4 py-2 text-xs font-medium rounded-sm border transition-colors',
+                      isActive
+                        ? 'bg-foreground text-background border-foreground'
+                        : 'bg-transparent text-stone-600 dark:text-stone-400 border-border hover:border-foreground hover:text-foreground'
+                    )}
+                  >
+                    {cat === 'ALL' ? 'All questions' : cat}
+                  </button>
+                );
+              })}
+              <span className="ml-auto font-mono text-[11px] text-stone-400">
+                {String(filteredFaqs.length).padStart(2, '0')} / {String(FAQS.length).padStart(2, '0')}
+              </span>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ============================================================ */}
+        {/* ACCORDION — hairline rows */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 pb-20">
+          <div className="border-t border-border">
+            {filteredFaqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              return (
+                <Reveal key={`${selectedCategory}-${idx}`} delay={idx * 30}>
+                  <div className="border-b border-border">
+                    <button
+                      type="button"
+                      onClick={() => setOpenIndex(isOpen ? null : idx)}
+                      className="w-full py-6 lg:py-7 flex items-start justify-between text-left gap-6 group"
+                    >
+                      <div className="flex items-start gap-5 min-w-0">
+                        <span className="font-mono text-[11px] text-stone-400 mt-1 shrink-0">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="eyebrow text-stone-400 mb-2">{faq.category}</div>
+                          <div
+                            className={cn(
+                              'display text-lg sm:text-xl leading-tight transition-colors',
+                              isOpen ? 'text-[var(--brand)]' : 'text-foreground group-hover:text-[var(--brand)]'
+                            )}
+                          >
+                            {faq.question}
+                          </div>
+                        </div>
+                      </div>
+                      <ChevronDown
+                        className={cn(
+                          'w-5 h-5 text-stone-400 shrink-0 mt-1 transition-transform duration-300',
+                          isOpen && 'rotate-180 text-[var(--brand)]'
+                        )}
+                      />
+                    </button>
+
+                    {isOpen && (
+                      <div className="pb-7 pl-10 pr-10 max-w-3xl">
+                        <div className="rule mb-5" />
+                        <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CTA */}
+        {/* ============================================================ */}
+        <section className="border-t border-border bg-card/30">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <Reveal>
+                <div>
+                  <div className="eyebrow text-stone-500 mb-3">Engineering desk</div>
+                  <h2 className="display text-[clamp(1.7rem,3.2vw,2.4rem)] leading-tight text-foreground max-w-lg">
+                    Have a specific project requirement?
+                  </h2>
+                  <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mt-4 max-w-md">
+                    Our surveillance solutions engineers can review your floor plan, camera
+                    count, and storage needs.
+                  </p>
+                </div>
+              </Reveal>
+              <Reveal delay={80}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link href="/contact" className="btn-ink">
+                    Contact engineering desk <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <Link href="/kit-builder" className="btn-ghost">
+                    CCTV kit builder <ArrowUpRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
