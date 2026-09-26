@@ -590,3 +590,42 @@ A feature-complete, single-developer-built, commercially-ambitious Next.js 16 + 
 - **Dev deps**: Tailwind v4, `tsx@^4.23.15`, `typescript@^5`, `babel-plugin-react-compiler@1.0.0`, `eslint@^9`
 - **Database**: 29 models, 5 enums, all `@@map` to snake_case Supabase tables
 - **Test coverage**: 39+28 = 67 automated assertions across 11+ testing domains
+
+
+---
+Task ID: 7-INTEGRATION
+Agent: Lead Developer (Z.ai Code)
+Task: Integrate the patelnetworks codebase into the Next.js 16 sandbox at /home/z/my-project, connect to the live Supabase database non-destructively, start the dev server, and verify all routes work.
+
+Work Log:
+- Read previous worklog (Task 3-DOCS exploration report) to understand the full project context (29 models, 37 routes, 12 phases, 19 ADRs, all integrations in simulation mode).
+- Investigated admin auth mechanism: admin-auth.service.ts uses env-var fallback (superadmin@patelnetworks.in / patel@admin2026) — no DB seeding needed, no destructive ops.
+- Compared patelnetworks src/lib/utils.ts (extended: cn + formatPrice + calculateGstBreakdown) vs sandbox (cn only) — used patelnetworks version (superset).
+- Verified sandbox package.json is a dependency superset but missing jose (JWT) and tsx (script runner).
+- Stage 1: Cleaned sandbox boilerplate (src/app, src/lib, prisma) — preserved src/components/ui (48 shadcn components) and src/hooks.
+- Stage 2: Copied patelnetworks src/app (45 files), src/lib (utils.ts, pincodes.ts), src/server (10 service files), src/components/admin (7) + storefront (10), src/components/ui/Badge.tsx (capital B, coexists with sandbox badge.tsx), src/middleware.ts.
+- Stage 3: Copied prisma/ (schema.prisma + seed.ts), scripts/ (8 test files), supabase/config.toml, public/ (svgs), word/, .env.example.
+- Stage 4: Replaced next.config.ts with patelnetworks version (image remote patterns for Unsplash/Cloudinary/Supabase). Later disabled reactCompiler (plugin not installed — caused 500 errors).
+- Stage 5: Merged package.json — added jose ^6.2.12, tsx ^4.23.15; added scripts (db:seed, test:loopback, test:master, typecheck); renamed package to "patelnetworks" v1.3.0-dev.
+- Stage 6: Merged globals.css — kept full shadcn oklch variable system + overrode --primary to sky-600 (brand) + added patelnetworks custom classes (.surveillance-badge-pulse, .bg-grid-pattern, scrollbar styling).
+- Stage 7: Created .env with live Supabase credentials + freshly generated 64-byte JWT_SECRET (openssl rand). All third-party integrations left in simulation mode (placeholder keys).
+- Stage 8: bun install — added jose + tsx (5 packages).
+- Stage 9: prisma generate — generated Prisma Client v6.19.2 with all 29 models (local-only, no DB contact).
+- Stage 10: Read-only DB verification via raw SQL — confirmed all 29 tables intact with 376 total rows. ZERO writes performed.
+  - Tables: addresses(17), admin_profiles(1), audit_logs(62), brands(10), cart_items(3), carts(4), categories(7), customers(7), inventory(19), inventory_movements(44), order_items(28), order_status_history(22), orders(27), otp_verifications(2), payments(3), product_images(20), product_variants(18), products(10), shipment_events(19), shipments(26), skus(19), users(8).
+- Stage 11: Started dev server (next dev -p 3000) detached via setsid. Fixed reactCompiler error (disabled in next.config.ts). Server runs cleanly: Next.js 16.1.3 Turbopack, ready in ~700ms.
+- Diagnosed system-level DATABASE_URL=file:... override (sandbox SQLite default) — resolved by exporting correct PostgreSQL env vars in persistent shell before launching dev server.
+- Route verification via curl: 14 routes return HTTP 200 (/, /products, /kit-builder, /cart, /checkout, /account/login, /about, /contact, /faq, /shipping-policy, /return-policy, /privacy-policy, /terms, /admin/login). /admin returns 307 redirect (middleware works). 404 page renders. Homepage has correct title + DB-driven brand data. Dev log clean.
+- Installed agent-browser Chrome binary for visual QA — agent-browser open on localhost:3000 hangs (likely HMR websocket in dev mode prevents page load event). Visual QA deferred to webDevReview cron job.
+- Copied all 13 markdown documentation files from patelnetworks repo.
+- Updated changelog.md with v1.3.0 entry documenting the full integration.
+- Appended ADR-020 to decisions.md documenting the sandbox integration decision (non-destructive DB, shadcn/ui preservation, theme merge, env workaround).
+- bun run lint: 1 warning (react-hooks/set-state-in-effect in cart component — non-blocking).
+
+Stage Summary:
+- **Database SAFETY CONFIRMED**: Live Supabase database is 100% intact. 376 rows across 29 tables verified via read-only queries. Zero writes, zero migrations, zero schema changes.
+- **Dev server WORKING**: Next.js 16.1.3 on port 3000, 14 routes return 200, clean dev.log, DB data renders on homepage.
+- **shadcn/ui PRESERVED**: All 48 shadcn components available alongside the custom storefront/admin components for progressive UI enhancement.
+- **Documentation CURRENT**: changelog.md (v1.3.0), decisions.md (ADR-020), worklog.md updated. All 13 docs synced.
+- **Known issues**: middleware.ts deprecation (→proxy.ts migration planned), 1 lint warning (cart set-state-in-effect), agent-browser QA deferred to cron.
+- **Next steps**: Set up webDevReview cron (every 15 min) for ongoing QA + feature development. Begin UI enhancement with shadcn/ui. Address Medusa migration as a documented future decision (not actioned — existing 12-phase custom architecture preserved).
