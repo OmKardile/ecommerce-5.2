@@ -2,16 +2,9 @@
 
 import React from 'react';
 import {
-  BarChart3,
-  TrendingUp,
-  FileCheck2,
   Boxes,
   CreditCard,
   Banknote,
-  DollarSign,
-  Calendar,
-  Layers,
-  Percent,
   Download,
 } from 'lucide-react';
 import { formatInr } from '@/lib/utils';
@@ -26,6 +19,7 @@ export function CommercialReportsConsole({ data }: Props) {
 
   const totalPayments = paymentSplit.razorpayCount + paymentSplit.codCount;
   const prepaidRatio = totalPayments > 0 ? Math.round((paymentSplit.razorpayCount / totalPayments) * 100) : 0;
+  const codRatio = 100 - prepaidRatio;
 
   const maxDailyRevenue = Math.max(...dailySales.map((d) => d.revenue), 1);
 
@@ -96,268 +90,266 @@ export function CommercialReportsConsole({ data }: Props) {
     document.body.removeChild(link);
   };
 
+  // Metric tiles for the top strip
+  const topMetrics = [
+    {
+      eyebrow: 'Gross Revenue (GMV)',
+      value: formatInr(summary.totalRevenue),
+      sub: `${summary.totalOrders} confirmed orders`,
+      accent: false,
+    },
+    {
+      eyebrow: 'GST Collected · 18%',
+      value: formatInr(summary.totalGstCollected),
+      sub: 'Statutory · GSTR-1 filing',
+      accent: true,
+    },
+    {
+      eyebrow: 'Average Order Value',
+      value: formatInr(summary.avgOrderValue),
+      sub: 'Commercial surveillance ticket',
+      accent: false,
+    },
+    {
+      eyebrow: 'Warehouse Asset Value',
+      value: formatInr(inventoryValuation.totalAssetValue),
+      sub: `${inventoryValuation.totalPhysicalUnits} physical units`,
+      accent: false,
+    },
+  ];
+
   return (
-    <div className="space-y-8">
-      {/* 4 Primary Top Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Gross Revenue (GMV)</span>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl font-black text-white mt-2">
-            {formatInr(summary.totalRevenue)}
-          </div>
-          <span className="text-[11px] text-slate-500">{summary.totalOrders} total confirmed orders</span>
+    <div className="dark bg-background text-foreground space-y-8">
+      {/* Console meta */}
+      <div className="border-b border-[#2A2823] pb-5">
+        <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+          <span className="dot-rec" /> Commercial Reports
         </div>
-
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>18% GST Collected</span>
-            <FileCheck2 className="w-4 h-4 text-sky-400" />
-          </div>
-          <div className="text-2xl font-black text-sky-400 mt-2">
-            {formatInr(summary.totalGstCollected)}
-          </div>
-          <span className="text-[11px] text-slate-500">Statutory tax for GSTR-1 return filing</span>
-        </div>
-
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Average Order Value (AOV)</span>
-            <Percent className="w-4 h-4 text-indigo-400" />
-          </div>
-          <div className="text-2xl font-black text-indigo-400 mt-2">
-            {formatInr(summary.avgOrderValue)}
-          </div>
-          <span className="text-[11px] text-slate-500">Commercial surveillance ticket size</span>
-        </div>
-
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Warehouse Asset Valuation</span>
-            <Boxes className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="text-2xl font-black text-amber-400 mt-2">
-            {formatInr(inventoryValuation.totalAssetValue)}
-          </div>
-          <span className="text-[11px] text-slate-500">{inventoryValuation.totalPhysicalUnits} physical units in stock</span>
-        </div>
+        <p className="text-sm text-stone-400 max-w-2xl">
+          Real-time accounting, statutory tax breakdown, inventory valuation, and payment
+          analytics for the Gujarat fulfillment hub.
+        </p>
       </div>
 
-      {/* Grid: GSTR-1 Tax Analysis & Payment Gateway Split */}
+      {/* 4 primary metrics — hairline strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#2A2823] border border-[#2A2823] rounded-sm overflow-hidden">
+        {topMetrics.map((m) => (
+          <div key={m.eyebrow} className="bg-card p-5">
+            <div className="eyebrow text-stone-500 mb-2">{m.eyebrow}</div>
+            <div
+              className={`text-2xl font-mono ${m.accent ? 'text-[var(--brand)]' : 'text-foreground'}`}
+            >
+              {m.value}
+            </div>
+            <div className="text-[11px] text-stone-500 mt-1">{m.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Grid: GSTR-1 Tax + Payment Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Card 1: GSTR-1 Tax Schedule Breakdown */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        {/* GSTR-1 Tax Schedule */}
+        <div className="border border-[#2A2823] bg-card rounded-sm">
+          <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <FileCheck2 className="w-4 h-4 text-sky-400" />
-                GSTR-1 Tax Summary & Split
+              <div className="eyebrow text-stone-500 mb-1.5 flex items-center gap-1.5">
+                <Download className="w-3 h-3" /> GSTR-1 Tax Schedule
+              </div>
+              <h2 className="text-sm font-sans font-semibold text-foreground tracking-tight">
+                Goods &amp; Services Tax Breakdown
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Statutory Goods & Services Tax breakdown for Gujarat Hub
+              <p className="text-[11px] text-stone-500 mt-1">
+                Statutory GST for Gujarat hub · 18% commercial rate
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] text-[var(--brand)] border border-[var(--brand)]/40 px-2 py-1 rounded-sm">
+                18% GST
+              </span>
               <button
                 type="button"
                 onClick={exportGstr1Csv}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] text-foreground border border-[#3A3830] hover:border-foreground rounded-sm transition-colors font-medium"
                 title="Download statutory GSTR-1 CSV report"
               >
-                <Download className="w-3 h-3 text-sky-400" />
+                <Download className="w-3 h-3" />
                 <span>Export CSV</span>
               </button>
-              <span className="text-xs font-mono font-bold text-sky-400 bg-sky-950/60 px-2 py-1 rounded border border-sky-800">
-                18% GST
-              </span>
             </div>
           </div>
 
-          <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between py-2 border-b border-slate-800/60">
-              <span className="text-slate-300">Intra-State CGST (Central Tax 9%)</span>
-              <span className="font-mono font-bold text-white">
-                {formatInr(taxBreakdown.cgstTotal)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between py-2 border-b border-slate-800/60">
-              <span className="text-slate-300">Intra-State SGST (State Tax 9%)</span>
-              <span className="font-mono font-bold text-white">
-                {formatInr(taxBreakdown.sgstTotal)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between py-2 border-b border-slate-800/60">
-              <span className="text-slate-300">Inter-State IGST (Integrated Tax 18%)</span>
-              <span className="font-mono font-bold text-white">
-                {formatInr(taxBreakdown.igstTotal)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between pt-2 text-sm font-bold">
-              <span className="text-white">Total GST Collected</span>
-              <span className="font-mono text-emerald-400">
+          <div className="divide-y divide-[#2A2823]">
+            {[
+              { label: 'Intra-State CGST', detail: 'Central · 9%', value: taxBreakdown.cgstTotal },
+              { label: 'Intra-State SGST', detail: 'State · 9%', value: taxBreakdown.sgstTotal },
+              { label: 'Inter-State IGST', detail: 'Integrated · 18%', value: taxBreakdown.igstTotal },
+            ].map((row) => (
+              <div key={row.label} className="px-5 py-3 flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-foreground">{row.label}</div>
+                  <div className="eyebrow text-stone-500 mt-0.5">{row.detail}</div>
+                </div>
+                <div className="font-mono text-sm text-foreground">{formatInr(row.value)}</div>
+              </div>
+            ))}
+            <div className="px-5 py-3.5 flex items-center justify-between bg-background/30">
+              <div className="text-sm text-foreground font-medium">Total GST Collected</div>
+              <div className="font-mono text-base text-[var(--brand)]">
                 {formatInr(taxBreakdown.totalGst)}
-              </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
-            💡 All B2B commercial invoices are tagged with 15-character GSTINs and recorded for monthly GSTR-1 return filing under Indian tax law.
+          <div className="px-5 py-3 border-t border-[#2A2823] text-[11px] text-stone-500 leading-relaxed">
+            All B2B commercial invoices are tagged with 15-character GSTINs and recorded for
+            monthly GSTR-1 return filing under Indian tax law.
           </div>
         </div>
 
-        {/* Card 2: Payment Gateway & Selective COD Split */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        {/* Payment Method Split */}
+        <div className="border border-[#2A2823] bg-card rounded-sm">
+          <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-purple-400" />
-                Payment Method & RTO Risk Breakdown
+              <div className="eyebrow text-stone-500 mb-1.5 flex items-center gap-1.5">
+                <CreditCard className="w-3 h-3" /> Payment Methods
+              </div>
+              <h2 className="text-sm font-sans font-semibold text-foreground tracking-tight">
+                Razorpay Prepaid vs Selective COD
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Razorpay Online Prepaid vs Selective Cash on Delivery
+              <p className="text-[11px] text-stone-500 mt-1">
+                Gateway distribution &amp; RTO risk exposure
               </p>
             </div>
-            <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 px-2 py-1 rounded border border-emerald-800">
-              {prepaidRatio}% Prepaid
+            <span className="font-mono text-[10px] text-foreground border border-[#3A3830] px-2 py-1 rounded-sm">
+              {prepaidRatio}% prepaid
             </span>
           </div>
 
-          <div className="space-y-4">
-            {/* Prepaid Bar */}
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between font-semibold">
-                <span className="text-slate-300 flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5 text-emerald-400" />
-                  Online Prepaid (Razorpay)
+          <div className="p-5 space-y-5">
+            {/* Prepaid row */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-foreground flex items-center gap-1.5">
+                  <CreditCard className="w-3.5 h-3.5 text-stone-400" />
+                  Online Prepaid · Razorpay
                 </span>
-                <span className="text-emerald-400 font-mono">
-                  {formatInr(paymentSplit.razorpayAmount)} ({paymentSplit.razorpayCount} orders)
+                <span className="font-mono text-foreground">
+                  {formatInr(paymentSplit.razorpayAmount)}
                 </span>
               </div>
-              <div className="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden">
+              <div className="flex items-center justify-between text-[11px] text-stone-500">
+                <span>{paymentSplit.razorpayCount} orders</span>
+                <span className="font-mono">{prepaidRatio}%</span>
+              </div>
+              <div className="h-1 bg-background border border-[#2A2823]">
                 <div
-                  className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                  className="h-full bg-[var(--brand)] transition-all duration-500"
                   style={{ width: `${prepaidRatio}%` }}
                 />
               </div>
             </div>
 
-            {/* COD Bar */}
-            <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between font-semibold">
-                <span className="text-slate-300 flex items-center gap-1.5">
-                  <Banknote className="w-3.5 h-3.5 text-amber-400" />
-                  Cash on Delivery (Selective COD)
+            {/* COD row */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-foreground flex items-center gap-1.5">
+                  <Banknote className="w-3.5 h-3.5 text-stone-400" />
+                  Cash on Delivery · Selective COD
                 </span>
-                <span className="text-amber-400 font-mono">
-                  {formatInr(paymentSplit.codAmount)} ({paymentSplit.codCount} orders)
+                <span className="font-mono text-foreground">
+                  {formatInr(paymentSplit.codAmount)}
                 </span>
               </div>
-              <div className="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden">
+              <div className="flex items-center justify-between text-[11px] text-stone-500">
+                <span>{paymentSplit.codCount} orders</span>
+                <span className="font-mono">{codRatio}%</span>
+              </div>
+              <div className="h-1 bg-background border border-[#2A2823]">
                 <div
-                  className="bg-amber-500 h-full rounded-full transition-all duration-500"
-                  style={{ width: `${100 - prepaidRatio}%` }}
+                  className="h-full bg-stone-400 transition-all duration-500"
+                  style={{ width: `${codRatio}%` }}
                 />
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                <div className="text-[10px] text-slate-400">Prepaid Conversion</div>
-                <div className="text-lg font-bold text-emerald-400 mt-0.5">{prepaidRatio}%</div>
-              </div>
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-                <div className="text-[10px] text-slate-400">COD Ratio</div>
-                <div className="text-lg font-bold text-amber-400 mt-0.5">{100 - prepaidRatio}%</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Warehouse Inventory Valuation Matrix */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      {/* Warehouse Inventory Valuation */}
+      <div className="border border-[#2A2823] bg-card rounded-sm">
+        <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
           <div>
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Boxes className="w-4 h-4 text-amber-400" />
-              Surveillance Warehouse Capital Assets
+            <div className="eyebrow text-stone-500 mb-1.5 flex items-center gap-1.5">
+              <Boxes className="w-3 h-3" /> Warehouse Capital Assets
+            </div>
+            <h2 className="text-sm font-sans font-semibold text-foreground tracking-tight">
+              Live Inventory Valuation
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Live inventory evaluation across all camera, DVR/NVR, cable, and hard drive SKUs
+            <p className="text-[11px] text-stone-500 mt-1">
+              Across all camera, DVR/NVR, cable, and hard drive SKUs · Surat central hub
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs text-slate-400 block">Total Active SKUs</span>
-            <span className="text-sm font-bold text-white font-mono">{inventoryValuation.totalSkusCount} SKUs</span>
+            <div className="eyebrow text-stone-500">Active SKUs</div>
+            <div className="font-mono text-sm text-foreground mt-1">
+              {inventoryValuation.totalSkusCount}
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block">Total Physical Units</span>
-            <span className="text-xl font-black text-white mt-1 block">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#2A2823]">
+          <div className="bg-card p-5">
+            <div className="eyebrow text-stone-500 mb-2">Physical Units</div>
+            <div className="text-xl font-mono text-foreground">
               {inventoryValuation.totalPhysicalUnits}
-            </span>
-            <span className="text-[10px] text-slate-500">Physically inside Surat warehouse</span>
+            </div>
+            <div className="text-[11px] text-stone-500 mt-1">Inside Surat warehouse</div>
           </div>
-
-          <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block">Available for Sale</span>
-            <span className="text-xl font-black text-emerald-400 mt-1 block">
+          <div className="bg-card p-5">
+            <div className="eyebrow text-stone-500 mb-2">Available for Sale</div>
+            <div className="text-xl font-mono text-foreground">
               {inventoryValuation.totalAvailableUnits}
-            </span>
-            <span className="text-[10px] text-slate-500">Unreserved net available</span>
+            </div>
+            <div className="text-[11px] text-stone-500 mt-1">Unreserved net available</div>
           </div>
-
-          <div className="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block">Total Warehouse Asset Value</span>
-            <span className="text-xl font-black text-amber-400 mt-1 block font-mono">
+          <div className="bg-card p-5">
+            <div className="eyebrow text-stone-500 mb-2">Asset Value</div>
+            <div className="text-xl font-mono text-[var(--brand)]">
               {formatInr(inventoryValuation.totalAssetValue)}
-            </span>
-            <span className="text-[10px] text-slate-500">Calculated at current selling prices</span>
+            </div>
+            <div className="text-[11px] text-stone-500 mt-1">At current selling prices</div>
           </div>
         </div>
       </div>
 
-      {/* Daily Sales Trend Timeline */}
+      {/* Daily Sales Trend — hairline bars */}
       {dailySales.length > 0 && (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-sky-400" />
-                Daily Sales & Order Velocity (Last 30 Days)
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Daily GMV distribution across the commercial fulfillment pipeline
-              </p>
-            </div>
+        <div className="border border-[#2A2823] bg-card rounded-sm">
+          <div className="p-5 border-b border-[#2A2823]">
+            <div className="eyebrow text-stone-500 mb-1.5">Daily Sales · Last 30 Days</div>
+            <h2 className="text-sm font-sans font-semibold text-foreground tracking-tight">
+              Order Velocity &amp; GMV Distribution
+            </h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="p-5 space-y-2.5">
             {dailySales.map((day) => {
               const widthPct = Math.round((day.revenue / maxDailyRevenue) * 100);
               return (
                 <div key={day.date} className="flex items-center gap-4 text-xs">
-                  <span className="w-24 text-slate-400 font-mono text-[11px] shrink-0">
+                  <span className="w-24 text-stone-500 font-mono text-[11px] shrink-0">
                     {day.date}
                   </span>
-                  <div className="flex-1 bg-slate-950 rounded-full h-4 overflow-hidden relative">
+                  <div className="flex-1 h-5 bg-background border border-[#2A2823] relative">
                     <div
-                      className="bg-gradient-to-r from-sky-600 to-indigo-600 h-full rounded-full transition-all"
-                      style={{ width: `${Math.max(widthPct, 4)}%` }}
+                      className="h-full bg-[var(--brand)] transition-all"
+                      style={{ width: `${Math.max(widthPct, 1)}%` }}
                     />
                   </div>
-                  <span className="w-24 text-right font-mono font-bold text-white shrink-0">
+                  <span className="w-24 text-right font-mono text-foreground shrink-0">
                     {formatInr(day.revenue)}
                   </span>
-                  <span className="w-16 text-right text-slate-400 text-[11px] shrink-0">
+                  <span className="w-20 text-right text-stone-500 text-[11px] shrink-0 font-mono">
                     {day.orders} {day.orders === 1 ? 'order' : 'orders'}
                   </span>
                 </div>

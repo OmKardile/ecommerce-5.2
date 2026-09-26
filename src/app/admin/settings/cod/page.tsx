@@ -1,14 +1,6 @@
 import React from 'react';
 import { getAdminProducts } from '@/server/services/admin.service';
 import { ProductCatalogTable } from '@/components/admin/ProductCatalogTable';
-import {
-  Banknote,
-  ShieldAlert,
-  ShieldCheck,
-  Plane,
-  AlertTriangle,
-  Info,
-} from 'lucide-react';
 
 export const revalidate = 0; // Dynamic server component
 
@@ -46,72 +38,83 @@ export default async function AdminCodSettingsPage() {
     };
   });
 
+  // 3 policy rule cards
+  const policyRules = [
+    {
+      index: '01',
+      eyebrow: 'Order Value Ceiling',
+      title: '₹15,000 hard cap',
+      body: 'Orders exceeding ₹15,000 are automatically restricted to Prepaid (Razorpay). High-value enterprise CCTV kits and bulk reels of Cat6 cable require advance payment to prevent Return-To-Origin carrier losses.',
+      enforced: 'checkout.actions.ts',
+    },
+    {
+      index: '02',
+      eyebrow: 'Air Cargo Postal Circles',
+      title: 'Pincode routing',
+      body: 'Remote postal circles (PIN prefix 79X, North-East, Island territories) shipped via air cargo do not accept COD. The checkout validates against the 6-digit Pincode Engine before showing payment options.',
+      enforced: 'src/lib/pincodes.ts',
+    },
+    {
+      index: '03',
+      eyebrow: 'Cart Disqualification',
+      title: 'Per-item policy',
+      body: 'If any single item in the buyer\'s cart is marked isCodAllowed=false below, the entire cart switches to Prepaid-only mode. Per-product policy is configurable in the table below.',
+      enforced: 'configurable below',
+    },
+  ];
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-black text-white flex items-center gap-3">
-          <Banknote className="w-6 h-6 text-amber-400" />
-          <span>Selective Cash on Delivery Policies (ADR-004)</span>
+    <div className="dark bg-background text-foreground space-y-10 min-h-screen">
+      {/* Page header */}
+      <div className="border-b border-[#2A2823] pb-6">
+        <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+          <span className="dot-rec" /> ADR-004 · Selective COD
+        </div>
+        <h1 className="text-2xl font-sans font-semibold text-foreground tracking-tight">
+          Cash on Delivery policies
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Configure risk-mitigation rules, order value ceilings, postal zone boundaries, and per-item COD eligibility toggles.
+        <p className="text-sm text-stone-400 mt-2 max-w-2xl leading-relaxed">
+          Configure risk-mitigation rules, order-value ceilings, postal zone boundaries, and
+          per-item COD eligibility toggles. All rules enforced at checkout.
         </p>
       </div>
 
-      {/* Policy Rules Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Rule 1: ₹15,000 Order Ceiling */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-          <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
-            <ShieldAlert className="w-4 h-4" />
-            <span>₹15,000 Order Ceiling</span>
+      {/* Policy rules — hairline editorial cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#2A2823] border border-[#2A2823] rounded-sm overflow-hidden">
+        {policyRules.map((rule) => (
+          <div key={rule.index} className="bg-card p-6 flex flex-col">
+            <div className="flex items-baseline justify-between mb-4">
+              <span className="font-mono text-[11px] text-stone-500">RULE / {rule.index}</span>
+              <span className="font-mono text-[10px] text-[var(--brand)] border border-[var(--brand)]/40 px-2 py-0.5 rounded-sm">
+                active
+              </span>
+            </div>
+            <div className="eyebrow text-stone-500 mb-1.5">{rule.eyebrow}</div>
+            <h2 className="text-base font-sans font-medium text-foreground tracking-tight mb-3">
+              {rule.title}
+            </h2>
+            <p className="text-[12px] text-stone-400 leading-relaxed flex-1">{rule.body}</p>
+            <div className="mt-4 pt-4 border-t border-[#2A2823]">
+              <div className="eyebrow text-stone-500 mb-1">Enforced</div>
+              <code className="font-mono text-[11px] text-foreground">{rule.enforced}</code>
+            </div>
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Orders exceeding ₹15,000 are automatically restricted to Prepaid (Razorpay). High-value enterprise CCTV kits and bulk reels of Cat6 cables require advance payment to prevent Return-To-Origin (RTO) carrier losses.
-          </p>
-          <div className="px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-800/60 text-[11px] font-mono text-amber-400 font-bold">
-            Hard Capped in checkout.actions.ts
-          </div>
-        </div>
-
-        {/* Rule 2: Air Cargo Pincode Restrictions */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-          <div className="flex items-center gap-2 text-sky-400 font-bold text-xs">
-            <Plane className="w-4 h-4" />
-            <span>Postal Circle Air Routes</span>
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Remote postal circles (PIN prefix 79X, North-East, Island territories) shipped via air cargo do not accept COD. The checkout automatically validates against our 6-digit Pincode Engine before showing payment options.
-          </p>
-          <div className="px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-800/60 text-[11px] font-mono text-sky-400 font-bold">
-            Enforced in src/lib/pincodes.ts
-          </div>
-        </div>
-
-        {/* Rule 3: Per-Product Blanket Disqualification */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-          <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Cart Disqualification</span>
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            If any single item in the buyer&apos;s cart is marked with <span className="font-mono text-white">isCodAllowed: false</span> below, the entire cart switches to Prepaid-only mode.
-          </p>
-          <div className="px-2.5 py-1 rounded-lg bg-emerald-950/60 border border-emerald-800/60 text-[11px] font-mono text-emerald-400 font-bold">
-            Configurable Below
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Per-Product COD Switcher */}
+      {/* Per-Product COD switcher */}
       <div className="space-y-4">
-        <h2 className="text-base font-bold text-white flex items-center gap-2">
-          <span>Per-Product Cash on Delivery Eligibility</span>
-          <span className="text-xs font-normal text-slate-400">
-            (Click the button in the Cash On Delivery column to toggle)
-          </span>
-        </h2>
+        <div className="border-b border-[#2A2823] pb-3 flex items-baseline justify-between gap-4">
+          <div>
+            <div className="eyebrow text-stone-500 mb-1.5">Per-Product Eligibility</div>
+            <h2 className="text-base font-sans font-semibold text-foreground tracking-tight">
+              Cash on Delivery toggles
+            </h2>
+          </div>
+          <p className="text-[11px] text-stone-500 max-w-sm text-right">
+            Toggle the COD column for each product to switch its eligibility.
+          </p>
+        </div>
 
         <ProductCatalogTable initialProducts={formatted} />
       </div>

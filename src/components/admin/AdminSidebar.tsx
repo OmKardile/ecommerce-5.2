@@ -10,16 +10,19 @@ import {
   Layers,
   Banknote,
   ArrowUpRight,
-  ShieldAlert,
   ShieldCheck,
-  Building2,
-  Clock,
-  Sparkles,
   Users,
   BarChart3,
 } from 'lucide-react';
 
-const NAV_ITEMS = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+};
+
+const NAV_ITEMS: NavItem[] = [
   {
     href: '/admin',
     label: 'Overview & KPIs',
@@ -58,34 +61,36 @@ const NAV_ITEMS = [
   },
 ];
 
+/**
+ * AdminSidebar — left nav for the operations console.
+ *
+ * Dark warm surface, hairline right border, Geist sans throughout.
+ * Active state: brand-blue left border + brand-blue text + slightly
+ * raised surface (NOT sky ring/glow, NOT gradient pill).
+ *
+ * All NAV_ITEMS + active-state logic preserved exactly.
+ */
 export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 select-none min-h-screen">
-      {/* Brand Header */}
-      <div className="p-6 border-b border-slate-800/80">
-        <Link href="/admin" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-600 flex items-center justify-center font-black text-white text-base shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
-            PN
+    <aside className="w-64 bg-card text-foreground flex flex-col shrink-0 border-r border-border select-none min-h-screen">
+      {/* Brand header */}
+      <div className="px-5 py-5 border-b border-border">
+        <Link href="/admin" className="block group" aria-label="Patel Networks admin home">
+          <div className="font-sans text-[15px] leading-none font-semibold tracking-tight text-foreground">
+            Patel<span className="text-[var(--brand)]">.</span>Networks
           </div>
-          <div>
-            <span className="font-extrabold text-sm tracking-tight text-white block">
-              PATEL NETWORKS
-            </span>
-            <span className="text-[10px] font-semibold text-sky-400 tracking-wider uppercase flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
-              Operations Portal
-            </span>
+          <div className="mt-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-stone-500 font-medium">
+            <span className="dot-rec" aria-hidden />
+            <span>Operations Portal</span>
           </div>
         </Link>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="flex-1 p-4 space-y-1.5 text-xs font-semibold">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 py-1 block">
-          Core Operations
-        </span>
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto scrollbar-thin">
+        <div className="eyebrow text-stone-500 px-3 mb-2">Core Operations</div>
 
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
@@ -97,50 +102,54 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              aria-current={isActive ? 'page' : undefined}
+              className={`relative flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium border-l-2 transition-colors ${
                 isActive
-                  ? 'bg-sky-600 text-white font-bold shadow-md shadow-sky-600/20'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'border-[var(--brand)] text-foreground bg-background'
+                  : 'border-transparent text-stone-400 hover:text-foreground hover:bg-background/60'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-              <span>{item.label}</span>
+              <Icon
+                className={`w-4 h-4 shrink-0 ${isActive ? 'text-[var(--brand)]' : 'text-stone-500'}`}
+              />
+              <span className="truncate">{item.label}</span>
             </Link>
           );
         })}
 
         <div className="pt-6">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 py-1 block">
-            Storefront & Public Web
-          </span>
+          <div className="eyebrow text-stone-500 px-3 mb-2">Storefront</div>
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+            className="relative flex items-center justify-between gap-3 px-3 py-2.5 text-[13px] font-medium border-l-2 border-transparent text-stone-400 hover:text-foreground hover:bg-background/60 transition-colors"
           >
-            <span className="flex items-center gap-3">
-              <ArrowUpRight className="w-4 h-4 text-emerald-400" />
-              <span>Customer Storefront</span>
+            <span className="flex items-center gap-3 min-w-0">
+              <ArrowUpRight className="w-4 h-4 shrink-0 text-stone-500" />
+              <span className="truncate">Customer Storefront</span>
             </span>
-            <span className="text-[10px] font-bold bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded-md border border-emerald-800/60">
+            <span className="text-[9px] uppercase tracking-wider font-mono text-[var(--brand)] border border-border px-1.5 py-0.5 leading-none shrink-0">
               Live
             </span>
           </Link>
         </div>
       </nav>
 
-      {/* Bottom Status / Database Badge */}
-      <div className="p-4 border-t border-slate-800/80">
-        <div className="p-3 rounded-2xl bg-slate-800/50 border border-slate-700/60 text-[11px] space-y-1.5">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="flex items-center gap-1.5 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+      {/* Bottom — DB connection status */}
+      <div className="px-3 py-4 border-t border-border">
+        <div className="px-3 py-3 border border-border bg-background/60 text-[11px] space-y-1.5">
+          <div className="flex items-center justify-between text-stone-400">
+            <span className="flex items-center gap-2 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--brand)]" />
               <span>Cloud PostgreSQL</span>
             </span>
-            <span className="text-emerald-400 font-bold">Connected</span>
+            <span className="flex items-center gap-1.5 text-[var(--brand)] font-medium">
+              <span className="dot-rec" aria-hidden />
+              <span>Online</span>
+            </span>
           </div>
-          <div className="text-[10px] font-mono text-slate-500 truncate">
-            Region: Tokyo (ap-northeast-1)
+          <div className="text-[10px] font-mono text-stone-500 truncate pl-5">
+            ap-northeast-1 · pooled
           </div>
         </div>
       </div>

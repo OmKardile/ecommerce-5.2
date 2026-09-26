@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import {
-  Package,
   Truck,
   CheckCircle2,
   Clock,
@@ -12,7 +11,6 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
-  AlertCircle,
   PlayCircle,
   Loader2,
 } from 'lucide-react';
@@ -37,12 +35,25 @@ export interface OrderTrackingTimelineProps {
 }
 
 const STAGES = [
-  { key: 'CONFIRMED', label: 'Order Confirmed', desc: 'Payment verified & order queued' },
-  { key: 'PACKED', label: 'Packed & Manifested', desc: 'AWB generated, packed at Surat Hub' },
-  { key: 'SHIPPED', label: 'In Transit', desc: 'Moving through logistics network' },
-  { key: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', desc: 'With local courier agent' },
-  { key: 'DELIVERED', label: 'Delivered', desc: 'Delivered to consignee' },
+  { key: 'CONFIRMED', label: 'Order Confirmed', desc: 'Payment verified & order queued for dispatch' },
+  { key: 'PACKED', label: 'Packed & Manifested', desc: 'AWB generated, packed at Surat Central Hub' },
+  { key: 'SHIPPED', label: 'In Transit', desc: 'Moving through the Delhivery surface network' },
+  { key: 'OUT_FOR_DELIVERY', label: 'Out for Delivery', desc: 'With local courier agent — OTP active' },
+  { key: 'DELIVERED', label: 'Delivered', desc: 'Delivered to consignee · POD confirmed' },
 ];
+
+/**
+ * Extract a string field from a JSON-shaped payload, with full type narrowing
+ * on `unknown` so we never need an `as any` cast on Prisma's `Prisma.JsonValue`.
+ */
+function readStringField(payload: unknown, key: string): string | undefined {
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+    const record = payload as Record<string, unknown>;
+    const value = record[key];
+    if (typeof value === 'string') return value;
+  }
+  return undefined;
+}
 
 export function OrderTrackingTimeline({
   orderNumber,
@@ -104,13 +115,15 @@ export function OrderTrackingTimeline({
       if (res.success && res.data) {
         setLocalStatus(stage);
         if (res.data.event) {
+          const activity =
+            readStringField(res.data.event.payload, 'activity') ||
+            res.data.event.status;
           const newEv: TrackingEvent = {
             id: res.data.event.id,
             status: res.data.event.status,
             location: res.data.event.location,
             timestamp: new Date().toISOString(),
-            activity:
-              (res.data.event.payload as any)?.activity || res.data.event.status,
+            activity,
           };
           setLocalEvents((prev) => [newEv, ...prev]);
         }
@@ -119,41 +132,56 @@ export function OrderTrackingTimeline({
           setTimeout(() => window.location.reload(), 1500);
         }
       }
-    } catch (err) {
-      console.error('Simulation error:', err);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('Simulation error:', msg);
     } finally {
       setSimulating(false);
     }
   };
 
+  // Locate the most recent tracking scan whose status maps to a given stage.
+  const findStageEvent = (stageKey: string): TrackingEvent | undefined => {
+    const upper = stageKey.toUpperCase();
+    return localEvents.find(
+      (e) => e.status.toUpperCase() === upper || e.status.toUpperCase().includes(upper)
+    );
+  };
+
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
+    <div className="bg-card border border-border p-6 sm:p-8">
       {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 block mb-1">
+          <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
+            <span className="dot-rec" aria-hidden />
             Live Courier Tracking
-          </span>
-          <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <Truck className="w-5 h-5 text-sky-500" />
-            <span>{carrier || 'Delhivery Surface'}</span>
+          </div>
+          <h3 className="display text-xl text-foreground flex items-baseline gap-2">
+            {carrier || 'Delhivery Surface'}
           </h3>
+          <div className="text-[11px] text-stone-500 mt-1 font-mono">
+            Order <span className="text-foreground">{orderNumber}</span>
+          </div>
         </div>
 
         {awbNumber && (
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-              <span className="text-xs text-slate-500 font-medium">AWB:</span>
-              <span className="text-xs font-mono font-bold text-slate-900 dark:text-white">
-                {awbNumber}
-              </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 px-3 py-1.5 border border-border bg-background">
+              <span className="eyebrow text-stone-500">AWB</span>
+              <span className="text-xs font-mono text-foreground">{awbNumber}</span>
               <button
                 type="button"
                 onClick={copyAwb}
                 title="Copy AWB"
-                className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                aria-label="Copy AWB number"
+                className="text-stone-400 hover:text-foreground transition-colors"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? (
+                  <Check className="w-3.5 h-3.5 text-[var(--brand)]" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
               </button>
             </div>
 
@@ -162,7 +190,8 @@ export function OrderTrackingTimeline({
                 href={trackingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 hover:bg-sky-100 transition-colors"
+                className="btn-ghost text-xs"
+                style={{ padding: '0.5rem 0.875rem' }}
               >
                 <span>Track</span>
                 <ExternalLink className="w-3 h-3" />
@@ -172,85 +201,114 @@ export function OrderTrackingTimeline({
         )}
       </div>
 
-      {/* 5-Stage Stepper Progress Bar */}
-      <div className="py-8">
-        <div className="relative">
-          {/* Background Connecting Line */}
-          <div className="absolute top-4 left-4 right-4 h-1 bg-slate-100 dark:bg-slate-800 -z-0" />
-          {/* Active Connecting Line */}
+      {/* 5-Stage Vertical Editorial Timeline */}
+      <div className="py-6 sm:py-8">
+        <ol className="relative">
+          {/* Hairline vertical rule */}
           <div
-            className="absolute top-4 left-4 h-1 bg-gradient-to-r from-emerald-500 to-sky-500 transition-all duration-500 -z-0"
-            style={{
-              width: `${(activeIndex / (STAGES.length - 1)) * 92}%`,
-            }}
+            className="absolute left-[7px] top-2 bottom-2 w-px bg-border"
+            aria-hidden
           />
 
-          {/* Stepper Dots */}
-          <div className="relative z-10 flex items-start justify-between">
-            {STAGES.map((stage, idx) => {
-              const isPast = idx < activeIndex;
-              const isCurrent = idx === activeIndex;
+          {STAGES.map((stage, idx) => {
+            const isPast = idx < activeIndex;
+            const isCurrent = idx === activeIndex;
+            const stageEvent = findStageEvent(stage.key);
+            const ts = stageEvent ? new Date(stageEvent.timestamp) : null;
 
-              return (
-                <div key={stage.key} className="flex flex-col items-center text-center max-w-[80px] sm:max-w-[110px]">
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-xs ${
-                      isPast
-                        ? 'bg-emerald-500 text-white ring-4 ring-emerald-50 dark:ring-emerald-950/50'
-                        : isCurrent
-                        ? 'bg-sky-600 text-white ring-4 ring-sky-100 dark:ring-sky-950/60 animate-pulse'
-                        : 'bg-white dark:bg-slate-800 text-slate-400 border-2 border-slate-200 dark:border-slate-700'
-                    }`}
-                  >
-                    {isPast ? <Check className="w-4 h-4" /> : idx + 1}
+            return (
+              <li
+                key={stage.key}
+                className="relative pl-8 pb-7 last:pb-0"
+                aria-current={isCurrent ? 'step' : undefined}
+              >
+                {/* Node — completed = filled ink, current = dot-rec pulse, pending = outline */}
+                <span
+                  className="absolute left-0 top-1 w-[15px] h-[15px] flex items-center justify-center"
+                  aria-hidden
+                >
+                  {isPast ? (
+                    <span className="w-2.5 h-2.5 bg-foreground rounded-full" />
+                  ) : isCurrent ? (
+                    <span className="dot-rec" />
+                  ) : (
+                    <span className="w-2.5 h-2.5 border border-stone-400 bg-card rounded-full" />
+                  )}
+                </span>
+
+                {/* Stage body */}
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1.5">
+                  <div className="min-w-0">
+                    <span
+                      className={`eyebrow ${
+                        isCurrent ? 'text-[var(--brand)]' : 'text-stone-500'
+                      } block`}
+                    >
+                      {stage.label}
+                    </span>
+                    <p className="text-xs text-stone-500 mt-1.5 leading-relaxed max-w-md">
+                      {stage.desc}
+                    </p>
+                    {stageEvent?.location && (
+                      <p className="text-[11px] text-stone-500 flex items-center gap-1 mt-1">
+                        <MapPin className="w-3 h-3 text-stone-400" /> {stageEvent.location}
+                      </p>
+                    )}
                   </div>
-
-                  <span
-                    className={`text-[11px] sm:text-xs font-bold mt-2.5 block leading-tight ${
-                      isCurrent
-                        ? 'text-sky-600 dark:text-sky-400'
-                        : isPast
-                        ? 'text-slate-800 dark:text-slate-200'
-                        : 'text-slate-400'
-                    }`}
-                  >
-                    {stage.label}
-                  </span>
-                  <span className="hidden sm:block text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-tight">
-                    {stage.desc}
-                  </span>
+                  {ts && (
+                    <span className="text-[11px] font-mono text-stone-500 shrink-0 sm:ml-4 sm:text-right">
+                      {ts.toLocaleString('en-IN', {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                      })}
+                    </span>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
 
       {/* Chronological Scan History Toggle */}
       {localEvents.length > 0 && (
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="pt-5 border-t border-border">
           <button
             type="button"
             onClick={() => setShowHistory(!showHistory)}
-            className="w-full flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="w-full flex items-center justify-between text-xs text-stone-500 hover:text-foreground transition-colors group"
+            aria-expanded={showHistory}
           >
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-sky-500" />
-              <span>Checkpoint History ({localEvents.length} updates)</span>
+            <span className="eyebrow text-stone-500 flex items-center gap-1.5 group-hover:text-foreground">
+              <Clock className="w-3 h-3 text-[var(--brand)]" />
+              Checkpoint History · {localEvents.length}{' '}
+              {localEvents.length === 1 ? 'scan' : 'scans'}
             </span>
-            {showHistory ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showHistory ? (
+              <ChevronUp className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5" />
+            )}
           </button>
 
           {showHistory && (
-            <div className="mt-4 space-y-3 pl-2 sm:pl-4 border-l-2 border-slate-200 dark:border-slate-700 ml-2 animate-in fade-in duration-200">
+            <ol className="mt-5 relative">
+              <div
+                className="absolute left-[5px] top-2 bottom-2 w-px bg-border"
+                aria-hidden
+              />
               {localEvents.map((ev, i) => (
-                <div key={ev.id || i} className="relative text-xs">
-                  <div className="absolute -left-[17px] sm:-left-[25px] top-1 w-2.5 h-2.5 rounded-full bg-sky-500 ring-4 ring-white dark:ring-slate-900" />
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <span className="font-bold text-slate-900 dark:text-white">
-                      {ev.activity}
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-mono">
+                <li
+                  key={ev.id || i}
+                  className="relative pl-7 pb-4 last:pb-0"
+                >
+                  <span
+                    className="absolute left-0 top-1.5 w-[11px] h-[11px] rounded-full bg-foreground ring-2 ring-card"
+                    aria-hidden
+                  />
+                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+                    <span className="text-xs text-foreground">{ev.activity}</span>
+                    <span className="text-[11px] font-mono text-stone-500 shrink-0 sm:ml-4 sm:text-right">
                       {new Date(ev.timestamp).toLocaleString('en-IN', {
                         dateStyle: 'medium',
                         timeStyle: 'short',
@@ -258,30 +316,32 @@ export function OrderTrackingTimeline({
                     </span>
                   </div>
                   {ev.location && (
-                    <span className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3 h-3 text-slate-400" /> {ev.location}
+                    <span className="text-[11px] text-stone-500 flex items-center gap-1 mt-1">
+                      <MapPin className="w-3 h-3 text-stone-400" /> {ev.location}
                     </span>
                   )}
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           )}
         </div>
       )}
 
       {/* Interactive Simulation Controls for Testing (ADR-012) */}
       {isTestMode && awbNumber && activeIndex < 4 && (
-        <div className="mt-6 p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-              <PlayCircle className="w-4 h-4 text-amber-600" /> Simulation Controls (Demo Mode)
-            </span>
-            <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+        <div className="mt-6 pt-5 border-t border-border">
+          <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+            <div className="eyebrow text-[var(--brand)] flex items-center gap-1.5">
+              <PlayCircle className="w-3.5 h-3.5" />
+              Simulation Controls · Demo Mode
+            </div>
+            <span className="text-[10px] text-stone-500 font-mono uppercase tracking-wider">
               Staff / Evaluator Tool
             </span>
           </div>
-          <p className="text-[11px] text-amber-800/90 dark:text-amber-300/80 mb-3">
-            Since carrier webhooks are awaiting real API dispatch, click below to trigger simulated carrier scans:
+          <p className="text-[11px] text-stone-500 mb-3 leading-relaxed max-w-2xl">
+            Since carrier webhooks are awaiting real API dispatch, click below to trigger
+            simulated carrier scans.
           </p>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -290,9 +350,14 @@ export function OrderTrackingTimeline({
                 type="button"
                 disabled={simulating}
                 onClick={() => handleSimulateStage('IN_TRANSIT')}
-                className="py-1.5 px-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                className="btn-ink text-xs disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+                style={{ padding: '0.5rem 0.875rem' }}
               >
-                {simulating && <Loader2 className="w-3 h-3 animate-spin" />}
+                {simulating ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <Truck className="w-3 h-3" />
+                )}
                 Simulate: In Transit (Surat Hub)
               </button>
             )}
@@ -302,9 +367,10 @@ export function OrderTrackingTimeline({
                 type="button"
                 disabled={simulating}
                 onClick={() => handleSimulateStage('OUT_FOR_DELIVERY')}
-                className="py-1.5 px-3 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                className="btn-ghost text-xs disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+                style={{ padding: '0.5rem 0.875rem' }}
               >
-                {simulating && <Loader2 className="w-3 h-3 animate-spin" />}
+                {simulating ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                 Simulate: Out for Delivery
               </button>
             )}
@@ -314,9 +380,14 @@ export function OrderTrackingTimeline({
                 type="button"
                 disabled={simulating}
                 onClick={() => handleSimulateStage('DELIVERED')}
-                className="py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                className="btn-ink text-xs disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+                style={{ padding: '0.5rem 0.875rem' }}
               >
-                {simulating && <Loader2 className="w-3 h-3 animate-spin" />}
+                {simulating ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="w-3 h-3" />
+                )}
                 Simulate: Delivered (Consignee)
               </button>
             )}

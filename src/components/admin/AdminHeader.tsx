@@ -2,14 +2,7 @@
 
 import React, { useTransition } from 'react';
 import Link from 'next/link';
-import {
-  ShieldCheck,
-  Building2,
-  ExternalLink,
-  LogOut,
-  Loader2,
-  UserCheck,
-} from 'lucide-react';
+import { LogOut, Loader2, ExternalLink } from 'lucide-react';
 import { AdminSessionPayload } from '@/server/services/admin-auth.service';
 import { adminLogoutAction } from '@/app/actions/admin-auth.actions';
 
@@ -17,6 +10,15 @@ interface Props {
   session?: AdminSessionPayload | null;
 }
 
+/**
+ * AdminHeader — top bar of the operations console.
+ *
+ * Dark warm-ink background, hairline bottom border, sharp corners.
+ * - Left: Patel.Networks wordmark + live node status
+ * - Right: storefront link, operator identity (initials + name + role + email), sign out
+ *
+ * Auth/logic preserved exactly: useTransition + adminLogoutAction.
+ */
 export function AdminHeader({ session }: Props) {
   const [isPending, startTransition] = useTransition();
 
@@ -29,62 +31,76 @@ export function AdminHeader({ session }: Props) {
   const email = session?.email || 'superadmin@patelnetworks.in';
   const fullName = session?.fullName || 'Operations Lead';
   const role = session?.role || 'SUPER_ADMIN';
+  const roleLabel = role.replace(/_/g, ' ');
+  const initials = fullName
+    .split(' ')
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   return (
-    <header className="h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-6 flex items-center justify-between sticky top-0 z-30">
-      {/* Left: Location & Node Identity */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs">
-          <Building2 className="w-3.5 h-3.5 text-sky-400" />
-          <span className="font-semibold text-slate-300">Surat Central Fulfillment Hub</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse ml-1" />
-          <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Live Node</span>
+    <header className="h-14 bg-background border-b border-border flex items-center justify-between px-5 sm:px-6 sticky top-0 z-30">
+      {/* Left — wordmark + node identity */}
+      <div className="flex items-center gap-5 min-w-0">
+        <Link href="/admin" className="flex items-baseline gap-2 shrink-0 group" aria-label="Patel Networks admin home">
+          <span className="font-sans text-[17px] leading-none font-semibold text-foreground tracking-tight">
+            Patel<span className="text-[var(--brand)]">.</span>Networks
+          </span>
+          <span className="hidden md:inline eyebrow text-stone-500 ml-0.5">
+            Operations Console
+          </span>
+        </Link>
+
+        <div className="hidden lg:flex items-center gap-2.5 pl-5 border-l border-border text-[11px]">
+          <span className="dot-rec" aria-hidden />
+          <span className="text-stone-400">Surat Central Fulfillment</span>
+          <span className="text-stone-700">/</span>
+          <span className="text-stone-500 font-mono">GSTIN 24AAACP1234F1Z8</span>
         </div>
       </div>
 
-      {/* Right: Quick Actions, Profile & Logout */}
-      <div className="flex items-center gap-4">
-        {/* Quick link to Storefront */}
+      {/* Right — storefront link, operator identity, sign out */}
+      <div className="flex items-center gap-3">
         <Link
           href="/"
           target="_blank"
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700/80 text-xs font-semibold text-slate-300 hover:text-white transition-colors border border-slate-700/50"
+          className="hidden sm:flex items-center gap-1.5 text-[11px] text-stone-400 hover:text-foreground link-underline transition-colors"
         >
           <span>Storefront</span>
-          <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+          <ExternalLink className="w-3 h-3" />
         </Link>
 
-        {/* GST State Badge */}
-        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-800/50 text-[11px] text-sky-300 font-mono">
-          <span>GSTIN: 24AAACP1234F1Z8</span>
-        </div>
-
-        {/* Admin User Avatar & Profile */}
-        <div className="flex items-center gap-2.5 pl-3 border-l border-slate-800">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-xs text-white shadow-md shadow-sky-500/20">
-            {fullName.slice(0, 2).toUpperCase()}
+        <div className="flex items-center gap-2.5 pl-3 border-l border-border">
+          <div
+            className="w-8 h-8 flex items-center justify-center font-mono text-[11px] font-medium text-foreground bg-card border border-border"
+            aria-hidden
+          >
+            {initials}
           </div>
-          <div className="hidden lg:block text-left">
-            <div className="text-xs font-bold text-white leading-none flex items-center gap-1.5">
+          <div className="hidden lg:block text-left leading-tight">
+            <div className="text-xs font-medium text-foreground flex items-center gap-2">
               <span>{fullName}</span>
-              <span className="px-1.5 py-0.5 rounded text-[9px] bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                {role}
+              <span className="text-[9px] font-mono uppercase tracking-wider text-[var(--brand)] border border-border px-1 py-0.5 leading-none">
+                {roleLabel}
               </span>
             </div>
-            <div className="text-[10px] font-medium text-slate-400 leading-none mt-1">{email}</div>
+            <div className="text-[10px] text-stone-500 font-mono mt-1 leading-none">
+              {email}
+            </div>
           </div>
         </div>
 
-        {/* Secure Sign Out Button */}
         <button
           type="button"
           onClick={handleLogout}
           disabled={isPending}
-          title="Sign Out of Command Center"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 hover:border-rose-800/60 border border-slate-700/50 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
+          aria-label="Sign out of operations console"
+          title="Sign out"
+          className="flex items-center gap-1.5 px-3 py-2 border border-border bg-transparent hover:border-[var(--brand)] hover:text-[var(--brand)] text-stone-400 text-[11px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
         >
           {isPending ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : (
             <LogOut className="w-3.5 h-3.5" />
           )}
