@@ -6,7 +6,7 @@ const JWT_SECRET_STRING =
   process.env.JWT_SECRET || 'patel_networks_secure_jwt_secret_key_32_bytes!';
 const JWT_KEY = new TextEncoder().encode(JWT_SECRET_STRING);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const requestHeaders = new Headers(request.headers);
