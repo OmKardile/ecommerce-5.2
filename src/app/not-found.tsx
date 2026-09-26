@@ -1,18 +1,29 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { Header } from '@/components/storefront/Header';
-import { Footer } from '@/components/storefront/Footer';
 
 export const metadata = {
   title: '404 — Page Not Found | Patel Networks',
   description: 'The requested page or surveillance feed could not be located on Patel Networks servers.',
 };
 
+// Self-contained 404 page — does NOT import the Header/Footer client
+// components. The Header calls server actions (getCartAction,
+// getCurrentUserAction) which need a request context; during the
+// /_global-error static prerender there's no request, so those calls
+// crash with "Cannot read properties of null (reading 'useContext')".
+// Keeping this page static-only resolves that.
 export default function NotFound() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <Header />
+      {/* Minimal top bar (no client-side cart/user fetches) */}
+      <header className="border-b border-border">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-[68px] flex items-center">
+          <Link href="/" className="display text-[22px] leading-none text-foreground">
+            Patel<span className="text-[var(--brand)]">.</span>Networks
+          </Link>
+        </div>
+      </header>
 
       <main className="flex-1 flex items-center justify-center px-6 lg:px-10 py-20 sm:py-32">
         <div className="max-w-xl w-full text-center">
@@ -61,7 +72,13 @@ export default function NotFound() {
         </div>
       </main>
 
-      <Footer />
+      {/* Minimal footer (no client-side logic) */}
+      <footer className="border-t border-border mt-auto">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-6 text-xs text-stone-500 flex justify-between">
+          <span>© {new Date().getFullYear()} Patel Networks</span>
+          <Link href="/products" className="link-underline">Browse catalog</Link>
+        </div>
+      </footer>
     </div>
   );
 }
