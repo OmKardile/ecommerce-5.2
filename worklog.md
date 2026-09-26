@@ -958,7 +958,7 @@ Work Log:
 - SECURITY VERIFICATION (comprehensive):
   1. .env gitignored: ✓ (git check-ignore returns .env)
   2. .env untracked: ✓ (not in git ls-tree HEAD)
-  3. No real credentials in tracked files: ✓ scanned all 4 secret fragments (DB password AJ9J8PM4iS2q8D0C, project ref yhqgogsednnarjfspado, JWT secret f8Torv3csTSc, Supabase anon key sb_publishable_8C374zg4) → 0 matches across all tracked files.
+  3. No real credentials in tracked files: ✓ scanned all 4 secret fragments (DB password <redacted>, project ref <redacted>, JWT secret <redacted>, Supabase anon key <redacted>) → 0 matches across all tracked files.
   4. No credentials in markdown/docs: ✓ sanitized worklog.md, decisions.md, VPS-DEPLOYMENT.md (replaced live connection strings with <SUPABASE_DB_URL> / <supabase-project-ref> placeholders).
   5. No Supabase secrets in code/config: ✓ only historical comments in prisma/schema.prisma ("Supabase removed", "No Supabase-specific types").
   6. .env.example: ✓ all values are placeholders or public config (NODE_ENV, NEXT_PUBLIC_APP_URL, JWT_EXPIRES_IN).
