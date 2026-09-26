@@ -1,6 +1,10 @@
 # Patel Networks — Physical Server Setup Guide
 
-> **Complete guide** for deploying the Patel Networks CCTV e-commerce platform on the client's own physical server (bare metal). Covers hardware selection → OS installation → remote SSH access → full application deployment.
+> **Note**: If the client prefers a **cloud VPS** instead of a physical server, see [`VPS-SETUP-GUIDE.md`](./VPS-SETUP-GUIDE.md) for that path (shorter, assumes the VPS provider handles hardware + OS).
+>
+> This guide covers the **physical server (bare metal) path** — covers hardware selection → OS installation → remote SSH access → full application deployment.
+>
+> **Complete guide** for deploying the Patel Networks CCTV e-commerce platform on the client's own physical server. Covers hardware selection → OS installation → remote SSH access → full application deployment.
 >
 > **Read this entire document once before starting.** Each phase has a ✅ checkpoint.
 >
