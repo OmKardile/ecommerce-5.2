@@ -57,7 +57,7 @@ export async function processCheckoutAction(formData: unknown) {
     });
 
     // If Razorpay, generate order details
-    let razorpayOrder = null;
+    let razorpayOrder: { id: string; amount: number; currency: string; isSimulated: boolean } | null = null;
     if (validated.paymentMethod === 'RAZORPAY') {
       razorpayOrder = await PaymentService.createRazorpayOrder(
         order.orderNumber,

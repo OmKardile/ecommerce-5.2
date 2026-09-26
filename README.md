@@ -95,7 +95,7 @@ patelnetworks/
 
 ## 🚀 Phased Build Roadmap
 
-- [x] **Phase 0 — Project Setup & Architecture**: Fullstack Next.js scaffold, Supabase PostgreSQL, Prisma setup, domain services, ground rules, and decision records.
+- [x] **Phase 0 — Project Setup & Architecture**: Fullstack Next.js scaffold, PostgreSQL (self-hosted on client VPS — ADR-022), Prisma setup, domain services, ground rules, and decision records.
 - [x] **Phase 1 — Database & Core Domain Foundation**: Complete Prisma schema with 29 relational models, taxonomy, SKU-level inventory, catalog seed, and cloud migration.
 - [x] **Phase 2 — Storefront: Browse & Discover**: Modern homepage, category navigation, dynamic variant matrix selector, faceted catalog filters, and Interactive CCTV Kit Builder (ADR-006).
 - [x] **Phase 3 — Cart, Checkout, Payments & Concurrency-Safe Orders**: Server-validated cart, dual-mode Razorpay gateway with test simulation (ADR-007), selective COD rules, B2B GSTIN input tax credit invoicing, row-level inventory reservation (ADR-010), idempotent webhooks, and formal GST Tax Invoices.
@@ -156,7 +156,7 @@ patelnetworks/
 ### Prerequisites
 * Node.js 20+ (LTS)
 * npm or pnpm
-* Supabase PostgreSQL Cloud or Docker
+* PostgreSQL 16 (self-hosted on client VPS via Docker + PgBouncer — see `VPS-DEPLOYMENT.md` and ADR-022)
 
 ### 1. Database & Migrations
 ```bash

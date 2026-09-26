@@ -17,7 +17,7 @@
 | [ADR-006](#adr-006-interactive-custom-cctv-kit--bundle-builder) | Interactive Stepped "Custom CCTV Kit Builder" | 2026-09-25 | **ACCEPTED** |
 | [ADR-007](#adr-007-integration-readiness--placeholder-fallback-for-razorpay--whatsapp-api) | Placeholder Fallback & Full Implementation for Razorpay & WhatsApp API | 2026-09-25 | **ACCEPTED** |
 | [ADR-008](#adr-008-senior-lead-production-grade-engineering-standard) | Senior Lead Production-Grade Engineering Standard & Enterprise Principles | 2026-09-25 | **ACCEPTED** |
-| [ADR-009](#adr-009-managed-cloud-database-on-supabase-postgresql) | Managed Cloud Database on Supabase PostgreSQL (Connection Pooling & Direct URL) | 2026-09-25 | **ACCEPTED** |
+| [ADR-009](#adr-009-managed-cloud-database-on-supabase-postgresql) | Managed Cloud Database on Supabase PostgreSQL (Connection Pooling & Direct URL) | 2026-09-25 | **SUPERSEDED** by ADR-022 |
 | [ADR-010](#adr-010-concurrency-safe-order-creation-row-level-locking-and-dual-mode-payment-gateway) | Concurrency-Safe Order Creation, Row-Level Locking, and Dual-Mode Payment Gateway | 2026-09-25 | **ACCEPTED** |
 | [ADR-011](#adr-011-phone-number--sms-otp-authentication-with-dual-mode-gateway-and-jwt-sessions) | Phone Number + SMS OTP Authentication with Dual-Mode Gateway & JWT Sessions | 2026-09-25 | **ACCEPTED** |
 | [ADR-012](#adr-012-carrier-logistics-pincode-intelligence--awb-generation-engine) | Carrier Logistics, Pincode Intelligence & AWB Generation Engine | 2026-09-25 | **ACCEPTED** |
@@ -193,7 +193,9 @@
 
 ## ADR-009: Managed Cloud Database on Supabase PostgreSQL
 
-* **Status**: **ACCEPTED**
+> ⚠️ **SUPERSEDED by [ADR-022](#adr-022-database-architecture--self-hosted-postgresql-on-client-vps-supabase-removed)** (2026-09-26): the database has been migrated to self-hosted PostgreSQL on the client VPS. The text below is retained for historical context.
+
+* **Status**: **SUPERSEDED** (was ACCEPTED)
 * **Date**: 2026-09-25
 * **Context**:  
   To avoid future migration friction and ensure that local development, staging, and production environments share identical cloud PostgreSQL infrastructure from Day 1, the platform has adopted Supabase PostgreSQL.
@@ -532,3 +534,27 @@ When new decisions are made during subsequent phases, append them using the foll
 
 
 
+
+
+---
+
+## ADR-022: Database Architecture — Self-Hosted PostgreSQL on Client VPS (Supabase Removed)
+* **Status**: ACCEPTED
+* **Date**: 2026-09-26
+* **Context**:
+  The platform was originally connected to Supabase-managed PostgreSQL (ADR-009 documented this choice). The client requested a full migration to **self-hosted PostgreSQL on the client's own VPS**, with no managed database services, no Firebase, no SQLite. A full audit confirmed the application had **zero hard Supabase coupling in code**: no `@supabase/supabase-js` package installed, no Supabase client imports, no use of `NEXT_PUBLIC_SUPABASE_*` env vars, and the Prisma schema already used standard `postgresql` provider with no Supabase-specific types. The only Supabase touchpoints were the connection strings, a CLI scaffold folder, an image-hostname pattern, and documentation references.
+* **Decision**:
+  1. **Database**: PostgreSQL 16 (Alpine) self-hosted on the client VPS via Docker, with a persistent bind-mounted volume at `/var/lib/patelnetworks/pgdata`.
+  2. **Connection pooling**: PgBouncer (transaction mode, `max_client_conn=200`, `default_pool_size=20`) on port 6432 for application queries (`DATABASE_URL`).
+  3. **Migrations**: direct connection on port 5432 bypasses PgBouncer for `DIRECT_URL` (Prisma migrations).
+  4. **Backups**: `scripts/backup-db.sh` — `pg_dump` to `/var/lib/patelnetworks/backups`, 14-day retention, cron-scheduled.
+  5. **Schema unchanged**: the Prisma schema (29 models, 5 enums) required no modifications — it was already standard PostgreSQL.
+  6. **Removed**: `supabase/` directory, `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` env vars, `**.supabase.co` image pattern in `next.config.ts`, all Supabase references in `.env.example` and documentation. This ADR supersedes ADR-009 (which will be marked SUPERSEDED).
+  7. **Transition**: the working `.env` continues to point at the live Supabase database until the VPS PostgreSQL is provisioned and the existing 376 rows are migrated via `pg_dump`/`psql` restore (documented in `VPS-DEPLOYMENT.md` §5). No destructive operations against the live database.
+* **Consequences**:
+  * The client owns the data directory directly on the VPS host (no vendor lock-in, no managed-service costs).
+  * Backup/restore is fully under client control (`scripts/backup-db.sh`).
+  * Docker-ready deployment (`docker-compose.yml`) with healthchecks and resource-friendly logging.
+  * The Prisma schema and all application logic (orders, payments, inventory, OTP auth, kit builder) are 100% preserved — only the connection target changes.
+  * **Blocker until cutover**: requires VPS access + chosen passwords + data-migration decision (keep the 376 existing rows or start fresh). See `VPS-DEPLOYMENT.md` §11.
+  * ADR-009 (Supabase managed database) is now SUPERSEDED by this ADR.

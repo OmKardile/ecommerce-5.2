@@ -233,7 +233,15 @@ export default function CheckoutPage() {
         gstin: isB2B ? gstin.trim().toUpperCase() : undefined,
       };
 
-      const result = await processCheckoutAction(payload);
+      const result = await processCheckoutAction(payload) as {
+        success: boolean;
+        error?: string;
+        orderNumber?: string;
+        orderId?: string;
+        paymentMethod?: string;
+        totalAmount?: number;
+        razorpayOrder?: { id: string; amount: number; isSimulated?: boolean } | null;
+      };
 
       if (!result.success) {
         setErrorMessage(result.error || 'Checkout failed. Please check form inputs.');

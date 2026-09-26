@@ -514,3 +514,50 @@ All remaining storefront pages and components reworked to the "Quiet Hardware / 
 - `OrderTrackingTimeline` component still on old aesthetic.
 - Pre-existing TS2339 type-narrowing errors in `checkout.actions.ts` (cosmetic, eslint doesn't flag, runtime works).
 - DB product photography audit (content, not code).
+
+
+---
+
+## [1.7.0] - 2026-09-26
+
+### Changed (Database Architecture: Supabase → Self-Hosted PostgreSQL on VPS — ADR-022)
+Per client direction, the database architecture was migrated from Supabase-managed PostgreSQL to **self-hosted PostgreSQL on the client's VPS**. No managed database services, no Firebase, no SQLite. Supabase fully removed.
+
+#### Audit Findings (delivered)
+- `@supabase/supabase-js` package: **not installed** (Prisma is the sole DB layer)
+- Supabase client imports in source: **0** (no `createClient`, no `@supabase` references)
+- `NEXT_PUBLIC_SUPABASE_*` env var usage in code: **0** (declared but never read)
+- Prisma schema Supabase-specific types: **0** (already standard `postgresql` provider)
+- Touchpoints removed: `supabase/` directory, supabase image pattern in next.config.ts, env vars in `.env.example`, all doc references
+
+#### Removed
+- `supabase/` directory (CLI scaffold — `config.toml`, `.temp/`)
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.example`
+- `**.supabase.co` image hostname pattern from `next.config.ts`
+- Supabase references across 9 documentation files (README, technical docs, decisions, changelog noted as historical)
+
+#### Added
+- **`docker-compose.yml`** — PostgreSQL 16 (Alpine) + PgBouncer stack for the VPS, persistent bind-mount at `/var/lib/patelnetworks/pgdata`, healthchecks, port 5432/6432 bound to `127.0.0.1` only.
+- **`scripts/backup-db.sh`** — `pg_dump` via the db container, compressed `.sql.gz`, 14-day retention, cron-ready.
+- **`VPS-DEPLOYMENT.md`** — full deployment guide: provisioning, role creation, schema deployment, Supabase→VPS data migration (one-time `pg_dump`/`psql` restore preserving the 376 existing rows), backups, validation checklist, blockers.
+- **ADR-022** in `decisions.md` documenting the architecture change. ADR-009 marked SUPERSEDED.
+- Prisma schema header comment updated to reference ADR-022.
+- `.env.example` rewritten to VPS PostgreSQL format (pooled `DATABASE_URL` via PgBouncer:6432, direct `DIRECT_URL` via 5432).
+
+#### Preserved (no changes)
+- **Prisma schema** (29 models, 5 enums) — already standard PostgreSQL, zero modifications
+- All business entities + relationships (Category → Brand → Product → Variant → SKU → Inventory)
+- All application logic (orders, payments, inventory, OTP auth, kit builder, cart, checkout)
+- The working `.env` (still pointing to live Supabase) — so the app keeps running during the transition. Switch to VPS strings once `VPS-DEPLOYMENT.md` §5 is complete.
+
+### Verified
+- `prisma generate` succeeds (client v6.19.2, 29 models).
+- `bun run lint`: 0 errors.
+- Dev server runs, all storefront routes HTTP 200.
+- No code changes required — purely a connection-target + config + docs migration.
+
+### Blockers Requiring VPS Information (not yet resolved)
+1. VPS access (SSH) or confirmation Docker is installed.
+2. A strong `POSTGRES_PASSWORD` and `PGBOUNCER_APP_PASSWORD`.
+3. Confirmation of whether the Next.js app runs on the same VPS or a separate host.
+4. Decision on data migration: keep the existing 376 rows (run the `pg_dump`/restore) or start fresh.

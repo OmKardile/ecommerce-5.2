@@ -29,7 +29,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const brandSlug = params.brand;
   const searchQuery = params.search;
   const inStockOnly = params.inStock === 'true';
-  const sortBy = (params.sort as string) || 'featured';
+  const sortBy = (params.sort as 'featured' | 'price_asc' | 'price_desc' | 'newest') || 'featured';
 
   const [products, categories, brands] = await Promise.all([
     getFilteredProducts({

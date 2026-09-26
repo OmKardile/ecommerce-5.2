@@ -1,3 +1,8 @@
+// Patel Networks — Prisma schema (standard PostgreSQL, self-hosted on client VPS).
+// See ADR-022 for the database architecture change (Supabase removed).
+// 29 models, 5 enums — all map to snake_case tables via @@map.
+// No Supabase-specific types; compatible with any standard PostgreSQL 14+.
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")

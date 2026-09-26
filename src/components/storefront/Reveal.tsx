@@ -58,8 +58,7 @@ export function Reveal({ children, className, delay = 0, as: Tag = 'div' }: Reve
 
   return (
     <Tag
-      // @ts-expect-error ref typing across polymorphic tag
-      ref={ref}
+      ref={ref as React.Ref<HTMLElement>}
       className={cn('reveal', visible && 'is-visible', className)}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
