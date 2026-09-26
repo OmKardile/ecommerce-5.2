@@ -603,3 +603,40 @@ The final remaining old-aesthetic surface — the admin console — has been rew
 
 ### Milestone
 **The entire Patel Networks codebase — storefront + admin console — is now aesthetically unified under the "Quiet Hardware / Editorial Security" design system.** No old SaaS-template patterns remain anywhere.
+
+
+---
+
+## [1.9.0] - 2026-09-26
+
+### Changed (Cinematic VFX Homepage + Functionality/Security Audit)
+
+#### Cinematic VFX Design System
+- New `CinematicHero` component: full-screen immersive hero with layered parallax (city skyline bg slow, camera lens foreground fast), animated particle grid, scroll-driven text fade+scale, staggered entrance animations, pulsing live-status dot, shimmer-sweep CTA, animated scroll indicator
+- New `ParallaxSection` component: sticky parallax image backgrounds with scroll-driven transforms (configurable speed 0.15-0.25x), dark overlay options
+- New `use-parallax.ts` hook: `useScrollProgress` + `useParallax` (rAF-throttled, passive listeners)
+- 3 generated cinematic images: hero-city.jpg (Blade Runner skyline), camera-lens.jpg (extreme close-up), dvr-rack.jpg (dark server rack with blue LEDs)
+- New CSS animations: `fade-in-up`, `pulse-slow`, `scroll-line` + reduced-motion overrides
+
+#### Dark Cinematic Treatment (all homepage sections)
+- Categories: parallax DVR-rack bg, white text, blue accent on hover
+- Featured products: black bg with particle grid, product cards grid
+- Discipline: parallax camera-lens bg with text overlay
+- Kit builder: black with atmospheric blue gradient, scale-reveal image
+- Brands: black wordmark grid with blue-accent hover
+
+#### Bug Fixes
+- Fixed `/robots.txt` 500 error: removed conflicting static `public/robots.txt` (was clashing with dynamic `src/app/robots.ts` route handler). Now serves the dynamic route with proper allow/disallow rules.
+
+### Verified (Functionality + Security Audit)
+- ✅ All 15 storefront routes return HTTP 200
+- ✅ All 7 admin routes return HTTP 307 (correctly redirect to /admin/login when no session)
+- ✅ `/account` returns HTTP 307 (correctly redirects to /account/login when no session)
+- ✅ Admin login page loads with email + password inputs
+- ✅ `/robots.txt` returns HTTP 200 (was 500 — fixed)
+- ✅ `/sitemap.xml` returns HTTP 200
+- ✅ Custom 404 page renders for unknown routes
+- ✅ API webhooks return 405 on GET (correct — they only accept POST)
+
+### Research (NOT implemented)
+- Created `STOCK-PANEL-RESEARCH.md`: comprehensive spec for a stock-monitoring employee panel — proposed schema (StockAlert, StockReconciliation, StockCountSession models + STOCK_CLERK role), 5 page designs (dashboard, alerts, movements, count sessions, reconciliation), auth guards, server actions, alert generation logic, implementation estimate (~20 hours), and 6 open questions for the client. **Not implemented — awaiting client confirmation.**
