@@ -8,28 +8,39 @@ interface RevealProps {
   className?: string;
   /** delay in ms for stagger */
   delay?: number;
+  /** animation variant */
+  variant?: 'up' | 'mask' | 'scale' | 'stagger';
   as?: React.ElementType;
 }
 
 /**
  * Reveal — single-element scroll reveal wrapper.
- * Adds `.reveal` until the element enters the viewport, then `.is-visible`.
- * Keeps a `transitionDelay` for staggered sequences.
- * Respects prefers-reduced-motion via CSS.
+ * Supports multiple animation variants per the design language brief:
+ * - 'up' (default): opacity + translateY (standard scroll-in)
+ * - 'mask': clip-path wipe (editorial magazine feel for images)
+ * - 'scale': subtle scale-down entrance (cinematic moments)
+ * - 'stagger': children animate in sequence (use --stagger CSS var on children)
  *
- * Note: `visible` is only ever set inside IntersectionObserver callbacks
- * (event-driven) or a timer (async), never synchronously in the effect body,
- * to comply with react-hooks/set-state-in-effect.
+ * All respect prefers-reduced-motion via CSS.
  */
-export function Reveal({ children, className, delay = 0, as: Tag = 'div' }: RevealProps) {
+export function Reveal({ children, className, delay = 0, variant = 'up', as: Tag = 'div' }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
 
+  const variantClass = {
+    up: 'reveal',
+    mask: 'reveal-mask',
+    scale: 'reveal-scale',
+    stagger: 'reveal-stagger',
+  }[variant];
+
   useEffect(() => {
     const el = ref.current;
-    // No element or no IntersectionObserver — schedule the reveal on the
-    // next tick instead of calling setState synchronously in the effect body.
-    if (!el || typeof IntersectionObserver === 'undefined') {
+    if (!el) {
+      const t = setTimeout(() => setVisible(true), 0);
+      return () => clearTimeout(t);
+    }
+    if (typeof IntersectionObserver === 'undefined') {
       const t = setTimeout(() => setVisible(true), 0);
       return () => clearTimeout(t);
     }
@@ -46,9 +57,6 @@ export function Reveal({ children, className, delay = 0, as: Tag = 'div' }: Reve
       { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
     );
     io.observe(el);
-    // Fallback: if the element never enters the viewport within 2.5s (e.g.
-    // a full-page screenshot captured without scrolling, or a very tall
-    // page), reveal it anyway so content is never permanently hidden.
     const fallback = setTimeout(() => setVisible(true), 2500);
     return () => {
       io.disconnect();
@@ -59,7 +67,7 @@ export function Reveal({ children, className, delay = 0, as: Tag = 'div' }: Reve
   return (
     <Tag
       ref={ref as React.Ref<HTMLElement>}
-      className={cn('reveal', visible && 'is-visible', className)}
+      className={cn(variantClass, visible && 'is-visible', className)}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
       {children}
