@@ -561,3 +561,45 @@ Per client direction, the database architecture was migrated from Supabase-manag
 2. A strong `POSTGRES_PASSWORD` and `PGBOUNCER_APP_PASSWORD`.
 3. Confirmation of whether the Next.js app runs on the same VPS or a separate host.
 4. Decision on data migration: keep the existing 376 rows (run the `pg_dump`/restore) or start fresh.
+
+
+---
+
+## [1.8.0] - 2026-09-26
+
+### Added (Admin Console Aesthetic Migration Complete)
+The final remaining old-aesthetic surface — the admin console — has been reworked to the design system. The admin uses a **dark operations-console** treatment (Linear/Vercel/Stripe quality) that shares the storefront's design DNA: sharp corners, hairline borders, blue accent, no gradients/glow/glass. The entire codebase is now aesthetically unified.
+
+#### Design Approach
+- **Admin = dark operations console** (`.dark` class on admin layout, warm near-black background `#131210`, surface `#1A1916`, hairline borders `#2A2823`, blue accent `#60A5FA`)
+- **Storefront = light editorial** (warm paper background, same blue accent, Fraunces serif headings)
+- **Shared DNA**: sharp corners (2px max), hairline borders, Geist sans for UI, `.eyebrow` labels, `font-mono` for numbers/SKUs, `.dot-rec` for live status, `.btn-ink`/`.btn-ghost` buttons
+- VLM-verified: *"Admin side feels like the engine room, homepage feels like the showroom"* — clearly the same product family
+
+#### Files Reworked (11)
+- `admin/layout.tsx` — added `.dark` class wrapper so design tokens resolve to the dark palette
+- `AdminHeader.tsx` — sharp hairline dark header, Patel.Networks wordmark, operator identity, sign-out
+- `AdminSidebar.tsx` — hairline dark sidebar, active = brand-blue left border (not sky ring/glow)
+- `admin/login/page.tsx` (197→190) — centered dark editorial card, hairline inputs, demo creds hint
+- `admin/page.tsx` (324→270) — dashboard with KPI hairline rows, payment-split bars, orders table, low-stock alerts
+- `OrderFulfillmentConsole.tsx` (654→627) — dark ops order management, hairline filter tabs, status transitions
+- `InventoryManagementConsole.tsx` (364→336) — hairline SKU matrix, dot-rec status, sharp adjust modal
+- `ProductCatalogTable.tsx` (240→245) — hairline catalog table, sharp COD/visibility toggles
+- `CustomerDirectoryTable.tsx` (234→232) — 3-cell metric strip, segmented filter, mono GSTIN
+- `CommercialReportsConsole.tsx` (371→310) — hairline GSTR-1 tax list, sharp CSV export
+- `admin/settings/cod/page.tsx` (120→128) — hairline policy grid, mono rule codes
+- `OrderTrackingTimeline.tsx` (328→339) — vertical editorial timeline with dot-rec nodes (storefront, light)
+
+#### Type Safety Improvements
+- Fixed `any` types via `unknown` narrowing in OrderTrackingTimeline (`readStringField` helper) + OrderFulfillmentConsole (`ShipmentSummary` interface + `toShipmentSummary` helper)
+- Replaced blocking `alert()` calls with existing `setActionFeedback()` chip slot
+
+### Verified
+- **All 23 routes**: HTTP 200 (storefront) or 307 (admin, correctly redirects to login via middleware)
+- **Lint: 0 errors, 0 warnings**
+- **Typecheck: 0 errors**
+- **Pattern audit: 0 old-aesthetic matches** across the entire `src/` directory (no gradients, rounded-2xl/3xl, glassmorphism, glow, colored icon tiles anywhere)
+- **VLM review**: admin login A-, homepage A, product family cohesion confirmed
+
+### Milestone
+**The entire Patel Networks codebase — storefront + admin console — is now aesthetically unified under the "Quiet Hardware / Editorial Security" design system.** No old SaaS-template patterns remain anywhere.
