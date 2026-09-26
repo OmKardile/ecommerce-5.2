@@ -1009,3 +1009,10 @@ sudo ufw allow 22/tcp && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo
 7. **Router admin access** (to set up port forwarding in Phase D)
 
 That's it. Everything else is in this guide.
+
+---
+
+<p align="center">
+<em>Authored by Omkar Kardile — Patel Networks / MegaTech</em><br/>
+<sub>Surveillance hardware procurement platform · India</sub>
+</p>

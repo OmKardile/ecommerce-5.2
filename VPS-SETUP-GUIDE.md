@@ -639,3 +639,10 @@ Before starting Phase C, provide these to the developer (or generate them yourse
 5. **Your domain name** (or confirm you'll use the VPS IP without HTTPS)
 
 That's it. Everything else is in this guide.
+
+---
+
+<p align="center">
+<em>Authored by Omkar Kardile — Patel Networks / MegaTech</em><br/>
+<sub>Surveillance hardware procurement platform · India</sub>
+</p>
