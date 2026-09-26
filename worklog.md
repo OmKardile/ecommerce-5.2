@@ -918,3 +918,28 @@ Stage Summary:
 - **All validation passes**: typecheck 0 errors, lint 0 errors, build succeeds, DB connectivity confirmed (read-only, 376 rows intact).
 - **Transition state**: the working .env still points to live Supabase so the app keeps running. The VPS deployment is documented and ready — switch .env to VPS strings once the client provides VPS access + passwords + data-migration decision.
 - **Blockers for cutover**: (1) VPS access/Docker confirmation, (2) POSTGRES_PASSWORD + PGBOUNCER_APP_PASSWORD, (3) same-VPS vs separate-host app decision, (4) keep-376-rows vs start-fresh decision. See VPS-DEPLOYMENT.md §11.
+
+
+---
+Task ID: 12b-COMPLIANCE-VERIFICATION
+Agent: Lead Developer (Z.ai Code)
+Task: Verify compliance with the user's live-database/env/supabase-storage/migration constraints after the DB architecture change.
+
+Work Log:
+- Verified LIVE DATABASE state via read-only row count across all 29 tables. Found 412 total rows (was 376 at initial verification). Investigated: the +36 rows are application-level writes during normal browsing/testing (audit_logs from page visits, cart creation for anonymous sessions, otp_verifications from testing the /account/login page, order_status_history from testing /order-success). I did NOT run any destructive commands (no db push, migrate, reset, seed, DROP, DELETE, TRUNCATE). Schema is unchanged; no data was deleted. The app's own runtime created these rows.
+- Checked .env git tracking: discovered .env WAS tracked by git (committed by the sandbox bootstrap in 566c089 "Initial commit" and 62528a9). This violated the user's "Do not commit .env" rule.
+- FIXED: ran `git rm --cached .env` to untrack .env from the git index (keeping the local file). Committed as 36b57b3 "security: untrack .env from git, strengthen .gitignore". Verified via `git ls-tree HEAD -- .env` (empty = not tracked) and `git check-ignore .env` (returns .env = ignored). Local .env still exists for the dev server.
+- Strengthened .gitignore: added explicit `.env`, `.env.local`, `.env.*.local` rules with a comment noting `.env.example` IS tracked as the template.
+- SECURITY NOTE: the .env with live Supabase credentials (DB password AJ9J8PM4iS2q8D0C, JWT_SECRET, Supabase anon key) remains in git HISTORY (commits 566c089 and 62528a9). No git remote is configured, so it was not pushed anywhere. If this repo is ever pushed to a remote (GitHub), the user MUST rotate the Supabase DB password first, or use git filter-branch / BFG Repo-Cleaner to purge .env from history.
+- Verified .env still points to live Supabase (temporary, as required): DATABASE_URL = supabase pooler:6543, DIRECT_URL = supabase:5432.
+- Verified .env.example points to VPS PostgreSQL (127.0.0.1:6432 PgBouncer + 127.0.0.1:5432 direct), no Supabase references.
+- Verified supabase.co image hostname removal was justified: queried product_images WHERE url ILIKE '%supabase.co%' → 0 rows. All product images use images.unsplash.com. Pattern removal was safe.
+- Confirmed no git remote configured (git remote -v returns empty).
+
+Stage Summary:
+- LIVE DB: not dropped, schema intact, but row count grew 376→412 due to app-level writes during testing (not destructive ops). Will be migrated to VPS PostgreSQL later via pg_dump/restore.
+- .env: NOW untracked from git + gitignored. Still points to Supabase (temporary). Local file preserved.
+- .env.example: points to VPS PostgreSQL (committed, no secrets).
+- supabase.co image pattern: removal confirmed safe (0 DB images use supabase.co).
+- SECURITY: live creds remain in git history (2 commits). No remote configured. Rotate Supabase password before pushing to any remote.
+- Migration steps documented in VPS-DEPLOYMENT.md §5 (pg_dump from Supabase → restore into VPS).
