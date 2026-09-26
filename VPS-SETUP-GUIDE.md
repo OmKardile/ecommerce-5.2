@@ -642,6 +642,56 @@ That's it. Everything else is in this guide.
 
 ---
 
+## Official reference links
+
+> Authoritative documentation for every tool used in this guide. Bookmark these.
+
+### Core stack
+| Tool | What it does | Official docs |
+|---|---|---|
+| **Next.js 16** | The application framework | https://nextjs.org/docs |
+| **Prisma 6** | Database ORM | https://www.prisma.io/docs |
+| **PostgreSQL 16** | The database | https://www.postgresql.org/docs/16/ |
+| **PgBouncer** | Connection pooler | https://www.pgbouncer.org/ |
+
+### Infrastructure
+| Tool | What it does | Official docs |
+|---|---|---|
+| **Docker Engine** | Container runtime | https://docs.docker.com/engine/ |
+| **Docker Compose** | Multi-container orchestration | https://docs.docker.com/compose/ |
+| **Ubuntu Server** | The OS | https://ubuntu.com/server/docs |
+| **UFW (Uncomplicated Firewall)** | Host firewall | https://help.ubuntu.com/community/UFW |
+| **fail2ban** | SSH brute-force protection | https://github.com/fail2ban/fail2ban/wiki |
+| **Caddy** | Reverse proxy + HTTPS | https://caddyserver.com/docs/ |
+| **pm2** | Node.js process manager | https://pm2.keymetrics.io/docs/usage/quick-start/ |
+| **Bun** | JavaScript runtime/package manager | https://bun.sh/docs |
+| **Node.js 20 LTS** | JavaScript runtime | https://nodejs.org/en/docs/ |
+
+### Migration & backups
+| Tool | What it does | Official docs |
+|---|---|---|
+| **pg_dump** | Database backup | https://www.postgresql.org/docs/16/app-pgdump.html |
+| **pg_restore / psql** | Database restore | https://www.postgresql.org/docs/16/app-psql.html |
+
+### Cloud / DNS (if using a VPS provider)
+| Service | Official link |
+|---|---|
+| DigitalOcean | https://docs.digitalocean.com/ |
+| AWS Lightsail | https://lightsail.aws.amazon.com/ls/docs/ |
+| Hetzner Cloud | https://docs.hetzner.com/cloud/ |
+| Let's Encrypt (HTTPS certs via Caddy) | https://letsencrypt.org/getting-started/ |
+| DuckDNS (dynamic DNS) | https://www.duckdns.org/ |
+| Cloudflare (DNS + CDN, optional) | https://developers.cloudflare.com/ |
+
+### Security
+| Resource | Link |
+|---|---|
+| OpenSSH config reference | https://www.openssh.com/manual.html |
+| GitHub Personal Access Tokens (for git push) | https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens |
+| BFG Repo-Cleaner (purge secrets from git history) | https://rtyley.github.io/bfg-repo-cleaner/ |
+
+---
+
 <p align="center">
 <em>Authored by Omkar Kardile — Patel Networks / MegaTech</em><br/>
 <sub>Surveillance hardware procurement platform · India</sub>

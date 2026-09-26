@@ -1012,6 +1012,64 @@ That's it. Everything else is in this guide.
 
 ---
 
+## Official reference links
+
+> Authoritative documentation for every tool used in this guide. Bookmark these.
+
+### Core stack
+| Tool | What it does | Official docs |
+|---|---|---|
+| **Next.js 16** | The application framework | https://nextjs.org/docs |
+| **Prisma 6** | Database ORM | https://www.prisma.io/docs |
+| **PostgreSQL 16** | The database | https://www.postgresql.org/docs/16/ |
+| **PgBouncer** | Connection pooler | https://www.pgbouncer.org/ |
+
+### Infrastructure
+| Tool | What it does | Official docs |
+|---|---|---|
+| **Docker Engine** | Container runtime | https://docs.docker.com/engine/ |
+| **Docker Compose** | Multi-container orchestration | https://docs.docker.com/compose/ |
+| **Ubuntu Server 24.04 LTS** | The OS | https://ubuntu.com/server/docs |
+| **UFW (Uncomplicated Firewall)** | Host firewall | https://help.ubuntu.com/community/UFW |
+| **fail2ban** | SSH brute-force protection | https://github.com/fail2ban/fail2ban/wiki |
+| **Caddy** | Reverse proxy + HTTPS | https://caddyserver.com/docs/ |
+| **pm2** | Node.js process manager | https://pm2.keymetrics.io/docs/usage/quick-start/ |
+| **Bun** | JavaScript runtime/package manager | https://bun.sh/docs |
+| **Node.js 20 LTS** | JavaScript runtime | https://nodejs.org/en/docs/ |
+
+### OS installation & remote access
+| Tool | What it does | Official docs |
+|---|---|---|
+| **Rufus** (Windows) | Create bootable USB | https://rufus.ie/ |
+| **dd** (Linux/Mac) | Write ISO to USB | `man dd` or https://www.gnu.org/software/coreutils/manual/html_node/dd-invocation.html |
+| **Ubuntu Server ISO download** | OS installer image | https://ubuntu.com/download/server |
+| **Netplan** (static IP config) | Ubuntu network config | https://netplan.readthedocs.io/ |
+| **OpenSSH** | SSH server + client | https://www.openssh.com/manual.html |
+| **ssh-keygen** | Generate SSH keys | https://www.ssh.com/academy/ssh/keygen |
+| **ssh-copy-id** | Copy public key to server | https://www.ssh.com/academy/ssh/copy-id |
+
+### Migration & backups
+| Tool | What it does | Official docs |
+|---|---|---|
+| **pg_dump** | Database backup | https://www.postgresql.org/docs/16/app-pgdump.html |
+| **pg_restore / psql** | Database restore | https://www.postgresql.org/docs/16/app-psql.html |
+
+### DNS & HTTPS
+| Service | Official link |
+|---|---|
+| Let's Encrypt (HTTPS certs via Caddy) | https://letsencrypt.org/getting-started/ |
+| DuckDNS (dynamic DNS) | https://www.duckdns.org/ |
+| Cloudflare (DNS + CDN, optional) | https://developers.cloudflare.com/ |
+
+### Security
+| Resource | Link |
+|---|---|
+| GitHub Personal Access Tokens (for git push) | https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens |
+| BFG Repo-Cleaner (purge secrets from git history) | https://rtyley.github.io/bfg-repo-cleaner/ |
+| unattended-upgrades (automatic security updates) | https://wiki.debian.org/UnattendedUpgrades |
+
+---
+
 <p align="center">
 <em>Authored by Omkar Kardile — Patel Networks / MegaTech</em><br/>
 <sub>Surveillance hardware procurement platform · India</sub>
