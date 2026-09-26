@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { RefreshCw, ArrowLeft } from 'lucide-react';
 
-export default function GlobalError({
+export default function ErrorBoundary({
   error,
   reset,
 }: {
