@@ -67,7 +67,7 @@ Follows Keep-a-Changelog format. Versions v0.1.0 → v1.2.0 (all dated 2026-09-2
 | **ADR-006** | Interactive 5-Step CCTV Kit Builder (Recorder→Cameras→Storage→Power→Bundle). 5% bundle discount, `Bundle`+`BundleItem` models. | 2026-09-25 | ACCEPTED |
 | **ADR-007** | Integration Readiness with Placeholder Fallback (Razorpay, WhatsApp). Dual-mode: live API when real keys, deterministic simulation when `placeholder` detected. Zero-code switchover. | 2026-09-25 | ACCEPTED |
 | **ADR-008** | Senior Lead Production-Grade Engineering: Zero `any`, Zod DTOs everywhere, `SELECT…FOR UPDATE` locks, integer paise or `Prisma.Decimal` for money, idempotency keys, Argon2id passwords, RBAC guards, no shortcuts. | 2026-09-25 | ACCEPTED |
-| **ADR-009** | Supabase PostgreSQL Cloud. Dual-URL: `DATABASE_URL` (PgBouncer port 6543 transaction pooler) + `DIRECT_URL` (port 5432 session for migrations). Project `yhqgogsednnarjfspado`. | 2026-09-25 | ACCEPTED |
+| **ADR-009** | Supabase PostgreSQL Cloud. Dual-URL: `DATABASE_URL` (PgBouncer port 6543 transaction pooler) + `DIRECT_URL` (port 5432 session for migrations). Project `<supabase-project-ref>`. | 2026-09-25 | ACCEPTED |
 | **ADR-010** | Concurrency-safe Order Creation: `SELECT…FOR UPDATE` on `inventory` rows in Prisma `$transaction`, `ORDER_RESERVED` increment, state machine `PENDING_PAYMENT/COD_PENDING→PAID/CONFIRMED→PROCESSING→PACKED→SHIPPED→OUT_FOR_DELIVERY→DELIVERED`. Interactive txn timeout 30s/maxWait 15s. Idempotent Razorpay webhook dedup via `PaymentEvent.eventId`. | 2026-09-25 | ACCEPTED |
 | **ADR-011** | Phone OTP + Dual-mode SMS + JWT Sessions. E.164 normalization `+91[6-9]\d{9}`, 6-digit OTP, `jose` HS256 signed `pn_session` HTTP-only 7-day cookie, guest-cart association on login. | 2026-09-25 | ACCEPTED |
 | **ADR-012** | Carrier Logistics + Pincode Intelligence + AWB. PIN prefix matching across INTRA_STATE/METRO/REGIONAL/SPECIAL_ZONE, COD auto-disable in air-cargo zones, Shiprocket live + deterministic `DELH...`/`BLUD...` AWB simulation, `/api/webhooks/shipping` idempotent dedup (`evt_${awb}_${status}_${timestamp}`), auto-sync order state. | 2026-09-25 | ACCEPTED |
@@ -507,7 +507,7 @@ Per `continue.md` §7 and `changelog.md` [Unreleased]:
 
 | Integration | Code Status | Live Status |
 |---|---|---|
-| **Supabase PostgreSQL** | ✅ Live (production cloud via dual-URL) | Live in dev (project `yhqgogsednnarjfspado` in `ap-northeast-1` per ADR-009). Production should migrate to Mumbai `ap-south-1`. |
+| **Supabase PostgreSQL** | ✅ Live (production cloud via dual-URL) | Live in dev (project `<supabase-project-ref>` in `ap-northeast-1` per ADR-009). Production should migrate to Mumbai `ap-south-1`. |
 | **Razorpay Payments** | ✅ Dual-mode code complete | 🟡 Placeholder keys → simulation mode active. Needs live `rzp_live_*` keys + webhook registration. |
 | **Shiprocket / Delhivery** | ✅ Dual-mode code complete | 🟡 Placeholder creds → deterministic simulation (`DELH...`/`BLUD...` AWBs). Needs live tokens. |
 | **WhatsApp Cloud API** | ✅ Dual-mode code complete (Meta Graph API `v20.0`) | 🟡 Placeholder token → simulation (terminal logging + audit_logs). Needs permanent System User token + approved HSM templates. |
@@ -930,7 +930,7 @@ Work Log:
 - Checked .env git tracking: discovered .env WAS tracked by git (committed by the sandbox bootstrap in 566c089 "Initial commit" and 62528a9). This violated the user's "Do not commit .env" rule.
 - FIXED: ran `git rm --cached .env` to untrack .env from the git index (keeping the local file). Committed as 36b57b3 "security: untrack .env from git, strengthen .gitignore". Verified via `git ls-tree HEAD -- .env` (empty = not tracked) and `git check-ignore .env` (returns .env = ignored). Local .env still exists for the dev server.
 - Strengthened .gitignore: added explicit `.env`, `.env.local`, `.env.*.local` rules with a comment noting `.env.example` IS tracked as the template.
-- SECURITY NOTE: the .env with live Supabase credentials (DB password AJ9J8PM4iS2q8D0C, JWT_SECRET, Supabase anon key) remains in git HISTORY (commits 566c089 and 62528a9). No git remote is configured, so it was not pushed anywhere. If this repo is ever pushed to a remote (GitHub), the user MUST rotate the Supabase DB password first, or use git filter-branch / BFG Repo-Cleaner to purge .env from history.
+- SECURITY NOTE: the .env with live Supabase credentials (DB password, JWT_SECRET, Supabase anon key — all now sanitized from tracked files) remains in git HISTORY (commits 566c089 and 62528a9). No git remote is configured, so it was not pushed anywhere. If this repo is ever pushed to a remote (GitHub), the user MUST rotate the Supabase DB password first, or use git filter-branch / BFG Repo-Cleaner to purge .env from history.
 - Verified .env still points to live Supabase (temporary, as required): DATABASE_URL = supabase pooler:6543, DIRECT_URL = supabase:5432.
 - Verified .env.example points to VPS PostgreSQL (127.0.0.1:6432 PgBouncer + 127.0.0.1:5432 direct), no Supabase references.
 - Verified supabase.co image hostname removal was justified: queried product_images WHERE url ILIKE '%supabase.co%' → 0 rows. All product images use images.unsplash.com. Pattern removal was safe.

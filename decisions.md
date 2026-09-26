@@ -200,7 +200,7 @@
 * **Context**:  
   To avoid future migration friction and ensure that local development, staging, and production environments share identical cloud PostgreSQL infrastructure from Day 1, the platform has adopted Supabase PostgreSQL.
 * **Decision**:  
-  Configure Prisma ORM to connect directly to the **Supabase PostgreSQL cluster** (`yhqgogsednnarjfspado`) using Supabase's official best-practice dual-URL strategy:
+  Configure Prisma ORM to connect directly to the **Supabase PostgreSQL cluster** (`(`<supabase-project-ref>`)lt;supabase-project-ref(`<supabase-project-ref>`)gt;`) using Supabase's official best-practice dual-URL strategy:
   1. `DATABASE_URL`: Transaction-mode connection pooler on port `6543` (`?pgbouncer=true`) for low-latency, scalable application queries under serverless or containerized runtimes.
   2. `DIRECT_URL`: Session-mode direct connection on port `5432` for administrative schema migrations and seed scripts (`prisma db push`, `prisma db seed`).
 * **Consequences**:  

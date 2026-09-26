@@ -57,3 +57,4 @@ server.log
 .env.local
 .env.*.local
 # (.env.example IS tracked as the template — do not ignore it)
+tool-results/

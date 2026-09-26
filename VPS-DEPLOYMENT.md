@@ -104,8 +104,9 @@ Until the data is migrated, the app can keep pointing at the live Supabase datab
 
 ```bash
 # From a machine with network access to the Supabase pooler:
+# Replace <SUPABASE_DB_URL> with the current connection string from .env
 pg_dump \
-  "postgresql://postgres.yhqgogsednnarjfspado:AJ9J8PM4iS2q8D0C@aws-0-ap-northeast-1.supabase.com:5432/postgres?sslmode=require" \
+  "<SUPABASE_DB_URL>" \
   --no-owner --no-privileges --clean --if-exists \
   --schema=public \
   | gzip > supabase-export.sql.gz
