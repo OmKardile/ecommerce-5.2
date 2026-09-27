@@ -1592,3 +1592,25 @@ Stage Summary:
 - Default dev credentials: stock@patelnetworks.in / stock@2026 (also configurable via EMPLOYEE_EMAIL / EMPLOYEE_PASSWORD env vars). Falls back to these defaults if the DB lookup fails or the employee row doesn't exist yet (matches the AdminAuthService.loginAdmin pattern).
 - Default permissions for the fallback account: STOCK_VIEW + STOCK_ADJUST + STOCK_EXPORT (matches the seed in the task spec). STOCK_RECONCILE + STOCK_MANAGE_ALERTS would need to be granted via /admin/employees.
 - Lint: 0 errors / 0 warnings. TypeScript: 0 errors. Build fails only on the pre-existing DB-URL environmental issue (unrelated to this task).
+
+
+---
+Task ID: 19-STOCK-PANEL-IMPLEMENTATION
+Agent: Lead Developer (Z.ai Code) + 2 parallel subagents
+Task: Implement the stock monitor employee panel with superadmin-controlled permissions. Create schema, auth service, pages, server actions, admin employee management UI.
+
+Work Log:
+- Added 4 new Prisma models (EmployeeProfile, StockAlert, StockCountSession, StockReconciliation) + StockPermission enum to schema.prisma
+- Created 4 DB tables via safe additive SQL (no drops, no existing data touched). 33 tables total now (was 29).
+- Created default stock employee user (stock@patelnetworks.in / stock@2026) with permissions STOCK_VIEW + STOCK_ADJUST + STOCK_EXPORT
+- Subagent 1 (stock panel, 16 files): employee-auth.service, login, layout, dashboard, alerts, movements, count sessions, 8 server actions, proxy guard, 6 client components
+- Subagent 2 (admin employee management, 4 files): /admin/employees page, EmployeeManagementConsole (full CRUD), employee.actions.ts (5 actions gated by SUPER_ADMIN), AdminSidebar nav item
+- Permission model: proxy.ts checks STOCK_VIEW in JWT for /stock/* routes; each server action calls requirePermission(); UI hides buttons when permission is missing
+- Lint: 0 errors. Build: ✓ 25/25 pages. Typecheck: 0 errors.
+
+Stage Summary:
+- Full stock monitor employee panel implemented + live.
+- Superadmin can create/manage employees and control permissions.
+- Default employee: stock@patelnetworks.in / stock@2026
+- Separate session (pn_stock_session), separate panel (/stock/*), separate login (/stock/login)
+- Admin employee management at /admin/employees

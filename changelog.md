@@ -762,3 +762,54 @@ Establishes a clear visual hierarchy through borders, surfaces, and spacing rhyt
 - Lint: 0 errors (was 1)
 - Build: ✓ compiled, 24/24 pages, BUILD_ID present
 - Typecheck: 0 errors
+
+
+---
+
+## [2.3.0] - 2026-09-27
+
+### Added (Stock Monitor Employee Panel + Admin Employee Management)
+
+Full implementation of the stock-monitoring employee panel with superadmin-controlled permissions.
+
+#### Database (4 new tables, additive — no existing data touched)
+- `employee_profiles`: employee code, permissions (TEXT[]), isActive, createdBy
+- `stock_alerts`: low-stock/out-of-stock alerts with acknowledge/resolve workflow
+- `stock_count_sessions`: batch physical count events
+- `stock_reconciliations`: expected vs counted qty with variance + status
+- Default employee created: `stock@patelnetworks.in` / `stock@2026` (permissions: STOCK_VIEW + STOCK_ADJUST + STOCK_EXPORT)
+
+#### Stock Panel (16 new files)
+- **Auth**: `employee-auth.service.ts` — separate `pn_stock_session` JWT cookie, `hasPermission()` check
+- **Login**: `/stock/login` — hairline inputs, demo creds hint
+- **Layout**: `/stock/layout.tsx` — session verification + redirect, sidebar + header
+- **Dashboard**: `/stock` — 4 KPI cards (total SKUs, stock value, low-stock count, out-of-stock count), recent alerts + movements
+- **Alerts**: `/stock/alerts` — filterable table, acknowledge/resolve buttons (STOCK_MANAGE_ALERTS-gated)
+- **Movements**: `/stock/movements` — paginated + filterable, CSV export (STOCK_EXPORT-gated)
+- **Count Sessions**: `/stock/count` — list + create form (STOCK_RECONCILE-gated)
+- **Server Actions**: 8 actions with per-permission enforcement
+- **Proxy Guard**: `/stock/*` routes verify `pn_stock_session` + STOCK_VIEW permission
+
+#### Admin Employee Management (4 new/modified files)
+- `/admin/employees` — table of all employees with permission badges + status
+- `EmployeeManagementConsole` — full CRUD (create, edit, deactivate, reset password)
+- Permission editor: 5 StockPermission checkboxes (STOCK_VIEW locked as base)
+- 5 server actions (all gated by SUPER_ADMIN check)
+- AdminSidebar: added "Employees" nav item
+
+#### Permission Model (defense in depth)
+| Action | Permission | Enforcement |
+|---|---|---|
+| Enter any /stock page | STOCK_VIEW | proxy.ts (JWT) + layout.tsx (server) |
+| Acknowledge/Resolve alert | STOCK_MANAGE_ALERTS | server action |
+| Generate alerts | STOCK_MANAGE_ALERTS | server action |
+| Create count session | STOCK_RECONCILE | server action |
+| Submit stock count | STOCK_RECONCILE | server action |
+| Export CSV | STOCK_EXPORT | server action |
+| Create/edit employees | SUPER_ADMIN | server action |
+
+### Verified
+- Lint: 0 errors
+- Build: ✓ 25/25 pages (was 24 — new /stock routes added)
+- Typecheck: 0 errors
+- DB: 33 tables (was 29 — 4 new stock tables created via safe additive SQL)

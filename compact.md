@@ -145,3 +145,19 @@ https://patel-5-2.onrender.com (auto-deploy on git push to main)
 - All admin hardcoded dark colors eliminated — semantic tokens only
 - Admin components no longer force dark — follow theme toggle
 - Lint: 0 errors, Build: ✓, Typecheck: 0 errors
+
+
+---
+
+## Update (v2.3.0 — 2026-09-27)
+
+### Stock Monitor Employee Panel (ADR-026)
+- 4 new DB tables: employee_profiles, stock_alerts, stock_count_sessions, stock_reconciliations
+- StockPermission enum: STOCK_VIEW, STOCK_ADJUST, STOCK_RECONCILE, STOCK_EXPORT, STOCK_MANAGE_ALERTS
+- Separate auth: pn_stock_session JWT (isolated from admin + customer sessions)
+- Stock panel: /stock (dashboard), /stock/alerts, /stock/movements, /stock/count
+- Admin employee management: /admin/employees (create, edit, deactivate, permissions, reset password)
+- Default employee: stock@patelnetworks.in / stock@2026 (permissions: VIEW + ADJUST + EXPORT)
+- Superadmin controls all permissions per employee
+- Defense in depth: proxy guard + server action permission checks + UI button hiding
+- 33 DB tables (was 29), 25 routes (was 24), lint 0 errors, build ✓

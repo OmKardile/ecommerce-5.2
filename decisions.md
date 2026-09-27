@@ -621,3 +621,24 @@ When new decisions are made during subsequent phases, append them using the foll
   - Borders subtle enough to avoid visual noise.
   - Works in both light (Clean Trust) and dark (Industrial Steel) themes.
   - Interface feels cohesive in grayscale (border contrast is structural, not decorative).
+
+
+---
+
+## ADR-026: Stock Monitor Employee Panel
+* **Status**: ACCEPTED
+* **Date**: 2026-09-27
+* **Context**:
+  The client requested a dedicated stock-monitoring employee panel where warehouse staff can monitor inventory levels, receive alerts, log movements, and run count sessions. The superadmin controls which functions each employee can access via per-user permissions.
+* **Decision**:
+  1. **New schema**: 4 tables (employee_profiles, stock_alerts, stock_count_sessions, stock_reconciliations) + StockPermission enum (5 values: STOCK_VIEW, STOCK_ADJUST, STOCK_RECONCILE, STOCK_EXPORT, STOCK_MANAGE_ALERTS).
+  2. **Separate auth**: `pn_stock_session` cookie (separate from admin `pn_admin_session` and customer `pn_session`). JWT payload includes permissions array.
+  3. **Permission model**: defense in depth — proxy.ts checks STOCK_VIEW in JWT, each server action calls `requirePermission()`, UI hides buttons when permission is missing.
+  4. **Default permissions**: new employees get STOCK_VIEW only; superadmin can grant additional permissions.
+  5. **Default employee**: seeded `stock@patelnetworks.in` / `stock@2026` with STOCK_VIEW + STOCK_ADJUST + STOCK_EXPORT.
+  6. **Superadmin control**: `/admin/employees` page with full CRUD — create, edit, deactivate, reset password, toggle permissions.
+* **Consequences**:
+  - Employees are isolated from admin (separate session, separate panel, separate permissions).
+  - Superadmin has full control over who can do what.
+  - The stock panel works in the Clean Trust theme (light by default, respects theme toggle).
+  - Existing inventory data is unchanged — the stock panel reads from the existing Inventory + InventoryMovement models.
