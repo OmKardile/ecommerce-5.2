@@ -132,3 +132,16 @@ https://patel-5-2.onrender.com (auto-deploy on git push to main)
 - Uses next-themes (ThemeProvider, attribute=class, defaultTheme=light)
 - Persists across pages via localStorage
 - Removed forced dark from admin/layout.tsx + checkout/page.tsx
+
+
+---
+
+## Update (v2.2.0 — 2026-09-26)
+
+### Border + Surface Hierarchy (ADR-025)
+- 3-level borders: `border-border-strong` (structural), `border` (component), `border-border-subtle` (divider)
+- 3-level surfaces: `surface-1` (container), `surface-2` (nested), `surface-3` (interactive)
+- Applied to all 16 storefront + admin files
+- All admin hardcoded dark colors eliminated — semantic tokens only
+- Admin components no longer force dark — follow theme toggle
+- Lint: 0 errors, Build: ✓, Typecheck: 0 errors

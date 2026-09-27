@@ -714,3 +714,51 @@ Per client direction: Clean Trust (white+blue) is now the default theme for the 
 - **Toggle**: click the sun/moon icon in the nav → switches to Industrial Steel (warm charcoal + amber)
 - Toggle persists across all pages (localStorage via next-themes)
 - Works on both storefront and admin (same toggle button in both headers)
+
+
+---
+
+## [2.2.0] - 2026-09-26
+
+### Changed (3-Level Border + Surface Hierarchy — ADR-025)
+
+Establishes a clear visual hierarchy through borders, surfaces, and spacing rhythm — without changing layout, content, or functionality. The user can now distinguish page-level containers from nested components immediately.
+
+#### New Design Tokens (globals.css)
+- **Border hierarchy** (3 levels):
+  - `border-border-strong` (Level 1) — structural: page sections, major containers, table outer borders, KPI cards
+  - `border` / `border-border` (Level 2, default) — component: cards, inputs, table rows
+  - `border-border-subtle` (Level 3) — divider: hairlines within cards, separators
+- **Surface hierarchy** (3 levels):
+  - `bg-surface-1` — primary container
+  - `bg-surface-2` — nested component / alt section
+  - `bg-surface-3` — interactive/input surface
+- Both light (Clean Trust) and dark (Industrial Steel) themes have their own border + surface values
+
+#### Applied to Storefront (6 files)
+- Homepage: section boundaries → border-strong, grid outer → border-strong, internal dividers → border-subtle. Tightened heading→text spacing, expanded between-section spacing.
+- Header: meta strip → border-subtle, nav bar → border, search focus → border-strong
+- Footer: trust strip → border-strong, bottom bar → border
+- ProductCard: card → border, image/meta divider → border-subtle, price section → border-subtle
+- Products page: sidebar tops → border-strong, link dividers → border-subtle, grid → bg-border-strong
+- Cart: item rows → border, summary card → border-strong, price breakdown → border-subtle
+
+#### Applied to Admin (10 files)
+- All hardcoded dark colors (`#2A2823`, `#1A1916`, `#292524`, `#3A3830`) replaced with semantic tokens
+- Removed forced `dark` class wrappers from 7 admin components (now follow theme toggle)
+- Input focus states unified to `focus:border-border-strong`
+- Button hover states unified to `hover:border-border-strong`
+- Grid separators `gap-px bg-[#2A2823]` → `gap-px bg-border` (works in both themes)
+
+#### Spacing Refinements
+- Tightened spacing between related elements (heading → supporting text → body) by one step
+- Expanded spacing between unrelated sections (py-16 → py-20, lg:py-24 → lg:py-28)
+- Whitespace now used as a hierarchy tool — some borders removed where whitespace alone provides separation
+
+#### Bug Fix
+- Fixed ThemeToggle lint error (`setMounted(true)` in `useEffect` → `setTimeout` deferral)
+
+### Verified
+- Lint: 0 errors (was 1)
+- Build: ✓ compiled, 24/24 pages, BUILD_ID present
+- Typecheck: 0 errors

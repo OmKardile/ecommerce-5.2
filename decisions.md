@@ -598,3 +598,26 @@ When new decisions are made during subsequent phases, append them using the foll
   - Users who prefer dark mode can toggle to Industrial Steel — and it persists.
   - The admin and checkout are no longer forced dark — they follow the user's preference.
   - Supersedes the forced-split approach from ADR-023 (which is now relaxed — both themes are available everywhere via toggle).
+
+
+---
+
+## ADR-025: 3-Level Border + Surface Hierarchy
+* **Status**: ACCEPTED
+* **Date**: 2026-09-26
+* **Context**:
+  The interface lacked visual hierarchy — every element had the same border weight, making it hard to distinguish page-level containers from nested components. The brief called for a clear 3-level border hierarchy + surface differentiation without changing the design language or functionality.
+* **Decision**:
+  1. **3 border levels**: `border-border-strong` (structural, Level 1), `border` (component, Level 2 default), `border-border-subtle` (divider, Level 3).
+  2. **3 surface levels**: `surface-1` (primary container), `surface-2` (nested), `surface-3` (interactive).
+  3. Applied across all 16 storefront + admin files.
+  4. Replaced ALL hardcoded dark-mode colors in admin with semantic tokens.
+  5. Removed forced `dark` class from 7 admin components (they now follow the theme toggle).
+  6. Input focus → `border-border-strong` (level 2 → level 1 on focus).
+  7. Whitespace used as hierarchy tool — borders removed where whitespace alone separates.
+* **Consequences**:
+  - Parent containers visually dominate child containers.
+  - Important sections separated more strongly than minor sections.
+  - Borders subtle enough to avoid visual noise.
+  - Works in both light (Clean Trust) and dark (Industrial Steel) themes.
+  - Interface feels cohesive in grayscale (border contrast is structural, not decorative).

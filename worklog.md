@@ -1393,3 +1393,24 @@ Stage Summary:
 - `gap-px bg-[#2A2823]` grid separator trick now uses `gap-px bg-border` (semantic border color fills the 1px gaps, works in both themes). `divide-[#2A2823]` replaced with `divide-border` (component-level row dividers) or `divide-border-subtle` (internal panel dividers) depending on context.
 - Lint: 0 errors / 0 warnings in all 10 reworked files. TypeScript: 0 errors. The single pre-existing lint error in ThemeToggle.tsx (added in Task 17) is unrelated to this task's border/surface/spacing changes.
 - This completes the border-hierarchy migration across the entire Patel Networks app — Task 18-STOREFRONT-BORDERS covered the 6 storefront files, this task covered the 10 admin files. Both halves now speak the same 3-level border + 3-level surface design language.
+
+
+---
+Task ID: 18-BORDER-HIERARCHY
+Agent: Lead Developer (Z.ai Code) + 2 parallel subagents
+Task: Apply 3-level border + surface hierarchy across the entire codebase (16 files).
+
+Work Log:
+- Added border-strong/border/border-subtle + surface-1/2/3 CSS variables to globals.css (both light + dark themes)
+- Registered new tokens in @theme inline block (Tailwind generates utilities: border-border-strong, border-border-subtle, bg-surface-1/2/3)
+- Subagent 1 (storefront, 6 files): homepage, Header, Footer, ProductCard, products page, cart — applied 3-level borders + surface tokens + spacing refinements
+- Subagent 2 (admin, 10 files): AdminSidebar, AdminHeader, admin login, admin dashboard, OrderFulfillmentConsole, InventoryManagementConsole, ProductCatalogTable, CustomerDirectoryTable, CommercialReportsConsole, COD settings — replaced ALL hardcoded dark colors with semantic tokens, removed forced dark wrappers
+- Fixed ThemeToggle lint error (setTimeout deferral for setMounted)
+- Lint: 0 errors, Build: ✓ 24/24 pages, Typecheck: 0 errors
+
+Stage Summary:
+- 3-level border + surface hierarchy established across the entire codebase
+- Parent containers dominate child containers
+- All admin hardcoded dark colors eliminated (semantic tokens only)
+- Admin components now follow the theme toggle (no forced dark)
+- Spacing rhythm refined (tight within groups, expanded between sections)
