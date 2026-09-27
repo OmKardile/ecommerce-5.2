@@ -813,3 +813,56 @@ Full implementation of the stock-monitoring employee panel with superadmin-contr
 - Build: ✓ 25/25 pages (was 24 — new /stock routes added)
 - Typecheck: 0 errors
 - DB: 33 tables (was 29 — 4 new stock tables created via safe additive SQL)
+
+
+---
+
+## [2.4.0] - 2026-09-27
+
+### Changed (Role Restructure + Staff Wizard + Design Weight)
+
+#### Role Restructuring (ADR-027)
+- **UserRole enum simplified**: SUPER_ADMIN, STAFF, CUSTOMER (removed ADMIN, INVENTORY_MANAGER, ORDER_MANAGER, CONTENT_MANAGER)
+- **DB migration**: old roles → STAFF via `ALTER TYPE ... USING CASE` (zero data loss)
+- **StockPermission enum removed**: permissions now stored as `String[]` (TEXT[] in PostgreSQL)
+- **New permissions library** (`src/lib/permissions.ts`): 9 module groups, 18 permissions total:
+  - Dashboard, Orders, Products, Inventory, Customers, Reports, Stock Panel, Employees, Settings
+- **SUPER_ADMIN**: full access to everything (no permission checks needed), can create other superadmins
+- **STAFF**: dynamic permissions set by superadmin at creation time via wizard
+- **CUSTOMER**: no admin access
+
+#### Staff Creation Wizard
+- 3-step modal: identity → permission matrix → review + create
+- Visual permission matrix showing all 9 module groups with checkboxes
+- DASHBOARD_VIEW locked as base permission (can't remove)
+- Live "X of N granted" counter
+- Permission editor in EmployeeManagementConsole shows the full matrix
+
+#### Admin Sidebar Permission Filtering
+- Each nav item has a `requiredPermission`
+- Staff only see items they have permission for
+- SUPER_ADMIN sees everything
+- Uses `hasPermission()` from `@/lib/permissions`
+
+#### Auth Updates
+- `admin-auth.service`: accepts SUPER_ADMIN + STAFF, includes `permissions: string[]` in JWT payload
+- `proxy.ts`: `/admin/*` checks role SUPER_ADMIN||STAFF; `/stock/*` checks `'STOCK_VIEW'` in permissions
+- `employee-auth.service`: uses string permissions, delegates to `hasPermission()`
+- All `StockPermission` enum references → string literals
+
+#### Design Weight (addressing "too minimalistic / Zara coded")
+- **Stronger borders**: border-strong `#94A3B8` (was `#CBD5E1`), more visible
+- **Heavier type**: `font-extrabold` headings, `font-semibold` nav links
+- **Solid surfaces**: cards `bg-card` (distinct from page bg), sidebar `bg-surface-2`
+- **Denser layout**: section `py-16 lg:py-20` (was `py-20 lg:py-28`)
+- **Larger buttons**: `px-7` (was `px-6`)
+- **Product cards**: `border-border-strong`, `font-bold` title, `text-xl` price
+- **Admin sidebar**: `bg-surface-2` panel, active item `bg-surface-3`
+- **Admin header**: `bg-surface-1`, `border-border-strong` bottom
+- **Products sidebar**: solid `bg-surface-2` panel with `p-5`
+
+### Verified
+- Lint: 0 errors
+- Build: ✓ 25/25 pages
+- Prisma generate: ✓
+- DB: 33 tables, UserRole enum migrated (old roles → STAFF)

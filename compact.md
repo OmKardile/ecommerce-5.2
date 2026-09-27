@@ -161,3 +161,23 @@ https://patel-5-2.onrender.com (auto-deploy on git push to main)
 - Superadmin controls all permissions per employee
 - Defense in depth: proxy guard + server action permission checks + UI button hiding
 - 33 DB tables (was 29), 25 routes (was 24), lint 0 errors, build ✓
+
+
+---
+
+## Update (v2.4.0 — 2026-09-27)
+
+### Role Restructure (ADR-027)
+- UserRole: SUPER_ADMIN, STAFF, CUSTOMER (3 roles, was 6)
+- 18 dynamic permissions across 9 modules (@/lib/permissions.ts)
+- Staff creation wizard: 3-step modal with permission matrix
+- Admin sidebar filters by permissions (staff only see what they can access)
+- SUPER_ADMIN: full access, can create other superadmins
+- StockPermission enum removed → unified String[] permissions
+
+### Design Weight
+- Stronger borders (border-strong #94A3B8)
+- Heavier type (font-extrabold headings)
+- Solid surfaces (bg-card, bg-surface-2 panels)
+- Denser layout (py-16 lg:py-20)
+- Larger buttons (px-7)

@@ -642,3 +642,25 @@ When new decisions are made during subsequent phases, append them using the foll
   - Superadmin has full control over who can do what.
   - The stock panel works in the Clean Trust theme (light by default, respects theme toggle).
   - Existing inventory data is unchanged — the stock panel reads from the existing Inventory + InventoryMovement models.
+
+
+---
+
+## ADR-027: Role Restructure — SUPER_ADMIN + Dynamic STAFF
+* **Status**: ACCEPTED
+* **Date**: 2026-09-27
+* **Context**:
+  The original role system had 6 roles (SUPER_ADMIN, ADMIN, INVENTORY_MANAGER, ORDER_MANAGER, CONTENT_MANAGER, CUSTOMER). The client requested simplification: SUPER_ADMIN (store owner with full control) + STAFF (dynamic permissions set by superadmin) + CUSTOMER. The superadmin should be able to create staff accounts and control exactly which functions each staff member can access via a wizard.
+* **Decision**:
+  1. **Simplified UserRole enum**: SUPER_ADMIN, STAFF, CUSTOMER (3 values, was 6)
+  2. **Dynamic permissions**: 18 permissions across 9 modules, stored as `String[]` in `employee_profiles.permissions`
+  3. **Permission library** (`@/lib/permissions.ts`): `hasPermission()`, `hasAnyPermission()`, `getEffectivePermissions()`, `PERMISSION_GROUPS` (for the wizard UI), `ALL_PERMISSIONS`, `DEFAULT_PERMISSIONS`
+  4. **Staff creation wizard**: 3-step modal (identity → permission matrix → review)
+  5. **Admin sidebar filtering**: each nav item has a `requiredPermission`; staff only see items they can access
+  6. **SUPER_ADMIN**: bypasses all permission checks, can create other superadmins
+  7. **Removed StockPermission enum**: merged into the unified permission system
+* **Consequences**:
+  - Simpler role model — only 3 roles to manage
+  - Flexible: superadmin can grant any combination of 18 permissions per staff member
+  - Defense in depth: sidebar filtering + server action permission checks + proxy guards
+  - Existing stock employee (stock@patelnetworks.in) migrated to STAFF with appropriate permissions

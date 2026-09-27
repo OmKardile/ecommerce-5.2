@@ -1825,3 +1825,24 @@ Stage Summary:
 - /admin/* proxy guard now explicitly checks the role claim is SUPER_ADMIN or STAFF.
 - Stock-panel permission values renamed to match the new catalog: STOCK_MANAGE_ALERTS → STOCK_ALERTS_MANAGE, STOCK_RECONCILE → STOCK_COUNT. STOCK_ADJUST removed (use INVENTORY_ADJUST instead).
 - Lint: 0 errors / 0 warnings. TypeScript: 0 errors.
+
+
+---
+Task ID: 20-ROLE-RESTRUCTURE-DESIGN-WEIGHT
+Agent: Lead Developer (Z.ai Code) + 2 parallel subagents
+Task: (1) Restructure roles to SUPER_ADMIN + STAFF + CUSTOMER with dynamic permissions. (2) Build staff creation wizard with permission matrix. (3) Add visual weight to the design (addressing "too minimalistic / Zara coded").
+
+Work Log:
+- DB migration: UserRole enum changed via ALTER TYPE USING CASE (old roles → STAFF). StockPermission enum dropped. employee_profiles.permissions changed to TEXT[]. Zero data loss.
+- Created @/lib/permissions.ts: 9 permission groups (Dashboard, Orders, Products, Inventory, Customers, Reports, Stock Panel, Employees, Settings), 18 permissions total, hasPermission/hasAnyPermission/getEffectivePermissions functions.
+- Subagent 1 (staff wizard + roles, 16 files): StaffCreationWizard (3-step modal with permission matrix), EmployeeManagementConsole updated, employee.actions.ts updated, employee-auth.service.ts updated, stock.actions.ts updated, proxy.ts updated, AdminSidebar permission-filtered, admin/layout.tsx passes permissions, all StockPermission refs → string literals, all old UserRole refs → STAFF.
+- Subagent 2 (design weight, 8 files): globals.css stronger borders + heavier type, homepage denser + bolder, Header taller + bigger, Footer solid sections, ProductCard stronger borders + bolder, products page solid sidebar, AdminSidebar solid panel, AdminHeader solid.
+- Lint: 0 errors. Build: ✓ 25/25 pages. Prisma generate: ✓.
+
+Stage Summary:
+- Role system: SUPER_ADMIN + STAFF + CUSTOMER (3 roles, was 6)
+- 18 dynamic permissions across 9 modules, set per-staff by superadmin via wizard
+- Staff creation wizard with visual permission matrix
+- Admin sidebar filters nav items based on staff permissions
+- Design has more visual weight: stronger borders, heavier type, solid surfaces, denser layout
+- All docs updated.
