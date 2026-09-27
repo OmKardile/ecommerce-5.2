@@ -156,7 +156,7 @@ patelnetworks/
 ### Prerequisites
 * Node.js 20+ (LTS)
 * npm or pnpm
-* PostgreSQL 16 (self-hosted on client VPS via Docker + PgBouncer — see `VPS-DEPLOYMENT.md` and ADR-022)
+* PostgreSQL 16 (self-hosted on client VPS — ADR-022). Split theme: storefront Clean Trust (white+blue, ADR-023), admin Industrial Steel (charcoal+amber)
 
 ### 1. Database & Migrations
 ```bash

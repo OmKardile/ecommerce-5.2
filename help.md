@@ -134,3 +134,25 @@ npx tsx scripts/comprehensive_loopback_test.ts
 # 3. Master Domain Loopback Suite
 npx tsx scripts/master_loopback_test.ts
 ```
+
+
+---
+
+## v2.0.0 Update — Admin Operator Handbook (Industrial Steel Theme)
+
+### Visual Changes for Operators
+The admin console now uses the "Industrial Steel" theme:
+- **Background**: warm charcoal `#1C1917` (not pure black — easier on the eyes for long sessions)
+- **Accent**: amber `#F59E0B` (replaces the old blue — used for active states, links, buttons)
+- **Text**: off-white on charcoal (high contrast, readable)
+
+### What to Expect
+- Active sidebar items: amber left-border (was blue)
+- Primary buttons: white on charcoal (was blue on dark)
+- Data tables: stone-700 hairline rows (was slate-800)
+- Status indicators: amber dot-rec (was blue)
+- Hover states: amber-tint background (was blue-tint)
+
+### No Functional Changes
+All admin functionality is unchanged — only the colors are different. The same
+buttons, forms, tables, and workflows work exactly as before.

@@ -346,3 +346,26 @@ Because open rates on WhatsApp in India exceed 90%, transactional notifications 
 
 
 
+
+
+---
+
+## v2.0.0 Update — Theme Impact on Business Flows
+
+### Storefront (Clean Trust — white + blue)
+The bright, trustworthy palette reinforces the B2B procurement positioning:
+- White backgrounds = datasheet/transparency feel (no hidden refurbished goods)
+- Deep blue accent = corporate authority, GST compliance signaling
+- Product photos pop against white — visual trust for hardware buyers
+
+### Admin/Checkout (Industrial Steel — charcoal + amber)
+The warm industrial palette signals "operations backend":
+- Warm charcoal (not pure black) = approachable, not sinister
+- Amber accent = technical/industrial (hardware store feel)
+- Visually distinct from storefront — clear context switch for employees
+
+### Impact on Conversion
+- Checkout uses Industrial Steel (dark) — this is intentional: the dark theme
+  reduces visual distraction at the payment step, focusing attention on the form
+- The amber accent draws the eye to the primary CTA ("Place order")
+- Trust signals (GST, SSL, Razorpay) use amber for emphasis

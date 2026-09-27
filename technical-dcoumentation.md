@@ -1176,3 +1176,49 @@ SMS_SENDER_ID="PTLNET"
 
 
 
+
+
+---
+
+## v2.0.0 Update — Split Theme Architecture
+
+### Design System Tokens (globals.css)
+
+#### Storefront Theme (`:root` — "Clean Trust")
+- `--background`: `#FFFFFF` (pure white)
+- `--foreground`: `#0F172A` (slate-900)
+- `--brand`: `#1E40AF` (blue-800, the accent)
+- `--brand-soft`: `#3B82F6` (blue-500)
+- `--brand-tint`: `#EFF6FF` (blue-50, hover bg)
+- `--border`: `#E2E8F0` (slate-200)
+- `--card`: `#FFFFFF`
+
+#### Admin/Checkout Theme (`.dark` — "Industrial Steel")
+- `--background`: `#1C1917` (stone-900, warm charcoal — NOT pure black)
+- `--foreground`: `#FAFAF9` (stone-50)
+- `--brand`: `#F59E0B` (amber-500, the accent)
+- `--brand-soft`: `#FBBF24` (amber-400)
+- `--brand-tint`: `#422006` (amber-950, hover bg)
+- `--border`: `#44403C` (stone-700)
+- `--card`: `#292524` (stone-800)
+
+### Theme Application
+- `admin/layout.tsx`: wraps children in `<div className="dark ...">` — admin pages get Industrial Steel
+- `checkout/page.tsx`: root div has `className="dark ..."` — checkout gets Industrial Steel
+- All other pages: use default `:root` (storefront Clean Trust)
+- The `.dark` class triggers the `.dark {}` CSS block in globals.css
+
+### Removed in v2.0.0
+- CinematicHero component (dark VFX hero — no longer used)
+- ParallaxSection component (dark parallax bg — no longer used)
+- Fraunces serif font on storefront headings (replaced with sans-serif font-bold)
+- Pure black `#131210` background (replaced with warm charcoal `#1C1917` for admin, white for storefront)
+- Blue accent in dark/admin mode (replaced with amber)
+
+### Build Configuration
+- `next.config.ts`: `output: "standalone"` (for Render deployment)
+- `package.json` build: `next build --webpack` (avoids Turbopack prerender bug)
+- `package.json` start: `next start` (reads PORT env, no hardcoded port)
+- `proxy.ts` (renamed from middleware.ts): runs on Node runtime, not Edge
+- `next` pinned to `16.1.3` (16.3.6 has /_global-error prerender bug)
+- `NODE_ENV` must be `production` (non-standard values cause useContext crash)
