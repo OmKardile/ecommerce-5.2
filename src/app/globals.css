@@ -63,44 +63,43 @@
   --radius-xl: 8px;
 }
 
-/* ---------- STOREFRONT: Clean Trust (Option 3) ---------- */
-/* White base, deep blue accent — bright, safe, reliable B2B */
+/* ---------- STOREFRONT: Bold Commerce ---------- */
+/* Deep navy base + electric accent — confident, substantial, real store */
 :root {
-  /* Radii — small for precision instrument feel */
-  --radius: 4px;
+  --radius: 6px;
 
-  /* Core neutrals — clean white/slate */
-  --ink: #0F172A;            /* slate-900 — text */
-  --paper: #FFFFFF;          /* pure white background */
-  --bone: #F8FAFC;           /* slate-50 — alt section */
-  --stone: #64748B;          /* slate-500 — secondary text */
-  --stone-soft: #94A3B8;     /* slate-400 — tertiary text */
-  --hairline: #E2E8F0;       /* slate-200 — borders */
-  --hairline-strong: #CBD5E1; /* slate-300 */
+  /* Core neutrals — warm slate with navy undertone */
+  --ink: #0B1120;            /* near-black navy — text */
+  --paper: #FFFFFF;          /* white background */
+  --bone: #F3F4F6;           /* gray-100 — alt section */
+  --stone: #4B5563;          /* gray-600 — secondary text */
+  --stone-soft: #6B7280;     /* gray-500 — tertiary text */
+  --hairline: #D1D5DB;       /* gray-300 — borders */
+  --hairline-strong: #9CA3AF; /* gray-400 */
 
-  /* Brand accent — deep authoritative blue */
-  --brand: #1E40AF;          /* blue-800 */
-  --brand-soft: #3B82F6;     /* blue-500 */
-  --brand-tint: #EFF6FF;     /* blue-50 */
+  /* Brand accent — electric indigo (confident, modern, not generic blue) */
+  --brand: #4F46E5;          /* indigo-600 */
+  --brand-soft: #818CF8;     /* indigo-400 */
+  --brand-tint: #EEF2FF;     /* indigo-50 */
 
-  /* 3-level border hierarchy (ADR-025) — strengthened for visual weight */
-  --border-strong: #94A3B8;   /* level 1 — structural: slate-400, more visible */
-  --border: #CBD5E1;          /* level 2 — component: slate-300 */
-  --border-subtle: #E2E8F0;  /* level 3 — divider: slate-200 */
+  /* 3-level border hierarchy */
+  --border-strong: #9CA3AF;   /* level 1 — structural: gray-400 */
+  --border: #D1D5DB;           /* level 2 — component: gray-300 */
+  --border-subtle: #E5E7EB;   /* level 3 — divider: gray-200 */
 
   /* Surface hierarchy */
-  --surface-1: #FFFFFF;       /* primary container (same as bg, uses border for separation) */
-  --surface-2: #F8FAFC;       /* nested component / alt section */
-  --surface-3: #F1F5F9;       /* interactive/input surface */
+  --surface-1: #FFFFFF;       /* primary container */
+  --surface-2: #F9FAFB;       /* gray-50 — alt section */
+  --surface-3: #F3F4F6;       /* gray-100 — interactive/input */
 
-  /* Semantic mapping (shadcn-compatible) */
+  /* Semantic mapping */
   --background: var(--paper);
   --foreground: var(--ink);
   --card: var(--surface-1);
   --card-foreground: var(--ink);
   --popover: var(--surface-1);
   --popover-foreground: var(--ink);
-  --primary: var(--ink);
+  --primary: var(--brand);            /* primary buttons = indigo */
   --primary-foreground: #FFFFFF;
   --secondary: var(--surface-2);
   --secondary-foreground: var(--ink);
@@ -108,26 +107,26 @@
   --muted-foreground: var(--stone);
   --accent: var(--brand-tint);
   --accent-foreground: var(--brand);
-  --destructive: #DC2626;    /* red-600 */
-  --border: var(--border);           /* level 2 default */
+  --destructive: #DC2626;
+  --border: var(--border);
   --input: var(--border);
   --ring: var(--brand);
-  --hairline: var(--border-subtle);  /* backward compat */
+  --hairline: var(--border-subtle);
   --hairline-strong: var(--border-strong);
 
   --chart-1: var(--brand);
-  --chart-2: #475569;
-  --chart-3: #94A3B8;
-  --chart-4: #60A5FA;
-  --chart-5: #0F172A;
+  --chart-2: #6366F1;
+  --chart-3: #A5B4FC;
+  --chart-4: #C7D2FE;
+  --chart-5: #0B1120;
 
   --sidebar: #FFFFFF;
   --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--ink);
+  --sidebar-primary: var(--brand);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: var(--bone);
+  --sidebar-accent: var(--surface-2);
   --sidebar-accent-foreground: var(--ink);
-  --sidebar-border: var(--hairline);
+  --sidebar-border: var(--border);
   --sidebar-ring: var(--brand);
 }
 
@@ -263,24 +262,24 @@
   width: 100%;
 }
 
-/* Sharp interactive — primary ink button */
+/* Sharp interactive — primary indigo button */
 .btn-ink {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--ink);
-  color: var(--paper);
-  font-weight: 500;
+  background: var(--brand);
+  color: #FFFFFF;
+  font-weight: 600;
   font-size: 13px;
   line-height: 1;
-  padding: 0.875rem 1.75rem;
-  border-radius: 3px;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius);
   transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
               opacity 0.18s ease,
               background 0.18s ease;
   will-change: transform;
 }
-.btn-ink:hover { transform: translateY(-1px); }
+.btn-ink:hover { transform: translateY(-1px); background: var(--brand-soft); }
 .btn-ink:active { transform: translateY(0) scale(0.985); }
 
 /* Ghost / secondary button — hairline border, no fill */
