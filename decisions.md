@@ -558,3 +558,23 @@ When new decisions are made during subsequent phases, append them using the foll
   * The Prisma schema and all application logic (orders, payments, inventory, OTP auth, kit builder) are 100% preserved — only the connection target changes.
   * **Blocker until cutover**: requires VPS access + chosen passwords + data-migration decision (keep the 376 existing rows or start fresh). See `VPS-DEPLOYMENT.md` §11.
   * ADR-009 (Supabase managed database) is now SUPERSEDED by this ADR.
+
+
+---
+
+## ADR-023: Split Theme — Storefront Clean Trust + Admin Industrial Steel
+* **Status**: ACCEPTED
+* **Date**: 2026-09-26
+* **Context**:
+  The prior single dark cinematic theme (v1.9.0) was rejected by the client — pure black felt "sinister rather than premium" for security hardware. The client directed a split: storefront should be bright and trustworthy (Option 3 "Clean Trust"), while admin/checkout should be dark and industrial (Option 2 "Industrial Steel").
+* **Decision**:
+  Two distinct CSS variable sets:
+  1. **Storefront** (`:root`): white `#FFFFFF` bg, slate-900 text, deep blue `#1E40AF` accent — bright, safe, reliable B2B procurement feel.
+  2. **Admin/Checkout** (`.dark`): warm charcoal `#1C1917` (stone-900) bg, amber `#F59E0B` accent, off-white text — industrial, technical, warehouse operations feel. NOT pure black (has warmth to avoid the "void" effect).
+  
+  The `.dark` class is applied to the admin layout wrapper and the checkout page root div. All other pages use the default `:root` (storefront) theme.
+* **Consequences**:
+  - Storefront feels safe and trustworthy (white + blue = reliability)
+  - Admin feels industrial and technical (charcoal + amber = warehouse operations)
+  - The two themes are clearly distinct but share the same design DNA (sharp corners, hairline borders, sans-serif, mono numbers)
+  - Amber accent in admin provides strong visual differentiation from the storefront blue

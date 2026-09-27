@@ -104,3 +104,19 @@ npx tsx scripts/master_loopback_test.ts
 - robots.txt fixed (was 500, now 200)
 - Mobile responsive: products page sidebar overflow fixed (drawer replaces sidebar on mobile)
 - Lint: 0 errors, Typecheck: 0 errors, Build: exit 0
+
+
+---
+
+## Update (v2.0.0 — 2026-09-26)
+
+### Current Theme: Split
+- **Storefront**: Clean Trust — white #FFFFFF + deep blue #1E40AF
+- **Admin/Checkout**: Industrial Steel — warm charcoal #1C1917 + amber #F59E0B
+- Admin uses `.dark` class on layout wrapper; checkout uses `.dark` on root div
+- Storefront uses `:root` (default light theme)
+- No more pure black void — charcoal has warmth (stone-900)
+- No more Fraunces serif on storefront headings — clean sans-serif throughout
+
+### Live URL
+https://patel-5-2.onrender.com (auto-deploy on git push to main)

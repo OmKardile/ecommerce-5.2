@@ -1102,3 +1102,23 @@ Stage Summary:
 - All routes functional, all auth guards working, robots.txt fixed.
 - Stock panel research documented (not implemented).
 - Next: UI/UX research on e-commerce/admin patterns, full responsive audit.
+
+
+---
+Task ID: 16-SPLIT-THEME
+Agent: Lead Developer (Z.ai Code)
+Task: Implement split color theme per client direction: Option 3 (Clean Trust — white+blue) for storefront, Option 2 (Industrial Steel — charcoal+amber) for admin/checkout. Fix checkout page. Update all docs.
+
+Work Log:
+- Rewrote globals.css :root (storefront): white #FFFFFF bg, slate-900 text, blue-800 accent, slate-200 borders. Removed warm paper/bone tones.
+- Rewrote globals.css .dark (admin/checkout): stone-900 #1C1917 bg (warm charcoal, NOT pure black), amber-500 accent, stone-50 text. Replaced blue accent with amber in dark mode.
+- Added 'dark' class to checkout/page.tsx root div (picks up Industrial Steel theme).
+- Admin layout already had 'dark' class (unchanged).
+- Rewrote homepage (page.tsx): removed CinematicHero + ParallaxSection, clean white storefront with product image, blue accent, sans-serif headings. All sections light.
+- Build verified: ✓ compiled, 24/24 pages, BUILD_ID present.
+- Updated changelog.md (v2.0.0), decisions.md (ADR-023), worklog.md, compact.md.
+
+Stage Summary:
+- Split theme implemented: storefront = white+blue (Clean Trust), admin+checkout = charcoal+amber (Industrial Steel).
+- All docs updated.
+- Known issue: checkout form not rendering on Render (server action cart fetch) — investigating.

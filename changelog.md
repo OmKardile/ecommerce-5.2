@@ -640,3 +640,51 @@ The final remaining old-aesthetic surface — the admin console — has been rew
 
 ### Research (NOT implemented)
 - Created `STOCK-PANEL-RESEARCH.md`: comprehensive spec for a stock-monitoring employee panel — proposed schema (StockAlert, StockReconciliation, StockCountSession models + STOCK_CLERK role), 5 page designs (dashboard, alerts, movements, count sessions, reconciliation), auth guards, server actions, alert generation logic, implementation estimate (~20 hours), and 6 open questions for the client. **Not implemented — awaiting client confirmation.**
+
+
+---
+
+## [2.0.0] - 2026-09-26
+
+### Changed (Split Theme — Storefront Clean Trust + Admin Industrial Steel)
+
+Per client direction: two distinct color themes for different contexts.
+
+#### Storefront Theme: "Clean Trust" (Option 3)
+- **Background**: pure white `#FFFFFF` (was warm off-white `#F6F3ED`)
+- **Text**: slate-900 `#0F172A` (was warm near-black `#131210`)
+- **Accent**: deep blue `#1E40AF` (blue-800, unchanged)
+- **Borders**: slate-200 `#E2E8F0` (was warm `#DCD6C8`)
+- **Feel**: bright, safe, reliable B2B procurement portal (Digi-Key / McMaster-Carr)
+
+#### Admin/Checkout Theme: "Industrial Steel" (Option 2)
+- **Background**: warm charcoal `#1C1917` (stone-900, NOT pure black — has warmth)
+- **Text**: off-white `#FAFAF9` (stone-50)
+- **Accent**: amber `#F59E0B` (amber-500 — warm, technical, industrial)
+- **Borders**: stone-700 `#44403C`
+- **Feel**: industrial warehouse / precision engineering (not a void)
+
+#### Applied to
+- **Storefront** (homepage, products, product detail, cart, kit-builder, about, contact, faq, policies, account/login, order-success): Clean Trust (white + blue)
+- **Admin** (admin layout, login, dashboard, orders, products, inventory, customers, reports, COD settings): Industrial Steel (charcoal + amber)
+- **Checkout**: Industrial Steel (charcoal + amber) — added `dark` class to checkout root div
+
+#### Homepage Rewrite
+- Removed CinematicHero + ParallaxSection (dark cinematic is gone from storefront)
+- Clean white hero with product image, blue accent on "precisely"
+- All sections light: white bg with bone/50 alt sections
+- Sans-serif headings (font-bold, tracking-tight), no Fraunces serif
+- Mobile-responsive padding (px-4 on mobile, sm:px-6, lg:px-10)
+
+### Verified
+- Build: ✓ compiled, 24/24 pages, BUILD_ID present, exit 0
+- All 31 routes: HTTP 200/307/404 (correct)
+- Admin auth guards: ✓ all /admin/* redirect to login without session
+- Customer auth guard: ✓ /account redirects to login without session
+- robots.txt: ✓ HTTP 200
+- sitemap.xml: ✓ HTTP 200
+
+### Known Issues
+- Checkout page form not rendering on Render (server action cart fetch fails silently in production) — investigating
+- Admin login flow verified working via agent-browser (login → redirect to /admin dashboard)
+- Add to cart verified working (cart count updates, "View cart" confirmation appears)
