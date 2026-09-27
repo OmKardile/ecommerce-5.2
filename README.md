@@ -182,3 +182,26 @@ npx tsx scripts/comprehensive_loopback_test.ts
 npx tsx scripts/master_loopback_test.ts
 ```
 
+
+
+---
+
+## v2.4.0 Update — Role Restructure + Staff Wizard + Design Weight
+
+### Roles
+- **SUPER_ADMIN**: full access, can create other superadmins, can change own credentials
+- **STAFF**: dynamic permissions (18 permissions across 9 modules) set by superadmin via creation wizard
+- **CUSTOMER**: no admin access
+
+### Staff Creation
+- Superadmin creates staff via `/admin/employees` → Staff Creation Wizard (3-step modal)
+- Permission matrix: 9 module groups with checkboxes
+- Admin sidebar filters nav items based on staff permissions
+
+### Design
+- Clean Trust (white + blue) default theme, Industrial Steel (charcoal + amber) as dark mode toggle
+- 3-level border hierarchy: border-strong (structural), border (component), border-subtle (divider)
+- Design weight: stronger borders, heavier type, solid surfaces, denser layout
+
+### Live URL
+https://patel-5-2.onrender.com (auto-deploy on git push)

@@ -232,3 +232,32 @@ When continuing development in Google AI Studio, focus on the following high-pri
 > 2. Implement the requested feature adhering to the strict TypeScript and architectural standards.  
 > 3. Re-run `npx tsc --noEmit` and `npx tsx scripts/comprehensive_loopback_test.ts`.  
 > 4. Append all new changes to `continue.md`, `changelog.md`, `decisions.md`, and related `.md` files.
+
+
+---
+
+## v2.4.0 Update — Current State
+
+### Live URL
+https://patel-5-2.onrender.com (Render, auto-deploy on git push)
+
+### Database
+- Supabase PostgreSQL (temporary — will migrate to client VPS per ADR-022)
+- 33 tables, 438+ rows
+- UserRole enum: SUPER_ADMIN, STAFF, CUSTOMER
+
+### Role System (ADR-027)
+- SUPER_ADMIN: full access, can create other superadmins
+- STAFF: 18 dynamic permissions across 9 modules (set by superadmin via wizard)
+- CUSTOMER: OTP login, no admin access
+
+### Credentials
+- Admin: superadmin@patelnetworks.in / patel@admin2026
+- Stock staff: stock@patelnetworks.in / stock@2026
+
+### Theme
+- Default: Clean Trust (white + deep blue)
+- Toggle: Industrial Steel (warm charcoal + amber) via sun/moon icon in nav
+
+### GitHub
+https://github.com/OmKardile/patel-5.2 (main branch, auto-deploys to Render)

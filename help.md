@@ -156,3 +156,28 @@ The admin console now uses the "Industrial Steel" theme:
 ### No Functional Changes
 All admin functionality is unchanged — only the colors are different. The same
 buttons, forms, tables, and workflows work exactly as before.
+
+
+---
+
+## v2.4.0 Update — Staff Roles + Permission System
+
+### New Role System
+The admin console now supports two access levels:
+- **SUPER_ADMIN** (store owner): full access to everything. Can create other superadmins, manage staff, change own credentials.
+- **STAFF**: dynamic permissions. The superadmin controls exactly which modules each staff member can access.
+
+### Creating Staff (Superadmin only)
+1. Login to `/admin` as superadmin
+2. Go to **Employees** in the sidebar
+3. Click **Create Employee**
+4. Fill in identity details (name, email, phone, password, employee code)
+5. Select permissions from the 9-module matrix:
+   - Dashboard, Orders, Products, Inventory, Customers, Reports, Stock Panel, Employees, Settings
+6. Review and create
+
+### Permission-Based Sidebar
+Staff members only see the admin sidebar items they have permission for. If a staff member doesn't have INVENTORY_VIEW, they won't see "Inventory" in the sidebar at all.
+
+### Stock Panel Access
+Staff with STOCK_VIEW permission can access `/stock/login` → `/stock` (the dedicated stock monitor panel). This is separate from the admin console.

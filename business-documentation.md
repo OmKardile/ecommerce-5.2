@@ -369,3 +369,36 @@ The warm industrial palette signals "operations backend":
   reduces visual distraction at the payment step, focusing attention on the form
 - The amber accent draws the eye to the primary CTA ("Place order")
 - Trust signals (GST, SSL, Razorpay) use amber for emphasis
+
+
+---
+
+## v2.4.0 Update — Role System + Permission Model
+
+### Role Hierarchy
+| Role | Access Level | Count |
+|---|---|---|
+| SUPER_ADMIN | Full access, can create other superadmins | 1 (admin@patelnetworks.com) |
+| STAFF | Dynamic permissions set by superadmin | 1 (stock@patelnetworks.in, EMP-001) |
+| CUSTOMER | No admin access, OTP login only | 8 |
+
+### Permission Model (18 permissions, 9 modules)
+- **Dashboard**: DASHBOARD_VIEW
+- **Orders**: ORDERS_VIEW, ORDERS_MANAGE
+- **Products**: PRODUCTS_VIEW, PRODUCTS_MANAGE
+- **Inventory**: INVENTORY_VIEW, INVENTORY_ADJUST
+- **Customers**: CUSTOMERS_VIEW, CUSTOMERS_MANAGE
+- **Reports**: REPORTS_VIEW, REPORTS_EXPORT
+- **Stock Panel**: STOCK_VIEW, STOCK_ALERTS_MANAGE, STOCK_COUNT, STOCK_EXPORT
+- **Employees**: EMPLOYEES_VIEW, EMPLOYEES_MANAGE
+- **Settings**: SETTINGS_VIEW, SETTINGS_MANAGE
+
+### Staff Management
+- Superadmin creates staff via `/admin/employees` → Staff Creation Wizard
+- Each staff member gets a custom set of permissions
+- Admin sidebar shows only the modules the staff member can access
+- Defense in depth: sidebar filtering + server action permission checks + proxy guards
+
+### Default Credentials
+- Admin: `superadmin@patelnetworks.in` / `patel@admin2026`
+- Stock staff: `stock@patelnetworks.in` / `stock@2026`
