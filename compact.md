@@ -120,3 +120,15 @@ npx tsx scripts/master_loopback_test.ts
 
 ### Live URL
 https://patel-5-2.onrender.com (auto-deploy on git push to main)
+
+
+---
+
+## Update (v2.1.0 — 2026-09-26)
+
+### Theme: Clean Trust Default + Industrial Steel Toggle
+- **Default**: Clean Trust (white + blue) everywhere — storefront, admin, checkout
+- **Toggle**: sun/moon icon in nav (both Header + AdminHeader) switches to Industrial Steel (charcoal + amber)
+- Uses next-themes (ThemeProvider, attribute=class, defaultTheme=light)
+- Persists across pages via localStorage
+- Removed forced dark from admin/layout.tsx + checkout/page.tsx

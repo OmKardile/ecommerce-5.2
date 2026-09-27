@@ -688,3 +688,29 @@ Per client direction: two distinct color themes for different contexts.
 - Checkout page form not rendering on Render (server action cart fetch fails silently in production) — investigating
 - Admin login flow verified working via agent-browser (login → redirect to /admin dashboard)
 - Add to cart verified working (cart count updates, "View cart" confirmation appears)
+
+
+---
+
+## [2.1.0] - 2026-09-26
+
+### Changed (Clean Trust Everywhere + Industrial Steel as Dark Mode Toggle)
+
+Per client direction: Clean Trust (white+blue) is now the default theme for the ENTIRE site — including admin and checkout. Industrial Steel (charcoal+amber) is available as a dark mode toggle via a button in the nav.
+
+#### New Components
+- `ThemeProvider` (`src/components/storefront/ThemeProvider.tsx`): wraps the app with next-themes. `defaultTheme='light'` (Clean Trust), toggle switches to `'dark'` (Industrial Steel). `enableSystem=false` (manual control only).
+- `ThemeToggle` (`src/components/storefront/ThemeToggle.tsx`): Sun/Moon icon button. Mounted client-side only (avoids hydration mismatch). Persists across pages via next-themes localStorage.
+
+#### Changes
+- `layout.tsx`: added `<ThemeProvider>` wrapper + `suppressHydrationWarning` on `<html>`
+- `Header.tsx` (storefront): added `<ThemeToggle />` between Cart and Mobile toggle
+- `AdminHeader.tsx`: added `<ThemeToggle />` after Sign Out button
+- `admin/layout.tsx`: removed forced `dark` class (now uses default light Clean Trust)
+- `checkout/page.tsx`: removed forced `dark` class (now uses default light Clean Trust)
+
+#### Result
+- **Default**: entire site is Clean Trust (white + deep blue) — bright, safe, reliable
+- **Toggle**: click the sun/moon icon in the nav → switches to Industrial Steel (warm charcoal + amber)
+- Toggle persists across all pages (localStorage via next-themes)
+- Works on both storefront and admin (same toggle button in both headers)

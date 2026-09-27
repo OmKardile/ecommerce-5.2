@@ -1122,3 +1122,25 @@ Stage Summary:
 - Split theme implemented: storefront = white+blue (Clean Trust), admin+checkout = charcoal+amber (Industrial Steel).
 - All docs updated.
 - Known issue: checkout form not rendering on Render (server action cart fetch) — investigating.
+
+
+---
+Task ID: 17-THEME-TOGGLE
+Agent: Lead Developer (Z.ai Code)
+Task: Change from forced split theme to Clean Trust everywhere + Industrial Steel as dark mode toggle button in nav.
+
+Work Log:
+- Created ThemeProvider component (next-themes wrapper, defaultTheme=light, enableSystem=false, attribute=class)
+- Created ThemeToggle component (Sun/Moon icon, client-mounted, hydration-safe)
+- Updated layout.tsx: added ThemeProvider wrapper + suppressHydrationWarning on <html>
+- Added ThemeToggle to storefront Header (between Cart and Mobile toggle)
+- Added ThemeToggle to AdminHeader (after Sign Out button)
+- Removed forced 'dark' class from admin/layout.tsx (now defaults to light Clean Trust)
+- Removed forced 'dark' class from checkout/page.tsx (now defaults to light Clean Trust)
+- Build verified: ✓ compiled, 24/24 pages, BUILD_ID present.
+- Updated changelog.md (v2.1.0), decisions.md (ADR-024).
+
+Stage Summary:
+- Clean Trust (white+blue) is now the default for the entire site.
+- Industrial Steel (charcoal+amber) is a toggle button in the nav (both storefront + admin).
+- Toggle persists across pages via next-themes localStorage.

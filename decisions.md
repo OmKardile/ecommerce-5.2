@@ -578,3 +578,23 @@ When new decisions are made during subsequent phases, append them using the foll
   - Admin feels industrial and technical (charcoal + amber = warehouse operations)
   - The two themes are clearly distinct but share the same design DNA (sharp corners, hairline borders, sans-serif, mono numbers)
   - Amber accent in admin provides strong visual differentiation from the storefront blue
+
+
+---
+
+## ADR-024: Clean Trust as Default Theme + Industrial Steel as Dark Mode Toggle
+* **Status**: ACCEPTED
+* **Date**: 2026-09-26
+* **Context**:
+  ADR-023 established a split theme (storefront = Clean Trust, admin/checkout = Industrial Steel). The client revised: Clean Trust should be the default everywhere (including admin/checkout), with Industrial Steel available as an optional dark mode toggle via a nav button.
+* **Decision**:
+  1. Clean Trust (white + deep blue) is the default theme for the entire site.
+  2. Industrial Steel (warm charcoal + amber) is available via a dark mode toggle button in both the storefront Header and the AdminHeader.
+  3. Uses `next-themes` (already installed) with `attribute="class"`, `defaultTheme="light"`, `enableSystem=false`.
+  4. The toggle persists across pages via next-themes localStorage.
+  5. Removed forced `dark` class from `admin/layout.tsx` and `checkout/page.tsx` (they now use the default light theme unless the user toggles).
+* **Consequences**:
+  - The entire site is bright and trustworthy by default.
+  - Users who prefer dark mode can toggle to Industrial Steel — and it persists.
+  - The admin and checkout are no longer forced dark — they follow the user's preference.
+  - Supersedes the forced-split approach from ADR-023 (which is now relaxed — both themes are available everywhere via toggle).
