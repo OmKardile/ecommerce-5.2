@@ -270,9 +270,9 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
   };
 
   return (
-    <div className="dark bg-background text-foreground space-y-6">
+    <div className="bg-background text-foreground space-y-6">
       {/* Console meta + search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A2823] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-strong pb-5">
         <div className="flex items-baseline gap-4 flex-wrap">
           <div className="eyebrow text-stone-500 flex items-center gap-2">
             <span className="dot-rec" /> Fulfillment Console
@@ -292,7 +292,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search order #, customer, phone, or AWB"
-              className="w-full pl-9 pr-3 h-9 bg-card border border-[#2A2823] text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-[var(--brand)] rounded-sm transition-colors font-sans"
+              className="w-full pl-9 pr-3 h-9 bg-card border border-border text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-border-strong rounded-sm transition-colors font-sans"
             />
           </div>
 
@@ -308,7 +308,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
           </button>
 
           {actionFeedback && (
-            <div className="px-3 py-1.5 border border-[#2A2823] bg-card text-[11px] text-foreground flex items-center gap-2 rounded-sm">
+            <div className="px-3 py-1.5 border border-border bg-card text-[11px] text-foreground flex items-center gap-2 rounded-sm">
               <span className="dot-rec" aria-hidden />
               <span className="font-mono">{actionFeedback}</span>
             </div>
@@ -317,7 +317,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
       </div>
 
       {/* Filter Tabs — hairline pill row */}
-      <div className="flex items-center gap-px overflow-x-auto scrollbar-thin border border-[#2A2823] bg-[#2A2823] -mt-2">
+      <div className="flex items-center gap-px overflow-x-auto scrollbar-thin border border-border bg-border -mt-2">
         {STATUS_FILTERS.map((tab) => {
           const active = statusFilter === tab.value;
           return (
@@ -338,9 +338,9 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
       </div>
 
       {/* Orders List — hairline editorial rows */}
-      <div className="border-t border-[#2A2823]">
+      <div className="border-t border-border-strong">
         {filteredOrders.length === 0 ? (
-          <div className="p-12 text-center text-xs text-stone-500 space-y-2 border-b border-[#2A2823]">
+          <div className="p-12 text-center text-xs text-stone-500 space-y-2 border-b border-border-strong">
             <Package className="w-7 h-7 text-stone-600 mx-auto" />
             <p className="text-sm text-foreground">No orders matching your criteria.</p>
             <p>Adjust the search query or status filter.</p>
@@ -354,7 +354,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
             const isDelivered = order.status === OrderStatus.DELIVERED;
 
             return (
-              <div key={order.id} className="border-b border-[#2A2823]">
+              <div key={order.id} className="border-b border-border">
                 {/* Order Summary Bar */}
                 <div
                   onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
@@ -380,7 +380,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                           {order.status}
                         </span>
                         {order.companyName && (
-                          <span className="text-[10px] uppercase tracking-wider text-stone-400 border border-[#2A2823] px-1.5 py-0.5 flex items-center gap-1">
+                          <span className="text-[10px] uppercase tracking-wider text-stone-400 border border-border px-1.5 py-0.5 flex items-center gap-1">
                             <Building2 className="w-3 h-3" />
                             B2B · ITC
                           </span>
@@ -406,7 +406,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-[#2A2823]">
+                  <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-border-subtle">
                     <div className="text-right">
                       <div className="text-base font-mono text-foreground">
                         {formatInr(Number(order.totalAmount))}
@@ -425,9 +425,9 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
 
                 {/* Expanded Details Pane */}
                 {isExpanded && (
-                  <div className="p-5 sm:p-6 border-t border-[#2A2823] bg-card/30 space-y-6">
+                  <div className="p-5 sm:p-6 border-t border-border-strong bg-card/30 space-y-6">
                     {/* Top Row: 3-panel grid with hairline separators */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-[#2A2823] border border-[#2A2823]">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border border border-border">
                       {/* Carrier & Shipment Panel */}
                       <div className="bg-card p-4 space-y-3">
                         <div className="flex items-center justify-between gap-2">
@@ -436,7 +436,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                             Shipment &amp; AWB
                           </span>
                           {primaryShipment && (
-                            <span className="text-[10px] font-mono text-[var(--brand)] border border-[#2A2823] px-1.5 py-0.5">
+                            <span className="text-[10px] font-mono text-[var(--brand)] border border-border-subtle px-1.5 py-0.5">
                               {primaryShipment.carrier}
                             </span>
                           )}
@@ -446,7 +446,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                           <div className="space-y-2 text-xs">
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-stone-500">AWB Tracking</span>
-                              <span className="font-mono text-foreground bg-background border border-[#2A2823] px-2 py-0.5">
+                              <span className="font-mono text-foreground bg-background border border-border-subtle px-2 py-0.5">
                                 {primaryShipment.awbNumber || '—'}
                               </span>
                             </div>
@@ -577,14 +577,14 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                                 onClick={() =>
                                   handleStatusChange(order.id, OrderStatus.CANCELLED)
                                 }
-                                className="text-[11px] justify-center px-3 py-2 border border-[#3A3830] text-stone-400 hover:border-[var(--brand)] hover:text-[var(--brand)] rounded-sm transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="text-[11px] justify-center px-3 py-2 border border-border text-stone-400 hover:border-border-strong hover:text-[var(--brand)] rounded-sm transition-colors font-medium disabled:opacity-40 disabled:cursor-not-allowed"
                               >
                                 Cancel Order
                               </button>
                             )}
                         </div>
 
-                        <div className="pt-2 border-t border-[#2A2823]">
+                        <div className="pt-2 border-t border-border-subtle">
                           <Link
                             href={`/order-success/${order.orderNumber}`}
                             target="_blank"
@@ -625,7 +625,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                           </div>
 
                           {order.customerGstin && (
-                            <div className="pt-2 mt-1 border-t border-[#2A2823]">
+                            <div className="pt-2 mt-1 border-t border-border-subtle">
                               <div className="text-foreground">
                                 Firm: {order.companyName || 'B2B Enterprise'}
                               </div>
@@ -656,9 +656,9 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                         </span>
                       </div>
 
-                      <div className="border border-[#2A2823] bg-card overflow-x-auto scrollbar-thin">
+                      <div className="border border-border-strong bg-card overflow-x-auto scrollbar-thin">
                         <table className="w-full text-left text-xs">
-                          <thead className="border-b border-[#2A2823] bg-background/30">
+                          <thead className="border-b border-border-subtle bg-background/30">
                             <tr>
                               <th className="eyebrow py-2.5 px-3 font-medium">Item</th>
                               <th className="eyebrow py-2.5 px-3 font-medium">SKU</th>
@@ -676,7 +676,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                               </th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#2A2823]">
+                          <tbody className="divide-y divide-border">
                             {order.items.map((item) => {
                               const currentVal =
                                 serialInputs[item.id] !== undefined
@@ -716,7 +716,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                                         }))
                                       }
                                       placeholder="e.g. SN-882941, SN-882942"
-                                      className="w-full px-2.5 py-1.5 h-8 bg-background border border-[#2A2823] text-xs text-foreground placeholder:text-stone-600 font-mono focus:outline-none focus:border-[var(--brand)] rounded-sm transition-colors"
+                                      className="w-full px-2.5 py-1.5 h-8 bg-background border border-border text-xs text-foreground placeholder:text-stone-600 font-mono focus:outline-none focus:border-border-strong rounded-sm transition-colors"
                                     />
                                   </td>
                                   <td className="py-3 px-3 text-right">
@@ -724,7 +724,7 @@ export function OrderFulfillmentConsole({ initialOrders }: Props) {
                                       type="button"
                                       disabled={isPending}
                                       onClick={() => handleSaveSerials(item.id)}
-                                      className="px-2.5 py-1 text-[11px] text-foreground border border-[#3A3830] hover:border-foreground hover:bg-background/40 rounded-sm transition-colors font-medium inline-flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                                      className="px-2.5 py-1 text-[11px] text-foreground border border-border hover:border-border-strong hover:bg-background/40 rounded-sm transition-colors font-medium inline-flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
                                       title="Save Serial Numbers"
                                     >
                                       <Save className="w-3 h-3" />

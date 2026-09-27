@@ -13,7 +13,9 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Defer to next tick to avoid synchronous setState in the effect body
+    const t = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(t);
   }, []);
 
   // Prevent hydration mismatch — render a placeholder until mounted

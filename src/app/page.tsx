@@ -46,13 +46,13 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* HERO — clean, product-forward, split layout */}
         {/* ============================================================ */}
-        <section className="bg-background border-b border-border">
+        <section className="bg-background border-b border-border-strong">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[70vh] py-12 lg:py-20">
               {/* Text — left */}
               <div className="lg:col-span-7 order-2 lg:order-1">
                 <Reveal>
-                  <div className="flex items-center gap-3 mb-6">
+                  <div className="flex items-center gap-3 mb-5">
                     <span className="dot-rec" />
                     <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-stone-500">
                       Authorized Indian distributor
@@ -66,7 +66,7 @@ export default async function HomePage() {
                   </h1>
                 </Reveal>
                 <Reveal delay={120}>
-                  <p className="mt-6 text-base text-stone-600 dark:text-stone-400 leading-relaxed max-w-lg">
+                  <p className="mt-5 text-base text-stone-600 dark:text-stone-400 leading-relaxed max-w-lg">
                     Certified HD analog cameras, AI AcuSense recorders, 24/7
                     surveillance drives and Cat6 cabling — with verified 18%
                     GST invoicing and immediate pan-India dispatch.
@@ -86,7 +86,7 @@ export default async function HomePage() {
                 </Reveal>
                 {/* Trust stats */}
                 <Reveal delay={240}>
-                  <div className="mt-10 pt-6 border-t border-border grid grid-cols-3 gap-6 max-w-md">
+                  <div className="mt-8 pt-5 border-t border-border-subtle grid grid-cols-3 gap-6 max-w-md">
                     <div>
                       <div className="text-2xl font-mono text-foreground">{brands.length}</div>
                       <div className="text-[11px] text-stone-500 mt-1">brands</div>
@@ -122,11 +122,11 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* CATEGORIES — clean hairline index */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <Reveal>
               <div>
-                <div className="eyebrow text-stone-500 mb-3">01 — Categories</div>
+                <div className="eyebrow text-stone-500 mb-2">01 — Categories</div>
                 <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight text-foreground tracking-tight max-w-xl">
                   Six disciplines of security hardware.
                 </h2>
@@ -142,7 +142,7 @@ export default async function HomePage() {
             </Reveal>
           </div>
 
-          <div className="border-t border-border">
+          <div className="border-t border-border-strong">
             {curatedCategories.map((cat, idx) => (
               <Reveal key={cat!.id} delay={idx * 40}>
                 <Link
@@ -170,16 +170,16 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* FEATURED PRODUCTS — clean grid */}
         {/* ============================================================ */}
-        <section className="border-y border-border bg-bone/50">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
+        <section className="border-y border-border-strong bg-surface-2">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
               <Reveal>
                 <div>
-                  <div className="eyebrow text-stone-500 mb-3">02 — Featured</div>
+                  <div className="eyebrow text-stone-500 mb-2">02 — Featured</div>
                   <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight text-foreground tracking-tight max-w-xl">
                     High-demand surveillance models.
                   </h2>
-                  <p className="text-sm text-stone-500 mt-2 max-w-md">
+                  <p className="text-sm text-stone-500 mt-1.5 max-w-md">
                     Genuine stock, SKU-level dispatch from our central warehouse.
                   </p>
                 </div>
@@ -191,7 +191,7 @@ export default async function HomePage() {
               </Reveal>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-surface-2 border border-border-strong">
               {featuredProducts.slice(0, 4).map((product, idx) => (
                 <Reveal key={product.id} delay={idx * 50} className="bg-background">
                   <ProductCard product={product} />
@@ -204,11 +204,11 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* DISCIPLINE — image + text */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-5 order-2 lg:order-1">
               <Reveal>
-                <div className="eyebrow text-stone-500 mb-4">The discipline</div>
+                <div className="eyebrow text-stone-500 mb-3">The discipline</div>
               </Reveal>
               <Reveal delay={60}>
                 <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight text-foreground tracking-tight">
@@ -216,7 +216,7 @@ export default async function HomePage() {
                 </h2>
               </Reveal>
               <Reveal delay={120}>
-                <p className="text-sm text-stone-600 dark:text-stone-400 leading-[1.75] mt-5 max-w-md">
+                <p className="text-sm text-stone-600 dark:text-stone-400 leading-[1.75] mt-4 max-w-md">
                   Every camera, recorder and drive in our catalog is vetted by
                   engineers who specify and deploy these systems in the field.
                   No rebranded grey market, no mystery SKUs — only serial-tracked,
@@ -247,8 +247,8 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* KIT BUILDER */}
         {/* ============================================================ */}
-        <section className="border-t border-border bg-bone/50">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
+        <section className="border-t border-border-strong bg-surface-2">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <Reveal className="lg:col-span-6 order-1">
                 <div className="media-frame relative aspect-[4/3] bg-background border border-border">
@@ -280,7 +280,7 @@ export default async function HomePage() {
                 </Reveal>
 
                 <Reveal delay={160}>
-                  <ol className="grid grid-cols-2 gap-x-6 gap-y-4 pt-5 border-t border-border">
+                  <ol className="grid grid-cols-2 gap-x-6 gap-y-4 pt-4 border-t border-border-subtle">
                     {[
                       ['Recorder', '4, 8 or 16 channel DVR/NVR'],
                       ['Cameras', 'Dome & bullet, 2MP to 8MP'],
@@ -312,14 +312,14 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* BRANDS — static grid */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16">
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20">
           <Reveal>
-            <div className="eyebrow text-stone-500 mb-8 text-center">
+            <div className="eyebrow text-stone-500 mb-6 text-center">
               Authorized supply — premier security & networking brands
             </div>
           </Reveal>
           <Reveal delay={60}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-border border border-border">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-border-strong border border-border-strong">
               {brands.map((b) => (
                 <Link
                   key={b.id}

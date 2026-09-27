@@ -141,7 +141,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-[2px] border-b border-border transition-colors">
       {/* Slim meta strip — restrained, monochrome, no icons clutter */}
-      <div className="hidden md:block border-b border-border">
+      <div className="hidden md:block border-b border-border-subtle">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex justify-between items-center h-8 text-[11px] text-stone-500 dark:text-stone-400">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2">
@@ -184,7 +184,7 @@ export function Header() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
                 placeholder="Search cameras, recorders, cable, SKU…"
-                className="w-full px-0 py-2 pr-8 text-sm bg-transparent border-0 border-b border-border focus:outline-none focus:border-foreground transition-colors placeholder:text-stone-400 text-foreground"
+                className="w-full px-0 py-2 pr-8 text-sm bg-transparent border-0 border-b border-border focus:outline-none focus:border-border-strong transition-colors placeholder:text-stone-400 text-foreground"
               />
               <Search className="w-4 h-4 text-stone-400 absolute right-0 top-1/2 -translate-y-1/2 transition-colors group-focus-within:text-foreground" />
               {searchQuery && (
@@ -208,7 +208,7 @@ export function Header() {
                       <div className="eyebrow px-4 pt-3 pb-2 text-stone-400">
                         Matching hardware · {suggestions.length}
                       </div>
-                      <div className="divide-y divide-border border-t border-border">
+                      <div className="divide-y divide-border-subtle border-t border-border-subtle">
                         {suggestions.map((item) => (
                           <Link
                             key={item.id}
@@ -232,7 +232,7 @@ export function Header() {
                       </div>
                       <button
                         type="submit"
-                        className="w-full py-3 px-4 text-left text-xs font-medium text-stone-600 hover:text-foreground hover:bg-accent transition-colors border-t border-border flex items-center justify-between"
+                        className="w-full py-3 px-4 text-left text-xs font-medium text-stone-600 hover:text-foreground hover:bg-accent transition-colors border-t border-border-subtle flex items-center justify-between"
                       >
                         <span>View all results for “{searchQuery}”</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
@@ -315,7 +315,7 @@ export function Header() {
 
       {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-border bg-background px-6 pt-4 pb-8 space-y-6">
+        <div className="lg:hidden border-t border-border-strong bg-background px-6 pt-4 pb-8 space-y-6">
           <form onSubmit={handleSearch} className="relative w-full">
             <div ref={mobileSearchRef} className="relative w-full">
               <input
@@ -324,7 +324,7 @@ export function Header() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
                 placeholder="Search cameras, recorders, cable…"
-                className="w-full px-0 py-3 text-sm bg-transparent border-0 border-b border-border focus:outline-none focus:border-foreground text-foreground"
+                className="w-full px-0 py-3 text-sm bg-transparent border-0 border-b border-border focus:outline-none focus:border-border-strong text-foreground"
               />
               {searchQuery && (
                 <button
@@ -337,7 +337,7 @@ export function Header() {
                 </button>
               )}
               {showDropdown && suggestions.length > 0 && (
-                <div className="mt-2 bg-popover border border-border shadow-sm overflow-hidden divide-y divide-border max-h-72 overflow-y-auto">
+                <div className="mt-2 bg-popover border border-border shadow-sm overflow-hidden divide-y divide-border-subtle max-h-72 overflow-y-auto">
                   {suggestions.slice(0, 5).map((item) => (
                     <Link
                       key={item.id}
@@ -358,7 +358,7 @@ export function Header() {
             </div>
           </form>
 
-          <div className="flex flex-col divide-y divide-border border-y border-border">
+          <div className="flex flex-col divide-y divide-border-subtle border-y border-border-strong">
             <Link
               href="/products"
               onClick={() => setMobileMenuOpen(false)}

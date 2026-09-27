@@ -40,9 +40,9 @@ export function CustomerDirectoryTable({ initialCustomers }: Props) {
   const totalSpend = customers.reduce((sum, c) => sum + c.totalSpent, 0);
 
   return (
-    <div className="dark bg-background text-foreground space-y-6">
+    <div className="bg-background text-foreground space-y-6">
       {/* Editorial metric strip — 3 hairline cells */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#2A2823] border border-[#2A2823] rounded-sm overflow-hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border border border-border-strong rounded-sm overflow-hidden">
         <div className="bg-card p-5">
           <div className="eyebrow text-stone-500 mb-2">Total Accounts</div>
           <div className="text-2xl font-mono text-foreground">{customers.length}</div>
@@ -69,8 +69,8 @@ export function CustomerDirectoryTable({ initialCustomers }: Props) {
       </div>
 
       {/* Filter + search bar */}
-      <div className="border border-[#2A2823] bg-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-sm">
-        <div className="flex items-center gap-px bg-[#2A2823] border border-[#2A2823] rounded-sm overflow-hidden">
+      <div className="border border-border-strong bg-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-sm">
+        <div className="flex items-center gap-px bg-border border border-border rounded-sm overflow-hidden">
           {([
             ['ALL', `All · ${customers.length}`],
             ['B2B', `B2B · ${b2bCount}`],
@@ -97,16 +97,16 @@ export function CustomerDirectoryTable({ initialCustomers }: Props) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search name, phone, company, GSTIN"
-            className="w-full pl-9 pr-3 h-9 bg-background border border-[#2A2823] text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-[var(--brand)] rounded-sm transition-colors font-sans"
+            className="w-full pl-9 pr-3 h-9 bg-background border border-border text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-border-strong rounded-sm transition-colors font-sans"
           />
         </div>
       </div>
 
       {/* Customer directory table */}
-      <div className="border border-[#2A2823] bg-card overflow-hidden rounded-sm">
+      <div className="border border-border-strong bg-card overflow-hidden rounded-sm">
         <div className="overflow-x-auto scrollbar-thin">
           <table className="w-full text-left">
-            <thead className="border-b border-[#2A2823] bg-background/30">
+            <thead className="border-b border-border-subtle bg-background/30">
               <tr>
                 <th className="eyebrow py-3 px-4 font-medium">Customer</th>
                 <th className="eyebrow py-3 px-4 font-medium">B2B Company / GSTIN</th>
@@ -117,7 +117,7 @@ export function CustomerDirectoryTable({ initialCustomers }: Props) {
                 <th className="eyebrow py-3 px-4 font-medium text-right">Contact</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2823]">
+            <tbody className="divide-y divide-border">
               {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-xs text-stone-500">
@@ -204,7 +204,7 @@ export function CustomerDirectoryTable({ initialCustomers }: Props) {
                           href={waUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#3A3830] hover:border-foreground text-[11px] text-foreground rounded-sm transition-colors"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-border hover:border-border-strong text-[11px] text-foreground rounded-sm transition-colors"
                           title="Open WhatsApp chat"
                         >
                           <MessageCircle className="w-3 h-3" />

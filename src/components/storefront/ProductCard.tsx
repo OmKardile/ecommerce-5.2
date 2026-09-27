@@ -84,7 +84,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Meta */}
-      <div className="flex flex-col flex-1 p-5 border-t border-border">
+      <div className="flex flex-col flex-1 p-5 border-t border-border-subtle">
         {/* Brand + model */}
         <div className="flex items-baseline justify-between gap-2 mb-2">
           <span className="eyebrow text-stone-500">{product.brand.name}</span>
@@ -107,7 +107,7 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Price + stock */}
-        <div className="mt-auto pt-5 flex items-end justify-between gap-3">
+        <div className="mt-auto pt-4 border-t border-border-subtle flex items-end justify-between gap-3">
           <div>
             <div className="flex items-baseline gap-2">
               {minPrice > 0 ? (

@@ -64,9 +64,9 @@ export default async function AdminCodSettingsPage() {
   ];
 
   return (
-    <div className="dark bg-background text-foreground space-y-10 min-h-screen">
+    <div className="bg-background text-foreground space-y-10 min-h-screen">
       {/* Page header */}
-      <div className="border-b border-[#2A2823] pb-6">
+      <div className="border-b border-border-strong pb-6">
         <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
           <span className="dot-rec" /> ADR-004 · Selective COD
         </div>
@@ -80,7 +80,7 @@ export default async function AdminCodSettingsPage() {
       </div>
 
       {/* Policy rules — hairline editorial cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#2A2823] border border-[#2A2823] rounded-sm overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border-strong rounded-sm overflow-hidden">
         {policyRules.map((rule) => (
           <div key={rule.index} className="bg-card p-6 flex flex-col">
             <div className="flex items-baseline justify-between mb-4">
@@ -94,7 +94,7 @@ export default async function AdminCodSettingsPage() {
               {rule.title}
             </h2>
             <p className="text-[12px] text-stone-400 leading-relaxed flex-1">{rule.body}</p>
-            <div className="mt-4 pt-4 border-t border-[#2A2823]">
+            <div className="mt-4 pt-4 border-t border-border-subtle">
               <div className="eyebrow text-stone-500 mb-1">Enforced</div>
               <code className="font-mono text-[11px] text-foreground">{rule.enforced}</code>
             </div>
@@ -104,7 +104,7 @@ export default async function AdminCodSettingsPage() {
 
       {/* Per-Product COD switcher */}
       <div className="space-y-4">
-        <div className="border-b border-[#2A2823] pb-3 flex items-baseline justify-between gap-4">
+        <div className="border-b border-border-strong pb-3 flex items-baseline justify-between gap-4">
           <div>
             <div className="eyebrow text-stone-500 mb-1.5">Per-Product Eligibility</div>
             <h2 className="text-base font-sans font-semibold text-foreground tracking-tight">

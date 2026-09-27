@@ -118,9 +118,9 @@ export function InventoryManagementConsole({ initialItems }: Props) {
   };
 
   return (
-    <div className="dark bg-background text-foreground space-y-6">
+    <div className="bg-background text-foreground space-y-6">
       {/* Console meta + search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A2823] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-strong pb-5">
         <div className="flex items-baseline gap-4 flex-wrap">
           <div className="eyebrow text-stone-500 flex items-center gap-2">
             <span className="dot-rec" /> Inventory Matrix
@@ -140,12 +140,12 @@ export function InventoryManagementConsole({ initialItems }: Props) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search SKU, product, variant, brand"
-              className="w-full pl-9 pr-3 h-9 bg-card border border-[#2A2823] text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-[var(--brand)] rounded-sm transition-colors font-sans"
+              className="w-full pl-9 pr-3 h-9 bg-card border border-border text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-border-strong rounded-sm transition-colors font-sans"
             />
           </div>
 
           {feedback && (
-            <div className="px-3 py-1.5 border border-[#2A2823] bg-card text-[11px] text-foreground flex items-center gap-2 rounded-sm">
+            <div className="px-3 py-1.5 border border-border bg-card text-[11px] text-foreground flex items-center gap-2 rounded-sm">
               <span className="dot-rec" />
               <span className="font-mono">{feedback}</span>
             </div>
@@ -154,10 +154,10 @@ export function InventoryManagementConsole({ initialItems }: Props) {
       </div>
 
       {/* Dense SKU Inventory Matrix — hairline editorial table */}
-      <div className="border border-[#2A2823] bg-card overflow-hidden rounded-sm">
+      <div className="border border-border-strong bg-card overflow-hidden rounded-sm">
         <div className="overflow-x-auto scrollbar-thin">
           <table className="w-full text-left">
-            <thead className="border-b border-[#2A2823] bg-background/30">
+            <thead className="border-b border-border-subtle bg-background/30">
               <tr>
                 <th className="eyebrow py-3 px-4 font-medium">SKU</th>
                 <th className="eyebrow py-3 px-4 font-medium">Hardware Item</th>
@@ -169,7 +169,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
                 <th className="eyebrow py-3 px-4 font-medium text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2823]">
+            <tbody className="divide-y divide-border">
               {filteredItems.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-xs text-stone-500">
@@ -231,7 +231,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => handleOpenAdjust(item)}
-                          className="px-2.5 py-1 text-[11px] text-foreground border border-[#3A3830] hover:border-foreground hover:bg-background/40 rounded-sm transition-colors font-medium"
+                          className="px-2.5 py-1 text-[11px] text-foreground border border-border hover:border-border-strong hover:bg-background/40 rounded-sm transition-colors font-medium"
                         >
                           Adjust
                         </button>
@@ -248,9 +248,9 @@ export function InventoryManagementConsole({ initialItems }: Props) {
       {/* Stock Adjustment Modal — flat, sharp, no glow */}
       {selectedSku && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-card border border-[#2A2823] max-w-md w-full rounded-sm">
+          <div className="bg-card border border-border-strong max-w-md w-full rounded-sm">
             {/* Modal header */}
-            <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
+            <div className="flex items-start justify-between p-5 border-b border-border-subtle">
               <div>
                 <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
                   <span className="dot-rec" /> Stock Adjustment
@@ -272,7 +272,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
             </div>
 
             {/* Target SKU block */}
-            <div className="mx-5 mt-5 p-3 border border-[#2A2823] bg-background/40 rounded-sm space-y-1">
+            <div className="mx-5 mt-5 p-3 border border-border-subtle bg-background/40 rounded-sm space-y-1">
               <div className="font-mono text-xs text-[var(--brand)]">{selectedSku.code}</div>
               <div className="text-sm text-foreground font-medium">{selectedSku.productName}</div>
               <div className="text-[11px] text-stone-500">
@@ -293,7 +293,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
                   <button
                     type="button"
                     onClick={() => setDelta((prev) => prev - 5)}
-                    className="w-9 h-9 flex items-center justify-center border border-[#2A2823] hover:border-foreground text-stone-400 hover:text-foreground rounded-sm transition-colors"
+                    className="w-9 h-9 flex items-center justify-center border border-border hover:border-border-strong text-stone-400 hover:text-foreground rounded-sm transition-colors"
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
@@ -301,12 +301,12 @@ export function InventoryManagementConsole({ initialItems }: Props) {
                     type="number"
                     value={delta}
                     onChange={(e) => setDelta(parseInt(e.target.value, 10) || 0)}
-                    className="flex-1 text-center h-9 bg-background border border-[#2A2823] text-foreground font-mono text-sm focus:outline-none focus:border-[var(--brand)] rounded-sm"
+                    className="flex-1 text-center h-9 bg-background border border-border text-foreground font-mono text-sm focus:outline-none focus:border-border-strong rounded-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setDelta((prev) => prev + 5)}
-                    className="w-9 h-9 flex items-center justify-center border border-[#2A2823] hover:border-foreground text-stone-400 hover:text-foreground rounded-sm transition-colors"
+                    className="w-9 h-9 flex items-center justify-center border border-border hover:border-border-strong text-stone-400 hover:text-foreground rounded-sm transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
@@ -326,7 +326,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
                 <select
                   value={reason}
                   onChange={(e) => setReason(e.target.value as MovementReason)}
-                  className="w-full h-9 px-3 bg-background border border-[#2A2823] text-foreground text-xs focus:outline-none focus:border-[var(--brand)] rounded-sm"
+                  className="w-full h-9 px-3 bg-background border border-border text-foreground text-xs focus:outline-none focus:border-border-strong rounded-sm"
                 >
                   <option value={MovementReason.PURCHASE_RECEIPT}>
                     PURCHASE_RECEIPT — Vendor PO arrival
@@ -351,16 +351,16 @@ export function InventoryManagementConsole({ initialItems }: Props) {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Received 20 units via Delhivery cargo from Hikvision Ahmedabad"
-                  className="w-full px-3 py-2 bg-background border border-[#2A2823] text-foreground text-xs placeholder:text-stone-600 focus:outline-none focus:border-[var(--brand)] rounded-sm resize-none font-sans"
+                  className="w-full px-3 py-2 bg-background border border-border text-foreground text-xs placeholder:text-stone-600 focus:outline-none focus:border-border-strong rounded-sm resize-none font-sans"
                 />
               </div>
 
               {/* Submit row */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2A2823]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border-subtle">
                 <button
                   type="button"
                   onClick={handleCloseAdjust}
-                  className="px-4 py-2 text-xs text-stone-400 hover:text-foreground border border-[#2A2823] hover:border-foreground rounded-sm transition-colors font-medium"
+                  className="px-4 py-2 text-xs text-stone-400 hover:text-foreground border border-border hover:border-border-strong rounded-sm transition-colors font-medium"
                 >
                   Cancel
                 </button>

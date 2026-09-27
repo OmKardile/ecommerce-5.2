@@ -48,6 +48,15 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  /* 3-level border hierarchy (ADR-025) */
+  --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
+
+  /* Surface hierarchy */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 6px;
@@ -74,25 +83,37 @@
   --brand-soft: #3B82F6;     /* blue-500 */
   --brand-tint: #EFF6FF;     /* blue-50 */
 
+  /* 3-level border hierarchy (ADR-025) */
+  --border-strong: #CBD5E1;   /* level 1 — structural: page sections, major containers */
+  --border: #E2E8F0;          /* level 2 — component: cards, inputs, tables */
+  --border-subtle: #F1F5F9;   /* level 3 — divider: hairlines within cards */
+
+  /* Surface hierarchy */
+  --surface-1: #FFFFFF;       /* primary container (same as bg, uses border for separation) */
+  --surface-2: #F8FAFC;       /* nested component / alt section */
+  --surface-3: #F1F5F9;       /* interactive/input surface */
+
   /* Semantic mapping (shadcn-compatible) */
   --background: var(--paper);
   --foreground: var(--ink);
-  --card: #FFFFFF;
+  --card: var(--surface-1);
   --card-foreground: var(--ink);
-  --popover: #FFFFFF;
+  --popover: var(--surface-1);
   --popover-foreground: var(--ink);
   --primary: var(--ink);
   --primary-foreground: #FFFFFF;
-  --secondary: var(--bone);
+  --secondary: var(--surface-2);
   --secondary-foreground: var(--ink);
-  --muted: var(--bone);
+  --muted: var(--surface-2);
   --muted-foreground: var(--stone);
   --accent: var(--brand-tint);
   --accent-foreground: var(--brand);
   --destructive: #DC2626;    /* red-600 */
-  --border: var(--hairline);
-  --input: var(--hairline);
+  --border: var(--border);           /* level 2 default */
+  --input: var(--border);
   --ring: var(--brand);
+  --hairline: var(--border-subtle);  /* backward compat */
+  --hairline-strong: var(--border-strong);
 
   --chart-1: var(--brand);
   --chart-2: #475569;
@@ -126,24 +147,36 @@
   --brand-soft: #FBBF24;     /* amber-400 */
   --brand-tint: #422006;     /* amber-950 — whisper on dark */
 
+  /* 3-level border hierarchy (ADR-025) */
+  --border-strong: #57534E;   /* level 1 — structural: stone-600 */
+  --border: #44403C;          /* level 2 — component: stone-700 */
+  --border-subtle: #292524;   /* level 3 — divider: stone-800 */
+
+  /* Surface hierarchy */
+  --surface-1: #292524;       /* primary container (stone-800) */
+  --surface-2: #1C1917;       /* nested component / alt section (stone-900) */
+  --surface-3: #0C0A09;       /* interactive/input surface (stone-950) */
+
   --background: var(--paper);
   --foreground: var(--ink);
-  --card: #292524;            /* stone-800 */
+  --card: var(--surface-1);
   --card-foreground: var(--ink);
-  --popover: #292524;
+  --popover: var(--surface-1);
   --popover-foreground: var(--ink);
   --primary: #FAFAF9;         /* primary buttons = white on dark */
   --primary-foreground: #1C1917;
-  --secondary: var(--bone);
+  --secondary: var(--surface-2);
   --secondary-foreground: var(--ink);
-  --muted: var(--bone);
+  --muted: var(--surface-2);
   --muted-foreground: var(--stone);
   --accent: var(--brand-tint);
   --accent-foreground: var(--brand);
   --destructive: #EF4444;    /* red-500 */
-  --border: var(--hairline);
-  --input: var(--hairline);
+  --border: var(--border);
+  --input: var(--border);
   --ring: var(--brand);
+  --hairline: var(--border-subtle);
+  --hairline-strong: var(--border-strong);
 
   --chart-1: var(--brand);
   --chart-2: #A8A29E;

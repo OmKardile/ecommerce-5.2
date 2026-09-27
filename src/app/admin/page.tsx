@@ -88,9 +88,9 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* KPI rows — hairline rows, not gradient tiles */}
-      <div className="border-t border-border">
+      <div className="border-t border-border-strong">
         {/* GMV */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-border border-b border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-x divide-border-subtle border-b border-border-strong">
           <KpiRow
             label="Gross Merchandise Value"
             value={formatInr(metrics.totalRevenue)}
@@ -126,7 +126,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Payment channel split — hairline */}
-      <div className="border border-border bg-card p-6 space-y-4">
+      <div className="border border-border-strong bg-card p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
             <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
@@ -154,7 +154,7 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Hairline stacked bar — no gradient, no glow */}
-        <div className="w-full h-1.5 flex border border-border bg-background overflow-hidden">
+        <div className="w-full h-1.5 flex border border-border-subtle bg-background overflow-hidden">
           <div
             style={{ width: `${onlinePct}%` }}
             className="h-full bg-[var(--brand)] transition-all"
@@ -186,7 +186,7 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
 
-          <div className="border border-border bg-card overflow-hidden">
+          <div className="border border-border-strong bg-card overflow-hidden">
             {metrics.recentOrders.length === 0 ? (
               <div className="p-8 text-center text-stone-500 text-xs">
                 No orders created yet in the database.
@@ -262,14 +262,14 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
 
-          <div className="border border-border bg-card">
+          <div className="border border-border-strong bg-card">
             {metrics.lowStockItems.length === 0 ? (
               <div className="p-6 text-center text-stone-500 text-[11px] flex flex-col items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                 <span>All SKUs above threshold.</span>
               </div>
             ) : (
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-border-subtle">
                 {metrics.lowStockItems.slice(0, 5).map((item) => (
                   <div key={item.skuId} className="p-4 space-y-2">
                     <div className="flex items-start justify-between gap-3">
@@ -285,7 +285,7 @@ export default async function AdminDashboardPage() {
                         ≤ {item.threshold}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border">
+                    <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border-subtle">
                       <span className="text-stone-500">Available</span>
                       <span className="font-mono font-medium text-amber-400">
                         {item.availableStock}
@@ -301,7 +301,7 @@ export default async function AdminDashboardPage() {
 
             <Link
               href="/admin/inventory"
-              className="block w-full py-3 border-t border-border bg-background/60 hover:bg-background text-center font-medium text-[12px] text-stone-300 hover:text-foreground transition-colors"
+              className="block w-full py-3 border-t border-border-subtle bg-background/60 hover:bg-background text-center font-medium text-[12px] text-stone-300 hover:text-foreground transition-colors"
             >
               Open Inventory Console
             </Link>

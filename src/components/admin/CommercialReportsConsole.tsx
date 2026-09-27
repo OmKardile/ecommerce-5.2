@@ -119,9 +119,9 @@ export function CommercialReportsConsole({ data }: Props) {
   ];
 
   return (
-    <div className="dark bg-background text-foreground space-y-8">
+    <div className="bg-background text-foreground space-y-8">
       {/* Console meta */}
-      <div className="border-b border-[#2A2823] pb-5">
+      <div className="border-b border-border-strong pb-5">
         <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
           <span className="dot-rec" /> Commercial Reports
         </div>
@@ -132,7 +132,7 @@ export function CommercialReportsConsole({ data }: Props) {
       </div>
 
       {/* 4 primary metrics — hairline strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#2A2823] border border-[#2A2823] rounded-sm overflow-hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border-strong rounded-sm overflow-hidden">
         {topMetrics.map((m) => (
           <div key={m.eyebrow} className="bg-card p-5">
             <div className="eyebrow text-stone-500 mb-2">{m.eyebrow}</div>
@@ -149,8 +149,8 @@ export function CommercialReportsConsole({ data }: Props) {
       {/* Grid: GSTR-1 Tax + Payment Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* GSTR-1 Tax Schedule */}
-        <div className="border border-[#2A2823] bg-card rounded-sm">
-          <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
+        <div className="border border-border-strong bg-card rounded-sm">
+          <div className="flex items-start justify-between p-5 border-b border-border-subtle">
             <div>
               <div className="eyebrow text-stone-500 mb-1.5 flex items-center gap-1.5">
                 <Download className="w-3 h-3" /> GSTR-1 Tax Schedule
@@ -169,7 +169,7 @@ export function CommercialReportsConsole({ data }: Props) {
               <button
                 type="button"
                 onClick={exportGstr1Csv}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] text-foreground border border-[#3A3830] hover:border-foreground rounded-sm transition-colors font-medium"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] text-foreground border border-border hover:border-border-strong rounded-sm transition-colors font-medium"
                 title="Download statutory GSTR-1 CSV report"
               >
                 <Download className="w-3 h-3" />
@@ -178,7 +178,7 @@ export function CommercialReportsConsole({ data }: Props) {
             </div>
           </div>
 
-          <div className="divide-y divide-[#2A2823]">
+          <div className="divide-y divide-border-subtle">
             {[
               { label: 'Intra-State CGST', detail: 'Central · 9%', value: taxBreakdown.cgstTotal },
               { label: 'Intra-State SGST', detail: 'State · 9%', value: taxBreakdown.sgstTotal },
@@ -200,15 +200,15 @@ export function CommercialReportsConsole({ data }: Props) {
             </div>
           </div>
 
-          <div className="px-5 py-3 border-t border-[#2A2823] text-[11px] text-stone-500 leading-relaxed">
+          <div className="px-5 py-3 border-t border-border-subtle text-[11px] text-stone-500 leading-relaxed">
             All B2B commercial invoices are tagged with 15-character GSTINs and recorded for
             monthly GSTR-1 return filing under Indian tax law.
           </div>
         </div>
 
         {/* Payment Method Split */}
-        <div className="border border-[#2A2823] bg-card rounded-sm">
-          <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
+        <div className="border border-border-strong bg-card rounded-sm">
+          <div className="flex items-start justify-between p-5 border-b border-border-subtle">
             <div>
               <div className="eyebrow text-stone-500 mb-1.5 flex items-center gap-1.5">
                 <CreditCard className="w-3 h-3" /> Payment Methods
@@ -220,7 +220,7 @@ export function CommercialReportsConsole({ data }: Props) {
                 Gateway distribution &amp; RTO risk exposure
               </p>
             </div>
-            <span className="font-mono text-[10px] text-foreground border border-[#3A3830] px-2 py-1 rounded-sm">
+            <span className="font-mono text-[10px] text-foreground border border-border px-2 py-1 rounded-sm">
               {prepaidRatio}% prepaid
             </span>
           </div>
@@ -241,7 +241,7 @@ export function CommercialReportsConsole({ data }: Props) {
                 <span>{paymentSplit.razorpayCount} orders</span>
                 <span className="font-mono">{prepaidRatio}%</span>
               </div>
-              <div className="h-1 bg-background border border-[#2A2823]">
+              <div className="h-1 bg-background border border-border-subtle">
                 <div
                   className="h-full bg-[var(--brand)] transition-all duration-500"
                   style={{ width: `${prepaidRatio}%` }}
@@ -264,7 +264,7 @@ export function CommercialReportsConsole({ data }: Props) {
                 <span>{paymentSplit.codCount} orders</span>
                 <span className="font-mono">{codRatio}%</span>
               </div>
-              <div className="h-1 bg-background border border-[#2A2823]">
+              <div className="h-1 bg-background border border-border-subtle">
                 <div
                   className="h-full bg-stone-400 transition-all duration-500"
                   style={{ width: `${codRatio}%` }}
@@ -276,8 +276,8 @@ export function CommercialReportsConsole({ data }: Props) {
       </div>
 
       {/* Warehouse Inventory Valuation */}
-      <div className="border border-[#2A2823] bg-card rounded-sm">
-        <div className="flex items-start justify-between p-5 border-b border-[#2A2823]">
+      <div className="border border-border-strong bg-card rounded-sm">
+        <div className="flex items-start justify-between p-5 border-b border-border-subtle">
           <div>
             <div className="eyebrow text-stone-500 mb-1.5 flex items-center gap-1.5">
               <Boxes className="w-3 h-3" /> Warehouse Capital Assets
@@ -297,7 +297,7 @@ export function CommercialReportsConsole({ data }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#2A2823]">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-border">
           <div className="bg-card p-5">
             <div className="eyebrow text-stone-500 mb-2">Physical Units</div>
             <div className="text-xl font-mono text-foreground">
@@ -324,8 +324,8 @@ export function CommercialReportsConsole({ data }: Props) {
 
       {/* Daily Sales Trend — hairline bars */}
       {dailySales.length > 0 && (
-        <div className="border border-[#2A2823] bg-card rounded-sm">
-          <div className="p-5 border-b border-[#2A2823]">
+        <div className="border border-border-strong bg-card rounded-sm">
+          <div className="p-5 border-b border-border-subtle">
             <div className="eyebrow text-stone-500 mb-1.5">Daily Sales · Last 30 Days</div>
             <h2 className="text-sm font-sans font-semibold text-foreground tracking-tight">
               Order Velocity &amp; GMV Distribution
@@ -340,7 +340,7 @@ export function CommercialReportsConsole({ data }: Props) {
                   <span className="w-24 text-stone-500 font-mono text-[11px] shrink-0">
                     {day.date}
                   </span>
-                  <div className="flex-1 h-5 bg-background border border-[#2A2823] relative">
+                  <div className="flex-1 h-5 bg-background border border-border-subtle relative">
                     <div
                       className="h-full bg-[var(--brand)] transition-all"
                       style={{ width: `${Math.max(widthPct, 1)}%` }}

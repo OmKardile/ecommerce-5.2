@@ -95,9 +95,9 @@ export function ProductCatalogTable({ initialProducts }: Props) {
   };
 
   return (
-    <div className="dark bg-background text-foreground space-y-6">
+    <div className="bg-background text-foreground space-y-6">
       {/* Search + feedback */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A2823] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-strong pb-5">
         <div className="flex items-baseline gap-4 flex-wrap">
           <div className="eyebrow text-stone-500 flex items-center gap-2">
             <span className="dot-rec" /> Catalog
@@ -115,11 +115,11 @@ export function ProductCatalogTable({ initialProducts }: Props) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search product, brand, category, HSN"
-              className="w-full pl-9 pr-3 h-9 bg-card border border-[#2A2823] text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-[var(--brand)] rounded-sm transition-colors font-sans"
+              className="w-full pl-9 pr-3 h-9 bg-card border border-border text-xs text-foreground placeholder:text-stone-500 focus:outline-none focus:border-border-strong rounded-sm transition-colors font-sans"
             />
           </div>
           {feedback && (
-            <div className="px-3 py-1.5 border border-[#2A2823] bg-card text-[11px] text-foreground flex items-center gap-2 rounded-sm">
+            <div className="px-3 py-1.5 border border-border bg-card text-[11px] text-foreground flex items-center gap-2 rounded-sm">
               <span className="dot-rec" />
               <span className="font-mono">{feedback}</span>
             </div>
@@ -128,10 +128,10 @@ export function ProductCatalogTable({ initialProducts }: Props) {
       </div>
 
       {/* Catalog table — hairline editorial */}
-      <div className="border border-[#2A2823] bg-card overflow-hidden rounded-sm">
+      <div className="border border-border-strong bg-card overflow-hidden rounded-sm">
         <div className="overflow-x-auto scrollbar-thin">
           <table className="w-full text-left">
-            <thead className="border-b border-[#2A2823] bg-background/30">
+            <thead className="border-b border-border-subtle bg-background/30">
               <tr>
                 <th className="eyebrow py-3 px-4 font-medium">Product</th>
                 <th className="eyebrow py-3 px-4 font-medium">Category</th>
@@ -143,7 +143,7 @@ export function ProductCatalogTable({ initialProducts }: Props) {
                 <th className="eyebrow py-3 px-4 font-medium text-right">Storefront</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2823]">
+            <tbody className="divide-y divide-border">
               {filteredProducts.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-xs text-stone-500">
@@ -198,7 +198,7 @@ export function ProductCatalogTable({ initialProducts }: Props) {
                           onClick={() => handleToggleCod(product.id, product.isCodAllowed)}
                           className={`px-2.5 py-1 text-[10px] font-medium border rounded-sm transition-colors ${
                             product.isCodAllowed
-                              ? 'text-foreground border-[#3A3830] hover:border-foreground'
+                              ? 'text-foreground border-border hover:border-border-strong'
                               : 'text-[var(--brand)] border-[var(--brand)]/40 hover:border-[var(--brand)]'
                           }`}
                           title="Toggle COD eligibility (ADR-004)"
@@ -214,8 +214,8 @@ export function ProductCatalogTable({ initialProducts }: Props) {
                           onClick={() => handleToggleActive(product.id, product.isActive)}
                           className={`p-1.5 border rounded-sm transition-colors ${
                             product.isActive
-                              ? 'text-foreground border-[#3A3830] hover:border-foreground'
-                              : 'text-stone-500 border-[#2A2823] hover:border-stone-400'
+                              ? 'text-foreground border-border hover:border-border-strong'
+                              : 'text-stone-500 border-border-subtle hover:border-stone-400'
                           }`}
                           title={product.isActive ? 'Visible in catalog' : 'Hidden from catalog'}
                           aria-label={product.isActive ? 'Hide product' : 'Show product'}

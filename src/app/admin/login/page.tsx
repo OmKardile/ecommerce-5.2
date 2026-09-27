@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground flex flex-col items-center justify-center py-12 px-4 sm:px-6 selection:bg-[var(--brand)] selection:text-white">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center py-12 px-4 sm:px-6 selection:bg-[var(--brand)] selection:text-white">
       <div className="w-full max-w-md">
         {/* Brand header */}
         <div className="text-center">
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Login card */}
-        <div className="mt-8 bg-card border border-border p-6 sm:p-8">
+        <div className="mt-8 bg-card border border-border-strong p-6 sm:p-8">
           {errorMsg && (
             <div className="mb-5 p-3 border border-[var(--destructive)]/40 bg-[var(--destructive)]/10 text-[var(--destructive)] text-[11px] flex items-start gap-2.5">
               <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
@@ -114,7 +114,7 @@ export default function AdminLoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="superadmin@patelnetworks.in"
                   autoComplete="email"
-                  className="w-full pl-9 pr-3 py-2.5 bg-background border border-border focus:border-[var(--brand)] text-sm text-foreground placeholder:text-stone-600 transition-colors outline-none"
+                  className="w-full pl-9 pr-3 py-2.5 bg-background border border-border focus:border-border-strong text-sm text-foreground placeholder:text-stone-600 transition-colors outline-none"
                 />
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function AdminLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
                   autoComplete="current-password"
-                  className="w-full pl-9 pr-10 py-2.5 bg-background border border-border focus:border-[var(--brand)] text-sm text-foreground placeholder:text-stone-600 transition-colors outline-none font-mono"
+                  className="w-full pl-9 pr-10 py-2.5 bg-background border border-border focus:border-border-strong text-sm text-foreground placeholder:text-stone-600 transition-colors outline-none font-mono"
                 />
                 <button
                   type="button"
@@ -170,7 +170,7 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Demo credentials hint */}
-          <div className="mt-6 pt-5 border-t border-border flex flex-col gap-3">
+          <div className="mt-6 pt-5 border-t border-border-subtle flex flex-col gap-3">
             <div className="flex items-center justify-between text-[11px]">
               <span className="flex items-center gap-1.5 text-stone-400">
                 <KeyRound className="w-3 h-3 text-[var(--brand)]" />

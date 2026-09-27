@@ -136,7 +136,7 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             {/* Items — editorial hairline rows */}
             <div className="lg:col-span-8">
-              <div className="border-t border-border">
+              <div className="border-t border-border-strong">
                 {cart.items.map((item) => (
                   <div
                     key={item.id}
@@ -225,7 +225,7 @@ export default function CartPage() {
 
             {/* Order summary — sticky */}
             <div className="lg:col-span-4 lg:sticky lg:top-24">
-              <div className="border border-border bg-card p-7 space-y-6">
+              <div className="border border-border-strong bg-card p-7 space-y-6">
                 <div>
                   <div className="eyebrow text-stone-500 mb-1">Order summary</div>
                   <div className="display text-xl text-foreground">Price calculation</div>
@@ -244,7 +244,7 @@ export default function CartPage() {
                     <span>Shipping &amp; handling</span>
                     <span className="text-[var(--brand)]">Free</span>
                   </div>
-                  <div className="pt-3 mt-1 border-t border-border flex justify-between items-baseline">
+                  <div className="pt-3 mt-1 border-t border-border-subtle flex justify-between items-baseline">
                     <span className="text-foreground font-medium">Total</span>
                     <span className="text-xl font-mono text-[var(--brand)]">
                       {formatPrice(cart.totalAmount)}

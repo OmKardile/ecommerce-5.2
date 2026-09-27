@@ -74,9 +74,9 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-card text-foreground flex flex-col shrink-0 border-r border-border select-none min-h-screen">
+    <aside className="w-64 bg-card text-foreground flex flex-col shrink-0 border-r border-border-strong select-none min-h-screen">
       {/* Brand header */}
-      <div className="px-5 py-5 border-b border-border">
+      <div className="px-5 py-5 border-b border-border-subtle">
         <Link href="/admin" className="block group" aria-label="Patel Networks admin home">
           <div className="font-sans text-[15px] leading-none font-semibold tracking-tight text-foreground">
             Patel<span className="text-[var(--brand)]">.</span>Networks
@@ -105,7 +105,7 @@ export function AdminSidebar() {
               aria-current={isActive ? 'page' : undefined}
               className={`relative flex items-center gap-3 px-3 py-2.5 text-[13px] font-medium border-l-2 transition-colors ${
                 isActive
-                  ? 'border-[var(--brand)] text-foreground bg-background'
+                  ? 'border-border-strong text-foreground bg-background'
                   : 'border-transparent text-stone-400 hover:text-foreground hover:bg-background/60'
               }`}
             >
@@ -136,7 +136,7 @@ export function AdminSidebar() {
       </nav>
 
       {/* Bottom — DB connection status */}
-      <div className="px-3 py-4 border-t border-border">
+      <div className="px-3 py-4 border-t border-border-subtle">
         <div className="px-3 py-3 border border-border bg-background/60 text-[11px] space-y-1.5">
           <div className="flex items-center justify-between text-stone-400">
             <span className="flex items-center gap-2 font-medium">

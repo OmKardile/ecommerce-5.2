@@ -98,7 +98,7 @@ export function AdminHeader({ session }: Props) {
           disabled={isPending}
           aria-label="Sign out of operations console"
           title="Sign out"
-          className="flex items-center gap-1.5 px-3 py-2 border border-border bg-transparent hover:border-[var(--brand)] hover:text-[var(--brand)] text-stone-400 text-[11px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-2 border border-border bg-transparent hover:border-border-strong hover:text-[var(--brand)] text-stone-400 text-[11px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
         >
           {isPending ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />

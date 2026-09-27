@@ -4,9 +4,9 @@ import { ArrowUpRight } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-background">
+    <footer className="mt-auto border-t border-border-strong bg-background">
       {/* Trust strip — single hairline row, no colored icon tiles */}
-      <div className="border-b border-border">
+      <div className="border-b border-border-strong">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-8 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
           {[
             { k: 'Genuine brands', v: 'Serial-tracked, manufacturer warranty on CP Plus, Hikvision & Dahua.' },

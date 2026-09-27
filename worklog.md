@@ -1144,3 +1144,252 @@ Stage Summary:
 - Clean Trust (white+blue) is now the default for the entire site.
 - Industrial Steel (charcoal+amber) is a toggle button in the nav (both storefront + admin).
 - Toggle persists across pages via next-themes localStorage.
+
+
+---
+Task ID: 18-STOREFRONT-BORDERS
+Agent: Sub-agent (general-purpose) — Apply 3-level border hierarchy + surface hierarchy to Patel Networks storefront
+Task: Rework 6 storefront files (homepage, Header, Footer, ProductCard, products page, cart page) to apply the new 3-level border system (border-border-strong / border-border / border-border-subtle) + surface hierarchy (bg-surface-1/2/3). Parent containers dominate child containers. No layout/content/functionality changes — only borders, surfaces, spacing.
+
+Work Log:
+- Read prior worklog (Tasks 16-SPLIT-THEME, 17-THEME-TOGGLE) for context: project uses Clean Trust (white+blue) default + Industrial Steel (charcoal+amber) dark mode via next-themes. Confirmed the 3-level border tokens are wired in globals.css (light: border-strong #CBD5E1, border #E2E8F0, border-subtle #F1F5F9; dark: border-strong #57534E, border #44403C, border-subtle #292524) and exposed as Tailwind v4 utilities via `--color-border-strong` / `--color-border-subtle` / `--color-surface-1/2/3` (lines 51-58 of globals.css). Surface tokens: light surface-1 #FFFFFF, surface-2 #F8FAFC, surface-3 #F1F5F9; dark surface-1 #292524, surface-2 #1C1917, surface-3 #0C0A09. Card token `--card` is mapped to `--surface-1` so `bg-card` ≡ `bg-surface-1`.
+- Read all 6 target files in full to map every border / surface / spacing class before editing.
+
+1. **src/app/page.tsx** (homepage):
+   - Hero section boundary `border-b border-border` → `border-b border-border-strong` (structural section boundary, level 1).
+   - Hero internal trust-stats divider `border-t border-border` → `border-t border-border-subtle` (level 3, divider within section). Tightened `mt-10 pt-6` → `mt-8 pt-5` (one step).
+   - Hero eyebrow→h1 spacing `mb-6` → `mb-5`; h1→description `mt-6` → `mt-5` (tighten heading→supporting text by one step).
+   - Categories section `py-16 lg:py-24` → `py-20 lg:py-28` (expand between-section spacing). Eyebrow `mb-3` → `mb-2`.
+   - Categories list top `border-t border-border` → `border-t border-border-strong` (structural list boundary). Category rows keep `border-b border-border` (level 2 component, per task).
+   - Featured products section `border-y border-border bg-bone/50` → `border-y border-border-strong bg-surface-2` (structural section boundary + alt-section surface).
+   - Featured section eyebrow `mb-3` → `mb-2`; description `mt-2` → `mt-1.5`.
+   - Featured section `py-16 lg:py-24` → `py-20 lg:py-28`.
+   - Featured products grid `gap-px bg-border` → `gap-px bg-surface-2 border border-border-strong` (per task: grid uses bg-surface-2 with border-border-strong outer). Cells keep `bg-background`; ProductCard keeps its level-2 `border border-border`. Result: strong outer frame + subtle 1px gaps between cards on bg-surface-2, cards' level-2 borders dominated by parent strong frame.
+   - Discipline section `py-16 lg:py-24` → `py-20 lg:py-28`. Eyebrow `mb-4` → `mb-3`. Description `mt-5` → `mt-4`.
+   - Kit builder section `border-t border-border bg-bone/50` → `border-t border-border-strong bg-surface-2`. Section `py-16 lg:py-24` → `py-20 lg:py-28`.
+   - Kit builder steps `<ol>` `pt-5 border-t border-border` → `pt-4 border-t border-border-subtle` (internal divider within section → level 3, tightened padding one step).
+   - Brands section `py-16` → `py-20`. Eyebrow `mb-8` → `mb-6`.
+   - Brands grid `gap-px bg-border border border-border` → `gap-px bg-border-strong border border-border-strong` (structural outer + level-1 dividers between brand tiles; consistent with featured-grid treatment).
+
+2. **src/components/storefront/Header.tsx**:
+   - Top meta strip `border-b border-border` → `border-b border-border-subtle` (level 3 tertiary, per task).
+   - Main nav bar `border-b border-border` kept as `border-border` (level 2 component, per task).
+   - Desktop search input `border-b border-border focus:border-foreground` → `border-b border-border focus:border-border-strong` (per task: search input border-b is level 2, focus promotes to level 1).
+   - Mobile search input `focus:border-foreground` → `focus:border-border-strong` (same rule).
+   - Autocomplete dropdown internal suggestion dividers `divide-y divide-border border-t border-border` → `divide-y divide-border-subtle border-t border-border-subtle` (level 3 internal dividers within the dropdown card).
+   - Autocomplete "View all results" action button `border-t border-border` → `border-t border-border-subtle` (level 3 divider between suggestions list and action button).
+   - Mobile drawer top `border-t border-border` → `border-t border-border-strong` (structural section boundary between header and drawer).
+   - Mobile search suggestions dropdown `divide-y divide-border` → `divide-y divide-border-subtle` (level 3 internal dividers).
+   - Mobile nav menu container `divide-y divide-border border-y border-border` → `divide-y divide-border-subtle border-y border-border-strong` (outer section boundary strong; internal link dividers subtle).
+   - Account/Cart button borders unchanged (`border-border` / `hover:border-border` — component-level, kept as level 2 per global rule).
+   - Mobile menu toggle `hover:bg-accent` unchanged (no border).
+
+3. **src/components/storefront/Footer.tsx**:
+   - Footer root `border-t border-border` → `border-t border-border-strong` (structural section boundary between main content and footer, per global rule on MAJOR structural elements).
+   - Trust strip `border-b border-border` → `border-b border-border-strong` (structural, per task).
+   - Bottom bar `border-t border-border` kept as `border-border` (level 2 component, per task).
+   - Internal link columns: already borderless (whitespace-only), no change needed.
+
+4. **src/components/storefront/ProductCard.tsx**:
+   - Card outer `border border-border` kept as `border-border` (level 2 component, per task).
+   - Image/meta divider (line 87) `border-t border-border` → `border-t border-border-subtle` (level 3 internal divider within the card, per task).
+   - Price/stock section: ADDED `border-t border-border-subtle` (previously had no border, only `pt-5` padding). Changed `pt-5` → `pt-4` (tightened one step since border adds visual weight). Per task: "price/stock section border-t should be border-border-subtle".
+   - Prepaid flag badge `border-l border-b border-border` kept as `border-border` (component-level badge border).
+
+5. **src/app/products/page.tsx**:
+   - Filter sidebar Category section `border-t border-border` → `border-t border-border-strong` (structural sidebar section boundary, per task).
+   - Filter sidebar Brand section `border-t border-border` → `border-t border-border-strong`.
+   - Filter sidebar In-stock section `border-t border-border` → `border-t border-border-strong`.
+   - Sidebar section eyebrows `mb-3` → `mb-2` (tighten heading→list spacing one step).
+   - Category link list `space-y-px` → `divide-y divide-border-subtle` (per task: "Category/brand links should have border-border-subtle dividers (barely visible)"). Replaces 1px whitespace with an actual 1px level-3 divider line.
+   - Brand link list `space-y-px` → `divide-y divide-border-subtle`.
+   - Product grid outer container `gap-px bg-border` → `gap-px bg-border-strong` (per task: "product grid outer container bg-border should be bg-border-strong"). The gap-px dividers between cells become level-1 strong; the cells keep `bg-background`; ProductCard keeps level-2 `border-border`. Parent grid dividers dominate child card borders.
+   - Clear filters link: already had no border (just `link-underline`), per task. No change.
+   - Empty-state card `border border-border bg-card` kept as `border-border` (component-level card, not the order summary).
+
+6. **src/app/cart/page.tsx**:
+   - Cart items list top `border-t border-border` → `border-t border-border-strong` (structural section boundary for the items list; parent dominates the level-2 row dividers below).
+   - Cart item row `border-b border-border` kept as `border-border` (level 2 main divider, per task).
+   - Cart item image thumbnail `border border-border` kept as `border-border` (component-level).
+   - Quantity stepper `border border-border` kept as `border-border` (component-level).
+   - Order summary card `border border-border bg-card` → `border border-border-strong bg-card` (per task: "order summary card border should be border-border-strong"). The order summary now dominates the cart item rows beside it (strong vs level 2).
+   - Internal price breakdown total row `border-t border-border` → `border-t border-border-subtle` (level 3 internal divider within the summary card, per task).
+   - ITC notice box `border border-border` kept as `border-border` (component-level card).
+   - COD warning amber border unchanged (out of scope — task only targets `border-white/10` / `border-white/20` and `bg-bone/*` patterns, not amber warning chrome).
+   - Empty-state card `border border-border bg-card` kept as `border-border` (component-level).
+
+VALIDATION:
+- `bun run lint` → exit 1, but the SINGLE error is PRE-EXISTING in `src/components/storefront/ThemeToggle.tsx:16` (`setMounted(true)` inside `useEffect` — `react-hooks/set-state-in-effect` rule), added in Task 17-THEME-TOGGLE, not in any of the 6 files reworked here. All 6 target files (page.tsx, Header.tsx, Footer.tsx, ProductCard.tsx, products/page.tsx, cart/page.tsx) pass lint cleanly with no errors and no warnings.
+- No logic, content, or functionality changes — only border-color utilities, surface-background utilities, and Tailwind spacing scale (mt/pt/py/mb) tweaks. All JSX structure, all event handlers, all data fetching, all server actions, all state hooks untouched.
+- Border hierarchy verified: every section boundary / page-level container uses `border-border-strong` (level 1); every component-level card / input / row uses `border-border` (level 2); every internal divider / hairline within a card uses `border-border-subtle` (level 3).
+- Surface hierarchy verified: alt-section backgrounds now use `bg-surface-2` (replacing `bg-bone/50`); `bg-card` (= `bg-surface-1`) retained on actual cards and popovers; `bg-background` retained on the page shell and grid cells.
+- Spacing verified: heading→description mt/mb reduced by one step on homepage sections (mb-6→mb-5, mt-6→mt-5, mb-4→mb-3, mt-5→mt-4, mb-3→mb-2, mt-2→mt-1.5, mb-8→mb-6); section py expanded one step (py-16 lg:py-24 → py-20 lg:py-28; py-16 → py-20). Result: tighter within-section rhythm, more breathing room between sections.
+
+Stage Summary:
+- 3-level border hierarchy + surface hierarchy applied across the 6 storefront files. Parent containers (sections, sidebar boundaries, summary cards, grid frames) now use `border-border-strong` (level 1, slate-300 light / stone-600 dark). Component-level elements (cards, inputs, table rows, cart item rows, account/cart buttons) retain `border-border` (level 2, slate-200 light / stone-700 dark). Internal dividers within cards/sections (image/meta divider on ProductCard, price breakdown total, kit builder steps, trust stats, autocomplete suggestion list, sidebar link lists) now use `border-border-subtle` (level 3, slate-100 light / stone-800 dark).
+- All `bg-bone/50` alt-section backgrounds on the homepage replaced with `bg-surface-2`. Product grids on homepage + products page now have outer frames / dividers at level 1 (strong), dominating the level-2 ProductCard borders nested inside. Order summary card on cart page promoted to `border-border-strong` to dominate the level-2 cart item rows beside it.
+- Search input focus state promotes from level 2 → level 1 (border-foreground → border-border-strong) — visually consistent with the new strong border token instead of using the ink color directly.
+- Spacing tightened within sections (heading→description mt/mb one step down) and expanded between sections (section py one step up). Result: tighter internal rhythm + clearer section separation.
+- Lint: 0 errors / 0 warnings in all 6 reworked files. The single pre-existing lint error in ThemeToggle.tsx (added in Task 17) is unrelated to this task's border/surface/spacing changes.
+
+
+---
+Task ID: 18-ADMIN-BORDERS
+Agent: Sub-agent (general-purpose) — Apply 3-level border hierarchy + surface hierarchy to Patel Networks admin console
+Task: Rework 10 admin files (AdminSidebar, AdminHeader, admin/login, admin dashboard, OrderFulfillmentConsole, InventoryManagementConsole, ProductCatalogTable, CustomerDirectoryTable, CommercialReportsConsole, admin/settings/cod) to apply the new 3-level border system (border-border-strong / border-border / border-border-subtle) + surface hierarchy (bg-surface-1/2/3). Replace ALL hardcoded `border-[#2A2823]`, `border-[#3A3830]`, `bg-[#2A2823]`, `divide-[#2A2823]`, `gap-px bg-[#2A2823]` with semantic tokens. Remove forced `dark` class wrappers so components respect the user's theme toggle (light by default per Task 17-THEME-TOGGLE). No layout/content/functionality changes — only borders, surfaces, spacing.
+
+Work Log:
+- Read prior worklog (Tasks 14-ADMIN-SHELL, 14-ADMIN-DATA-CONSOLES, 14-ORDERS-TRACKING, 16-SPLIT-THEME, 17-THEME-TOGGLE, 18-STOREFRONT-BORDERS) for context: admin was previously dark-only (forced `dark` class on every component + admin/layout.tsx). Task 17 removed the forced `dark` from admin/layout.tsx so the admin now defaults to light (Clean Trust) unless the user toggles dark via ThemeToggle. But individual admin components (OrderFulfillmentConsole, InventoryManagementConsole, ProductCatalogTable, CustomerDirectoryTable, CommercialReportsConsole, cod/page, login/page) still had hardcoded `dark` class wrappers that forced dark mode locally — those needed removal so the components respect the user's theme choice.
+- Confirmed the 3-level border tokens are wired in globals.css (light: border-strong #CBD5E1, border #E2E8F0, border-subtle #F1F5F9; dark: border-strong #57534E, border #44403C, border-subtle #292524) and exposed as Tailwind v4 utilities via `--color-border-strong` / `--color-border-subtle` (lines 51-58 of globals.css). Surface tokens: light surface-1 #FFFFFF (= bg-card), surface-2 #F8FAFC, surface-3 #F1F5F9; dark surface-1 #292524 (= bg-card), surface-2 #1C1917, surface-3 #0C0A09. The `bg-card` utility already maps to `--surface-1` so existing `bg-card` usages are already semantic — no replacement needed unless explicitly hardcoded.
+- Read all 10 target files in full + admin/layout.tsx for surrounding context before editing.
+
+Strategy:
+- Every component-level outer wrapper that previously forced dark mode (`<div className="dark bg-background text-foreground ...">`) had the `dark` class removed. Result: components now follow the user's theme toggle (light by default, dark if user toggles). All semantic tokens (`bg-background`, `bg-card`, `text-foreground`, `border-border`, `text-[var(--brand)]`, `.eyebrow`, `.dot-rec`, `.btn-ink`, `.btn-ghost`) resolve correctly in both modes via `:root` and `.dark` overrides in globals.css.
+- Border hierarchy applied per task instructions:
+  - Level 1 (border-border-strong, structural): admin layout boundaries (sidebar right border, header section dividers, dashboard panel outers, table outers, expanded order detail pane, modal panel outer, KPI grid outer).
+  - Level 2 (border-border, component): table rows, cards, inputs, buttons, small chips, modal target SKU block.
+  - Level 3 (border-border-subtle, divider): hairlines within panels (internal dividers between sections in a panel, table header separator, dividers between list items within a card, bar-chart track borders inside panels, demo credentials box separator).
+- `gap-px bg-[#2A2823]` grid separator trick replaced with `gap-px bg-border` (the bg fills the 1px gap between cells with the semantic border color, working in both light and dark modes).
+- `divide-[#2A2823]` replaced with `divide-border` (component-level row dividers in tables/lists) or `divide-border-subtle` (internal dividers within panels, e.g., GSTR-1 tax rows inside the tax card, low-stock items inside the alerts panel).
+- All input focus states (`focus:border-[var(--brand)]`) on admin search inputs, login form inputs, modal delta/reason/notes inputs, serial-number inputs → `focus:border-border-strong` (promotes to level 1 on focus, consistent with storefront pattern from Task 18-STOREFRONT-BORDERS).
+- Hover states on buttons (`hover:border-foreground`) → `hover:border-border-strong` (level 2 → level 1 on hover, consistent semantic promotion rather than using the ink color directly).
+
+Per-file changes:
+
+1. **src/components/admin/AdminSidebar.tsx**:
+   - Sidebar right border `border-r border-border` → `border-r border-border-strong` (structural admin layout boundary).
+   - Brand header bottom divider `border-b border-border` → `border-b border-border-subtle` (internal divider within sidebar).
+   - Nav item active state `border-l-2 border-[var(--brand)]` → `border-l-2 border-border-strong` (active state indicator uses structural border weight instead of brand color; brand color preserved on the icon via `text-[var(--brand)]`).
+   - Bottom DB connection status section `border-t border-border` → `border-t border-border-subtle` (internal divider between nav and bottom panel).
+   - Status box inside bottom section keeps `border border-border` (component-level card).
+
+2. **src/components/admin/AdminHeader.tsx**:
+   - Header bottom border kept as `border-b border-border` (level 2 component, per task — already correct).
+   - Sign out button `hover:border-[var(--brand)]` → `hover:border-border-strong` (level 2 → level 1 on hover, per task).
+
+3. **src/app/admin/login/page.tsx**:
+   - Removed forced `dark` class from root wrapper so login page respects user's theme toggle.
+   - Brand chip `border border-border bg-card` kept as `border-border` (component-level).
+   - Login card outer `border border-border` → `border border-border-strong` (structural, per task).
+   - Email + password input borders `focus:border-[var(--brand)]` → `focus:border-border-strong` (level 2 → level 1 on focus, per task).
+   - Demo credentials hint divider `border-t border-border` → `border-t border-border-subtle` (internal divider, per task).
+   - Demo credentials code box `border border-border bg-background` kept as `border-border` (component-level).
+
+4. **src/app/admin/page.tsx** (dashboard):
+   - KPI section outer `border-t border-border` → `border-t border-border-strong` (structural section boundary).
+   - KPI grid outer `border-b border-border` → `border-b border-border-strong` (structural).
+   - KPI grid internal cell dividers `divide-x divide-border` → `divide-x divide-border-subtle` (internal price-breakdown dividers, per task — level 3 hairlines between KPI cells).
+   - Payment channel breakdown panel `border border-border bg-card` → `border border-border-strong bg-card` (structural dashboard panel, per task).
+   - Payment channel bar `border border-border bg-background` → `border border-border-subtle bg-background` (internal bar within panel, level 3).
+   - Recent orders table outer `border border-border bg-card` → `border border-border-strong bg-card` (structural, per task).
+   - Recent orders table header `border-b border-border` kept as `border-border` (component-level).
+   - Recent orders table body `divide-y divide-border` kept as `divide-border` (rows = component level, per task).
+   - Low stock alerts panel outer `border border-border bg-card` → `border border-border-strong bg-card` (structural).
+   - Low stock items internal dividers `divide-y divide-border` → `divide-y divide-border-subtle` (internal dividers between items within panel).
+   - Low stock item internal Available row divider `border-t border-border` → `border-t border-border-subtle` (internal divider within item).
+   - "Open Inventory Console" action link `border-t border-border` → `border-t border-border-subtle` (internal divider between list and action).
+   - Stock Audit button `border border-border` kept as `border-border` (component-level button).
+
+5. **src/components/admin/OrderFulfillmentConsole.tsx**:
+   - Removed forced `dark` class from root wrapper.
+   - Console meta section divider `border-b border-[#2A2823]` → `border-b border-border-strong` (structural section boundary).
+   - Search input `border border-[#2A2823] focus:border-[var(--brand)]` → `border border-border focus:border-border-strong`.
+   - Action feedback chip `border border-[#2A2823] bg-card` → `border border-border bg-card` (component-level).
+   - Filter tabs container `border border-[#2A2823] bg-[#2A2823]` → `border border-border bg-border` (gap-px trick: outer = component level, bg fills 1px gaps with border color).
+   - Orders list section top `border-t border-[#2A2823]` → `border-t border-border-strong` (structural).
+   - Empty state `border-b border-[#2A2823]` → `border-b border-border-strong` (structural).
+   - Order list rows `border-b border-[#2A2823]` → `border-b border-border` (component-level rows, per task).
+   - B2B ITC chip `border border-[#2A2823]` → `border border-border` (component-level chip).
+   - Mobile order summary bar `border-[#2A2823]` → `border-border-subtle` (internal divider within row, mobile only).
+   - Expanded details pane top `border-t border-[#2A2823]` → `border-t border-border-strong` (expanded panel = structural, per task).
+   - 3-panel grid `gap-px bg-[#2A2823] border border-[#2A2823]` → `gap-px bg-border border border-border` (component-level outer + border-color gap dividers).
+   - Carrier chip + AWB chip `border border-[#2A2823]` → `border border-border-subtle` (internal chips within panel).
+   - Cancel order button `border border-[#3A3830] hover:border-[var(--brand)]` → `border border-border hover:border-border-strong`.
+   - Printer link divider `border-t border-[#2A2823]` → `border-t border-border-subtle` (internal divider within status control panel).
+   - GSTIN block divider `border-t border-[#2A2823]` → `border-t border-border-subtle` (internal divider within recipient panel).
+   - Items table outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (table outer = structural).
+   - Items table header `border-b border-[#2A2823]` → `border-b border-border-subtle` (internal divider within table).
+   - Items table body `divide-y divide-[#2A2823]` → `divide-y divide-border` (rows = component level, per task).
+   - Serial number input `border border-[#2A2823] focus:border-[var(--brand)]` → `border border-border focus:border-border-strong`.
+   - Save serials button `border border-[#3A3830] hover:border-foreground` → `border border-border hover:border-border-strong`.
+
+6. **src/components/admin/InventoryManagementConsole.tsx**:
+   - Removed forced `dark` class from root wrapper.
+   - Console meta section divider `border-b border-[#2A2823]` → `border-b border-border-strong`.
+   - Search input + delta input + reason select + notes textarea all `border border-[#2A2823] focus:border-[var(--brand)]` → `border border-border focus:border-border-strong`.
+   - Feedback chip `border border-[#2A2823] bg-card` → `border border-border bg-card`.
+   - SKU matrix table outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural).
+   - SKU matrix table header `border-b border-[#2A2823]` → `border-b border-border-subtle` (internal divider).
+   - SKU matrix table body `divide-y divide-[#2A2823]` → `divide-y divide-border` (rows = component level).
+   - Adjust button `border border-[#3A3830] hover:border-foreground` → `border border-border hover:border-border-strong`.
+   - Modal panel outer `border border-[#2A2823]` → `border border-border-strong` (structural modal border).
+   - Modal header `border-b border-[#2A2823]` → `border-b border-border-subtle` (internal divider within modal).
+   - Target SKU block `border border-[#2A2823] bg-background/40` → `border border-border-subtle bg-background/40` (internal card within modal).
+   - Delta minus/plus buttons `border border-[#2A2823] hover:border-foreground` → `border border-border hover:border-border-strong`.
+   - Submit row divider `border-t border-[#2A2823]` → `border-t border-border-subtle` (internal divider within form).
+   - Cancel button `border border-[#2A2823] hover:border-foreground` → `border border-border hover:border-border-strong`.
+
+7. **src/components/admin/ProductCatalogTable.tsx**:
+   - Removed forced `dark` class from root wrapper.
+   - Console meta section divider `border-b border-[#2A2823]` → `border-b border-border-strong`.
+   - Search input `border border-[#2A2823] focus:border-[var(--brand)]` → `border border-border focus:border-border-strong`.
+   - Feedback chip `border border-[#2A2823] bg-card` → `border border-border bg-card`.
+   - Catalog table outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural, per task).
+   - Catalog table header `border-b border-[#2A2823]` → `border-b border-border-subtle` (internal divider).
+   - Catalog table body `divide-y divide-[#2A2823]` → `divide-y divide-border` (rows = component level, per task).
+   - COD toggle button (active state) `border-[#3A3830] hover:border-foreground` → `border-border hover:border-border-strong`.
+   - Visibility toggle button active state `border-[#3A3830] hover:border-foreground` → `border-border hover:border-border-strong`; inactive state `border-[#2A2823] hover:border-stone-400` → `border-border-subtle hover:border-stone-400` (inactive uses level 3 to visually de-emphasize).
+
+8. **src/components/admin/CustomerDirectoryTable.tsx**:
+   - Removed forced `dark` class from root wrapper.
+   - Editorial metric strip `gap-px bg-[#2A2823] border border-[#2A2823]` → `gap-px bg-border border border-border-strong` (structural outer + border-color gap dividers).
+   - Filter bar `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural).
+   - Filter segmented control `gap-px bg-[#2A2823] border border-[#2A2823]` → `gap-px bg-border border border-border` (component-level outer + border-color gap dividers).
+   - Search input `border border-[#2A2823] focus:border-[var(--brand)]` → `border border-border focus:border-border-strong`.
+   - Customer table outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural, per task).
+   - Customer table header `border-b border-[#2A2823]` → `border-b border-border-subtle` (internal divider).
+   - Customer table body `divide-y divide-[#2A2823]` → `divide-y divide-border` (rows = component level, per task).
+   - WhatsApp action button `border border-[#3A3830] hover:border-foreground` → `border border-border hover:border-border-strong`.
+
+9. **src/components/admin/CommercialReportsConsole.tsx**:
+   - Removed forced `dark` class from root wrapper.
+   - Console meta section divider `border-b border-[#2A2823]` → `border-b border-border-strong`.
+   - 4-metric strip `gap-px bg-[#2A2823] border border-[#2A2823]` → `gap-px bg-border border border-border-strong` (structural outer + border-color gap dividers).
+   - GSTR-1 tax card outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural).
+   - GSTR-1 card header `border-b border-[#2A2823]` → `border-b border-border-subtle` (internal divider).
+   - Export CSV button `border border-[#3A3830] hover:border-foreground` → `border border-border hover:border-border-strong`.
+   - Tax rows list `divide-y divide-[#2A2823]` → `divide-y divide-border-subtle` (internal dividers between rows in the list, level 3).
+   - Footer note divider `border-t border-[#2A2823]` → `border-t border-border-subtle` (internal divider).
+   - Payment method card outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural).
+   - Payment card header `border-b border-[#2A2823]` → `border-b border-border-subtle`.
+   - Prepaid ratio chip `border border-[#3A3830]` → `border border-border` (component-level chip).
+   - Prepaid bar + COD bar `border border-[#2A2823]` → `border border-border-subtle` (internal bars within panel, level 3).
+   - Warehouse valuation card outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural).
+   - Warehouse card header `border-b border-[#2A2823]` → `border-b border-border-subtle`.
+   - Warehouse 3-cell grid `gap-px bg-[#2A2823]` → `gap-px bg-border` (border-color gap dividers).
+   - Daily sales card outer `border border-[#2A2823] bg-card` → `border border-border-strong bg-card` (structural).
+   - Daily sales card header `border-b border-[#2A2823]` → `border-b border-border-subtle`.
+   - Daily sales bar track `border border-[#2A2823]` → `border border-border-subtle` (internal bar within panel).
+
+10. **src/app/admin/settings/cod/page.tsx**:
+    - Removed forced `dark` class from root wrapper.
+    - Page header divider `border-b border-[#2A2823]` → `border-b border-border-strong` (structural section boundary).
+    - Policy rules grid `gap-px bg-[#2A2823] border border-[#2A2823]` → `gap-px bg-border border border-border-strong` (structural outer + border-color gap dividers, per task: policy cards `border-border-strong`).
+    - Policy card internal divider `border-t border-[#2A2823]` → `border-t border-border-subtle` (internal divider between body and Enforced footer, per task: internal `border-border-subtle`).
+    - Per-product section header divider `border-b border-[#2A2823]` → `border-b border-border-strong` (structural section boundary).
+
+VALIDATION:
+- `bun run lint` → exit 1, but the SINGLE error is PRE-EXISTING in `src/components/storefront/ThemeToggle.tsx:16` (`setMounted(true)` inside `useEffect` — `react-hooks/set-state-in-effect` rule), added in Task 17-THEME-TOGGLE, NOT in any of the 10 files reworked here. All 10 target files (AdminSidebar, AdminHeader, login/page, admin/page, OrderFulfillmentConsole, InventoryManagementConsole, ProductCatalogTable, CustomerDirectoryTable, CommercialReportsConsole, cod/page) pass lint cleanly with no errors and no warnings.
+- `bunx tsc --noEmit` → exit 0, no type errors.
+- Verified zero remaining hardcoded dark colors (`border-[#2A2823]`, `border-[#3A3830]`, `bg-[#1A1916]`, `bg-[#292524]`, `divide-[#2A2823]`, `gap-px bg-[#2A2823]`, `border-white/10`, `border-white/5`) across all 10 admin files via Grep.
+- Verified zero remaining `dark` class wrappers in any of the 10 admin files — all components now respect the user's theme toggle.
+- No logic, content, or functionality changes — only border-color utilities, surface-background utilities, and `dark` class removal. All JSX structure, all event handlers, all server-action calls (adminLoginAction, adminLogoutAction, adminTransitionOrderStatusAction, adminCreateShipmentAction, saveSerialNumbersAction, adjustStockAction, toggleProductCodAction, toggleProductActiveAction), all data fetching (getAdminDashboardMetrics, getAdminProducts), CSV exports (exportOrdersToCsv, exportGstr1Csv), state hooks (useState/useTransition), and type narrowing helpers (toShipmentSummary) untouched.
+
+Stage Summary:
+- 3-level border hierarchy + surface hierarchy applied across all 10 admin files. Structural boundaries (sidebar right border, dashboard panels, table outers, expanded order pane, modal outer, KPI grid outer, policy cards grid, page section dividers) now use `border-border-strong` (level 1, slate-300 light / stone-600 dark). Component-level elements (table rows, cards, inputs, buttons, chips, modal target SKU block) retain `border-border` (level 2, slate-200 light / stone-700 dark). Internal dividers within panels (table header separators, list item dividers inside cards, bar-chart tracks, demo-credentials separator, modal form dividers, GSTIN block dividers) now use `border-border-subtle` (level 3, slate-100 light / stone-800 dark).
+- All hardcoded dark-mode colors (`#2A2823`, `#3A3830`, `#1A1916`, `#292524`) eliminated from the admin codebase — replaced with semantic tokens that resolve correctly in both light (Clean Trust) and dark (Industrial Steel) modes.
+- Forced `dark` class wrappers removed from 7 admin components (OrderFulfillmentConsole, InventoryManagementConsole, ProductCatalogTable, CustomerDirectoryTable, CommercialReportsConsole, cod/page, login/page). These components now respect the user's theme toggle (default: light, per Task 17). This completes the theme-toggle migration for admin that Task 17 began (which only removed `dark` from admin/layout.tsx).
+- All input focus states promote from level 2 → level 1 (`focus:border-[var(--brand)]` → `focus:border-border-strong`) — consistent with the storefront pattern established in Task 18-STOREFRONT-BORDERS. All button hover states promote from level 2 → level 1 (`hover:border-foreground` → `hover:border-border-strong`).
+- `gap-px bg-[#2A2823]` grid separator trick now uses `gap-px bg-border` (semantic border color fills the 1px gaps, works in both themes). `divide-[#2A2823]` replaced with `divide-border` (component-level row dividers) or `divide-border-subtle` (internal panel dividers) depending on context.
+- Lint: 0 errors / 0 warnings in all 10 reworked files. TypeScript: 0 errors. The single pre-existing lint error in ThemeToggle.tsx (added in Task 17) is unrelated to this task's border/surface/spacing changes.
+- This completes the border-hierarchy migration across the entire Patel Networks app — Task 18-STOREFRONT-BORDERS covered the 6 storefront files, this task covered the 10 admin files. Both halves now speak the same 3-level border + 3-level surface design language.
