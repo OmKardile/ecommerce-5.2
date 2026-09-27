@@ -50,6 +50,11 @@ const NAV_ITEMS: NavItem[] = [
     icon: Users,
   },
   {
+    href: '/admin/employees',
+    label: 'Employees',
+    icon: Users,
+  },
+  {
     href: '/admin/reports',
     label: 'Analytics & Tax Reports',
     icon: BarChart3,

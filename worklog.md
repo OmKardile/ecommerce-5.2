@@ -1414,3 +1414,181 @@ Stage Summary:
 - All admin hardcoded dark colors eliminated (semantic tokens only)
 - Admin components now follow the theme toggle (no forced dark)
 - Spacing rhythm refined (tight within groups, expanded between sections)
+
+
+---
+Task ID: 19-ADMIN-EMPLOYEES
+Agent: Sub Agent (general-purpose, Z.ai Code)
+Task: Build Admin Employee Management UI — superadmin creates employee (INVENTORY_MANAGER) users, manages existing ones, and controls which StockPermission values each employee has.
+
+Work Log:
+1. Read worklog.md (last 2 entries: 18-BORDER-HIERARCHY + earlier admin work) for context — confirmed Clean Trust split theme, 3-level border hierarchy (border-border-strong / border-border / border-border-subtle), surface tokens, and design primitives (.eyebrow, .btn-ink, .btn-ghost, .dot-rec, .link-underline).
+2. Studied existing admin patterns: `src/app/admin/layout.tsx` (server component, provides sidebar + header chrome), `src/components/admin/AdminSidebar.tsx` (NAV_ITEMS array), `src/components/admin/CustomerDirectoryTable.tsx` + `InventoryManagementConsole.tsx` (table + modal patterns, `useTransition` + server-action call pattern), `src/app/actions/admin.actions.ts` (server action conventions), `src/server/services/admin-auth.service.ts` (`getAdminSession()` returns AdminSessionPayload with role), `prisma/schema.prisma` (User + EmployeeProfile + StockPermission enum).
+3. Created `src/app/actions/employee.actions.ts` ('use server'):
+   - 5 server actions: createEmployeeAction(formData), updateEmployeeAction(employeeId, formData), toggleEmployeeActiveAction(employeeId), updateEmployeePermissionsAction(employeeId, permissions[]), resetEmployeePasswordAction(employeeId, newPassword).
+   - All actions verify caller is SUPER_ADMIN via requireSuperAdmin() helper that calls AdminAuthService.getAdminSession() and checks session.role === UserRole.SUPER_ADMIN.
+   - Exports STOCK_PERMISSION_VALUES (readonly array of all 5 StockPermission enum values) + EmployeeSummary interface for type-sharing between server + client.
+   - createEmployeeAction: validates fullName/email/phone/password required + password ≥6 chars, checks email/phone/employeeCode uniqueness, creates User (INVENTORY_MANAGER role) + EmployeeProfile (default [STOCK_VIEW] if no perms provided, createdBy = session.adminId).
+   - updateEmployeeAction: updates EmployeeProfile (fullName, phone, employeeCode, permissions, isActive); email is intentionally read-only (disabled in edit form); phone kept in sync on User when changed; User.isActive mirrored to EmployeeProfile.isActive so deactivated employees can't log in.
+   - toggleEmployeeActiveAction: flips isActive on EmployeeProfile AND User (keeps login block in sync).
+   - updateEmployeePermissionsAction: standalone permission-only update (kept for completeness per spec; the edit modal uses updateEmployeeAction which also writes permissions).
+   - resetEmployeePasswordAction: min 6 chars, overwrites User.passwordHash.
+   - parsePermissions(): dedupes + validates against STOCK_PERMISSION_VALUES, falls back to [STOCK_VIEW] if empty/invalid.
+   - toResult/toError helpers produce proper discriminated-union return types ({ success: true; data } | { success: false; error }).
+   - revalidatePath('/admin/employees') after every successful mutation.
+4. Created `src/app/admin/employees/page.tsx` (server component, revalidate=0):
+   - Fetches all EmployeeProfile rows where user.role = INVENTORY_MANAGER, includes user, ordered by createdAt asc.
+   - Maps to EmployeeSummary[] (Date → ISO string for client-safe serialization).
+   - Page header: eyebrow ("Stock Panel · Access Control" with dot-rec), sans-serif bold tracking-tight h1 ("Employee Management"), description.
+   - Hands off to <EmployeeManagementConsole initialEmployees={employees} />.
+5. Created `src/components/admin/EmployeeManagementConsole.tsx` ('use client'):
+   - KPI strip (4 hairline cells via gap-px bg-border border-border-strong): Total Employees, Active (emerald tone), Deactivated (amber tone if >0), Permissions Granted.
+   - Console meta + toolbar: eyebrow with dot-rec, "X of Y shown" font-mono counter, search input (filters name/email/phone/code), feedback chip, "Create Employee" btn-ink button.
+   - Employee roster table: Code (font-mono blue), Employee (name + joined date), Contact (email + phone), Permissions (badge chips — one per StockPermission, uppercase font-mono tracking-wider, border-border-subtle), Status (Active emerald-dot / Inactive stone-dot, opacity-60 row when inactive), Actions (Edit, Reset password icon, Disable/Enable toggle).
+   - Create/Edit modal (max-w-2xl): identity row (fullName + employeeCode), contact row (email disabled on edit + phone), password row (required on create, optional on edit with hint), isActive checkbox (edit only), permission editor (5-row checkbox group — each row shows label + StockPermission enum value (font-mono blue) + description; STOCK_VIEW is locked + tagged "base"; "X of 5 granted" counter).
+   - Permission editor: STOCK_VIEW cannot be unchecked (locked base permission), consistent with the @default([STOCK_VIEW]) on the Prisma model.
+   - Reset password modal (max-w-md): separate small modal triggered by KeyRound icon button.
+   - Default new-employee permissions: [STOCK_VIEW] (DEFAULT_NEW_PERMISSIONS constant).
+   - All inputs use semantic tokens: bg-background, border-border, focus:border-border-strong, text-foreground, placeholder:text-stone-500. Modal: bg-card border-border-strong; modal header divider border-border-subtle; form submit divider border-border-subtle.
+   - Use 3 separate useTransition hooks (isPending for create/edit, isTogglePending for activate toggle, isResetPending for password reset) so independent actions don't block each other.
+   - Form submission builds FormData (fd.set for scalars + fd.append('permissions', p) for each perm) and dispatches to createEmployeeAction or updateEmployeeAction based on mode.
+6. Updated `src/components/admin/AdminSidebar.tsx`: added `{ href: '/admin/employees', label: 'Employees', icon: Users }` to NAV_ITEMS array immediately after the Customers entry. Users icon was already imported (Customers was using it); both nav items now share the Users icon — acceptable since labels disambiguate, and minimal-change principle (spec didn't request changing Customers' icon).
+
+VALIDATION:
+- `bun run lint` → exit 0 (0 errors, 0 warnings). Clean across all 4 modified/created files.
+- `bunx tsc --noEmit` → 0 errors in any file I created or modified. The single remaining TS error is in `src/app/stock/login/page.tsx` (untracked pre-existing work from a different task — `.error` access on a non-discriminated ActionResult union) — NOT in any of the 4 files touched by this task.
+- Fixed a TS narrowing quirk in EmployeeManagementConsole.tsx: changed `if (res.success && res.data)` to `if (res.success)` in two handlers (handleSubmit + handleToggleActive) so TypeScript correctly narrows the discriminated union to the success branch (allowing `res.data` access) and the else branch (allowing `res.error` access).
+
+Stage Summary:
+- 5 server actions live in `src/app/actions/employee.actions.ts`, all SUPER_ADMIN-gated via AdminAuthService.getAdminSession(). Discriminated-union return types ({ success: true; data } | { success: false; error }) for type-safe client handling.
+- `src/app/admin/employees/page.tsx` is a server component that fetches INVENTORY_MANAGER users + their EmployeeProfile and renders the client console.
+- `src/components/admin/EmployeeManagementConsole.tsx` is a 840-line client component providing: KPI strip, search, table with permission badges + status + per-row actions, create/edit modal with full permission checkbox editor, reset-password modal, and 3 independent useTransition hooks for non-blocking concurrent mutations.
+- AdminSidebar now has an "Employees" nav item linking to /admin/employees, placed after "Customers".
+- Design system compliance: Clean Trust semantic tokens throughout (text-foreground, text-stone-500, bg-card, bg-background, border-border-strong/border/border-subtle), .eyebrow / .btn-ink / .btn-ghost / .dot-rec primitives, sans-serif font-bold tracking-tight headings. No hardcoded colors. Respects the theme toggle (no forced dark wrapper).
+- Permission model: STOCK_VIEW is locked as the base permission (can't be removed in the editor) — matches the Prisma `permissions StockPermission[] @default([STOCK_VIEW])`. The superadmin can grant any of the other 4 (STOCK_ADJUST, STOCK_RECONCILE, STOCK_EXPORT, STOCK_MANAGE_ALERTS).
+- Active/Inactive toggle cascades to User.isActive so deactivated employees can't log in.
+- Email is intentionally read-only on edit (changing email would invalidate login + require unique check); phone is editable and stays synced between User.phone (login identifier) and EmployeeProfile.phone (warehouse contact).
+
+---
+Task ID: 19-STOCK-PANEL
+Agent: Subagent (general-purpose) — Stock Monitor Employee Panel
+Task: Build the warehouse employee stock panel (auth + 4 pages + server actions + proxy guard) on top of the 4-table schema (employee_profiles, stock_alerts, stock_count_sessions, stock_reconciliations) created in Task 18-BORDER-HIERARCHY's follow-up. Default employee: stock@patelnetworks.in / stock@2026, permissions STOCK_VIEW + STOCK_ADJUST + STOCK_EXPORT.
+
+Work Log (actions performed):
+
+1. Read context: STOCK-PANEL-RESEARCH.md (the spec draft), last 2 worklog entries (18-ADMIN-BORDERS, 18-BORDER-HIERARCHY), prisma/schema.prisma (lines 540-629 for the 4 new models + StockPermission enum, lines 230-264 for Inventory + InventoryMovement + MovementReason), existing admin-auth.service.ts (to mirror the pattern), proxy.ts, admin/login/page.tsx, admin/layout.tsx, admin/page.tsx, components/storefront/ThemeToggle.tsx, components/admin/AdminSidebar.tsx, app/actions/admin-auth.actions.ts, app/actions/employee.actions.ts (already-implemented employee CRUD), server/services/admin.service.ts (for adjustSkuStock pattern + movement reason enum), lib/utils.ts (formatInr), globals.css (verified `.eyebrow`, `.btn-ink`, `.btn-ghost`, `.dot-rec`, `.link-underline` utilities exist).
+
+2. Created `/home/z/my-project/src/server/services/employee-auth.service.ts`:
+   - `EMPLOYEE_COOKIE_NAME = 'pn_stock_session'` (isolated from admin/customer).
+   - JWT_SECRET + JWT_KEY reuse the same `process.env.JWT_SECRET` fallback string as admin-auth (single HMAC key, three separate cookies).
+   - `EmployeeSessionPayload { employeeId, userId, email, fullName, employeeCode, permissions: StockPermission[] }`.
+   - `createEmployeeSession(email, password)`: lookup `prisma.user.findFirst({ where: { email, isActive: true, employeeProfile: { isActive: true } }, include: { employeeProfile: true } })`, plain-text password compare (matches existing User.passwordHash convention used by admin-auth + employee.actions.ts), falls back to default `stock@patelnetworks.in` / `stock@2026` if no DB row exists (dev convenience — defaults seeded by superadmin via /admin/employees in production). Issues a 7-day HS256 JWT, sets the httpOnly + sameSite=lax cookie.
+   - `getEmployeeSession()`: reads + verifies the cookie, returns null on missing/invalid.
+   - `clearEmployeeSession()`: maxAge=0 cookie reset.
+   - `hasPermission(session, permission)`: array.includes check (null-safe).
+   - Exported both the class and a standalone `hasPermission` function for ergonomics.
+
+3. Created `/home/z/my-project/src/server/services/stock.service.ts` (read-side data layer):
+   - `getStockDashboardData(session)`: aggregates Inventory (with SKU + variant + product) into KPIs (totalSkus, totalStockValue = sum(currentStock × sellingPrice), lowStockCount = currentStock ≤ threshold, outOfStockCount = currentStock = 0). Fetches last 5 alerts + last 10 movements. Resolves createdById → email via a follow-up `prisma.user.findMany` (no `createdBy` relation on InventoryMovement in the schema). Computes `canReconcile`, `canExport`, `canManageAlerts` from the session's permissions.
+   - `getStockAlerts(status?)`: returns stock_alerts with sku + variant + product, serialized to ISO timestamps.
+   - `getStockMovements(filters)`: paginated (default 25/page, max 100) with `search` (sku code/barcode/product name/notes), `reason` filter (cast to MovementReason enum), `dateFrom`/`dateTo` range, OR-clause search. Returns `{ rows, total, page, pageSize }`.
+
+4. Created `/home/z/my-project/src/app/stock/actions/stock.actions.ts` (7 server actions):
+   - `employeeLoginAction(formData)` → `LoginResult` (success + redirectUrl, or error). Re-reads the session after creation to enforce STOCK_VIEW.
+   - `employeeLogoutAction()` → calls `clearEmployeeSession()` then `redirect('/stock/login')`.
+   - `acknowledgeAlertAction(alertId)` → requires STOCK_MANAGE_ALERTS, sets `status='ACKNOWLEDGED'` + `acknowledgedBy=userId` + `acknowledgedAt=now()`.
+   - `resolveAlertAction(alertId)` → same permission, sets `status='RESOLVED'` + `resolvedBy` + `resolvedAt`.
+   - `generateAlertsAction()` → idempotent scan of every Inventory row, creates OPEN alerts for SKUs at/below threshold that don't already have an OPEN alert. Returns `{ created, skipped }` counts.
+   - `createCountSessionAction(name, assignedSkus)` → requires STOCK_RECONCILE. Validates name + skuIds, fetches inventories for expectedQty, creates StockCountSession (status='IN_PROGRESS', startedAt=now()) + seeds StockReconciliation rows (status='PENDING', countedQty=null).
+   - `submitStockCountAction(sessionId, counts)` → in a single $transaction, updates each reconciliation with countedQty + variance + status (MATCHED if variance=0, DISCREPANCY otherwise), marks the session COMPLETED + completedAt.
+   - Used two result types: `ActionResult = {success:true} | {success:false, error:string}` for mutations; `LoginResult = {success:true, redirectUrl:string} | {success:false, error:string}` for login (so the client can narrow correctly).
+   - Each mutation action calls `revalidatePath('/stock')` + the relevant sub-path.
+
+5. Created `/home/z/my-project/src/app/stock/actions/export.actions.ts`:
+   - `exportMovementsCsvAction(filters)` → requires STOCK_EXPORT. Re-fetches all matching movements (up to 5000 rows), builds CSV (RFC 4180 compliant — wraps values containing commas/quotes/newlines in double quotes, escapes embedded quotes by doubling), returns `{ csv, filename }`. Client creates a Blob + triggers a download via an injected `<a download>` element.
+
+6. Created `/home/z/my-project/src/app/stock/login/page.tsx` (client component):
+   - Mirrors admin login composition: brand header → eyebrow + h1 + sub-paragraph → hairline-underline email input (with Mail icon) → hairline-underline password input (with Lock icon + show/hide toggle) → `.btn-ink` submit → demo-credentials hint card with "Autofill credentials" link.
+   - Demo credentials pre-filled: `stock@patelnetworks.in` / `stock@2026`.
+   - useTransition + `employeeLoginAction(formData)` → on success `router.push(redirectUrl)` + `router.refresh()`, on failure setErrorMsg.
+   - Security disclaimer line at the bottom (256-bit JWT, isolated session, 7-day expiry).
+   - All colors via semantic tokens (text-foreground, text-stone-500/600, bg-card, bg-background, border-border/border-strong/border-subtle, text-[var(--brand)] for accent) — Clean Trust light-by-default theme, respects the user's theme toggle.
+
+7. Created `/home/z/my-project/src/app/stock/layout.tsx` (server component):
+   - Reads `x-pathname` from headers (set by proxy.ts).
+   - If pathname includes `/stock/login`, renders children bare (no sidebar/header).
+   - Otherwise calls `EmployeeAuthService.getEmployeeSession()` — if null or missing STOCK_VIEW, `redirect('/stock/login')`.
+   - Renders the StockSidebar + StockHeader + main content area (`p-6 lg:p-8 max-w-7xl w-full mx-auto`) inside the standard `min-h-screen bg-background text-foreground flex antialiased` shell.
+
+8. Created `/home/z/my-project/src/components/stock/StockSidebar.tsx` (client):
+   - 4-item nav: Dashboard, Alerts, Movements, Count Sessions (exact match for /stock, prefix match for others).
+   - Active state: brand-blue left border (border-border-strong) + foreground text + bg-background. Inactive: transparent border + stone-500 + hover raises to foreground + bg-background/60.
+   - Brand header at top (Patel.Networks wordmark + "Stock Panel" eyebrow + dot-rec).
+   - Employee identity card at the bottom (initials avatar + name + employeeCode + email).
+   - Sign-out lives in the header per the spec (not the sidebar).
+
+9. Created `/home/z/my-project/src/components/stock/StockHeader.tsx` (client):
+   - 14px sticky top bar, border-b border-border.
+   - Left: Patel.Networks wordmark + "Stock Panel" label (hidden on small screens) separated by a border-l divider.
+   - Right: "Signed in as {fullName}" + dot-rec + ThemeToggle + `.btn-ghost` sign-out button (calls `employeeLogoutAction` via useTransition).
+
+10. Created `/home/z/my-project/src/app/stock/page.tsx` (dashboard, server component, `revalidate=0`):
+    - KPI grid (4 cards in a `divide-x divide-border-subtle border border-border-strong bg-card`): Total SKUs, Total Stock Value (formatInr), Low Stock SKUs (amber), Out of Stock (destructive). Tone-aware value color (text-amber-600 / text-[var(--destructive)] when count > 0).
+    - Quick actions: "New count session" link (only rendered if session has STOCK_RECONCILE) → /stock/count. Always-visible "View movements" link.
+    - Recent alerts (last 5) + Recent movements (last 10) as two side-by-side hairline tables (lg:grid-cols-2). Alert type chip color-coded (OUT_OF_STOCK = destructive, LOW_STOCK = amber). Movement type icon (ArrowDownCircle green for IN, ArrowUpCircle destructive for OUT). Each section has a "Manage all" / "View all" link with the ArrowRight icon + .link-underline.
+    - Empty-state messages when no data.
+
+11. Created `/home/z/my-project/src/components/stock/AlertsTable.tsx` (client component for the alerts page):
+    - Renders the server-fetched alerts as a hairline table. Columns: SKU (+ product name + variant), Type chip (amber/destructive), Stock/Threshold, Status badge (amber/brand/emerald), Created timestamp. If `canManageAlerts`, additional Actions column with Acknowledge + Resolve buttons.
+    - Acknowledge button disabled when status !== 'OPEN' (already acknowledged or resolved). Resolve button disabled when status === 'RESOLVED'.
+    - useTransition + per-row pending state (pendingId) so multiple rows can be actioned sequentially without blocking the UI. Inline success/error feedback per row (Check icon + "Updated." or AlertCircle + error message).
+    - Shows acknowledgedAt / resolvedAt as small date labels under the status badge when set.
+
+12. Created `/home/z/my-project/src/components/stock/GenerateAlertsButton.tsx` (client):
+    - "Scan inventory for alerts" button (Zap icon). Triggers `generateAlertsAction()` via useTransition. Shows inline feedback: "Scan complete — N new alert(s) created, M skipped." or the error message.
+
+13. Created `/home/z/my-project/src/app/stock/alerts/page.tsx` (server component, `revalidate=0`):
+    - searchParams is `Promise<{ status?: string }>` per Next.js 16 PageProps (awaited at the top).
+    - Status filter: 4 pills (ALL / OPEN / ACKNOWLEDGED / RESOLVED) with live counts. Selected pill has `bg-foreground text-background` active style.
+    - Renders the GenerateAlertsButton (if STOCK_MANAGE_ALERTS) + AlertsTable.
+    - "Back to dashboard" link in the section header.
+
+14. Created `/home/z/my-project/src/components/stock/MovementsFilters.tsx` (client):
+    - Filter form (search input + reason select + dateFrom + dateTo date inputs + Apply button). On submit, pushes a new URL with the filter params so the server component re-renders with the filtered data — filters are shareable + survive refresh.
+    - "Export matching rows to CSV" button (Download icon) → calls `exportMovementsCsvAction(filters)`, receives the CSV string, creates a Blob, triggers a browser download. Gated on `canExport` prop.
+    - Inline success/error feedback for the export.
+
+15. Created `/home/z/my-project/src/app/stock/movements/page.tsx` (server component, `revalidate=0`):
+    - searchParams is `Promise<{ search?, reason?, dateFrom?, dateTo?, page? }>` per Next.js 16.
+    - Renders the MovementsFilters + a hairline table with columns: SKU (+ product + variant + notes), Type (IN/OUT icon chip), Qty (signed), Reason (MovementReason enum formatted), User (creator email or ID prefix), Timestamp.
+    - Pagination controls (Previous / page X of Y / Next) with preserved filter params in the URL. PAGE_SIZE = 25.
+    - "Back to dashboard" link in the header.
+
+16. Created `/home/z/my-project/src/app/stock/count/page.tsx` (server component, `revalidate=0`):
+    - Lists existing StockCountSessions as cards with name, status chip, created/completed dates, and a 3-cell metric strip (Items / Counted / Discrepancies).
+    - If `canReconcile`, fetches up to 200 SKUs (with current stock) and renders the StockCountSessions client component which has a "New count session" form (name input + multi-select SKU checklist + Select all / Clear all + Create button).
+
+17. Created `/home/z/my-project/src/components/stock/StockCountSessions.tsx` (client):
+    - Renders the session cards + the new-session form.
+    - Form validation: name required, at least one SKU selected. On submit calls `createCountSessionAction(name, skuIds)`. On success: clears the form + reloads the page so the new session appears in the server-rendered list.
+    - Per-SKU checkbox with code + current stock + product name + variant. Accent-color checkbox uses `.accent-[var(--brand)]`.
+
+18. Updated `/home/z/my-project/src/proxy.ts`:
+    - Added section 3 (Stock Monitor Employee Panel Protection, ADR-026).
+    - Matcher now includes `/stock/:path*`.
+    - For any pathname starting with `/stock` (except `/stock/login`), reads `pn_stock_session` cookie. If missing or invalid (jwtVerify throws), redirects to `/stock/login?next=pathname`. If valid, reads `payload.permissions` (array in the JWT) and rejects if `STOCK_VIEW` is missing — redirect to /stock/login.
+    - `/stock/login` is allowed through (no auth check), mirroring the admin-login pattern.
+
+VALIDATION:
+- `bun run lint` → exit 0, 0 errors, 0 warnings across all 16 new/modified files.
+- `bunx tsc --noEmit` → exit 0, 0 type errors.
+- `bun run build` → exit 1, but the failure is PRE-EXISTING + ENVIRONMENTAL: `PrismaClientInitializationError: Error validating datasource db: the URL must start with the protocol postgresql:// or postgres://` — the sandbox `.env` has `DATABASE_URL=file:/home/z/my-project/db/custom.db` (a SQLite-style URL on a Postgres provider). This blocks the prerender of `/`, `/products/[slug]`, `/sitemap.xml` — all of which query the DB at build time and have nothing to do with the stock panel. None of the 8 stock-panel routes are statically prerendered (all are dynamic server components with `revalidate=0`). Build succeeds through the TypeScript pass + webpack compile before the prerender phase hits the DB.
+
+Stage Summary:
+- Stock panel fully wired: 8 new files + 7 components/services + proxy guard + isolated JWT cookie (`pn_stock_session`).
+- Auth: employee login (DB lookup with default-credentials fallback) → 7-day JWT → httpOnly cookie → proxy guard verifies JWT + STOCK_VIEW permission on every /stock/* request → layout double-checks via `getEmployeeSession()` → server actions call `requirePermission()` for the specific permission each action needs.
+- Pages: login (client) → dashboard (server, KPIs + recent alerts/movements) → alerts (server + client table with Acknowledge/Resolve) → movements (server + client filters/CSV export, paginated) → count sessions (server + client form). All Clean Trust themed (light by default), 3-level border hierarchy (border-border-strong for structural, border-border for component-level, border-border-subtle for internal dividers), `.eyebrow` / `.btn-ink` / `.btn-ghost` / `.dot-rec` / `.link-underline` utilities, font-bold tracking-tight sans-serif headings, no hardcoded colors.
+- Permissions enforced end-to-end: STOCK_VIEW required to enter any /stock page (proxy + layout + login action); STOCK_MANAGE_ALERTS required for acknowledge/resolve/generate-alerts; STOCK_RECONCILE required for count session create + submit; STOCK_EXPORT required for CSV export. UI hides action buttons when the employee lacks the permission (Quick action "New count session" on dashboard, Acknowledge/Resolve buttons in AlertsTable, Export button in MovementsFilters, New session form in StockCountSessions).
+- Default dev credentials: stock@patelnetworks.in / stock@2026 (also configurable via EMPLOYEE_EMAIL / EMPLOYEE_PASSWORD env vars). Falls back to these defaults if the DB lookup fails or the employee row doesn't exist yet (matches the AdminAuthService.loginAdmin pattern).
+- Default permissions for the fallback account: STOCK_VIEW + STOCK_ADJUST + STOCK_EXPORT (matches the seed in the task spec). STOCK_RECONCILE + STOCK_MANAGE_ALERTS would need to be granted via /admin/employees.
+- Lint: 0 errors / 0 warnings. TypeScript: 0 errors. Build fails only on the pre-existing DB-URL environmental issue (unrelated to this task).

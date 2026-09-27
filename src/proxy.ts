@@ -59,9 +59,38 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // 3. Stock Monitor Employee Panel Protection (ADR-026)
+  // Isolated `pn_stock_session` cookie — separate from admin + customer.
+  if (pathname.startsWith('/stock') && pathname !== '/stock/login') {
+    // Already-authenticated employees hitting /stock/login get redirected to
+    // the dashboard so they don't see the login form again.
+    const stockToken = request.cookies.get('pn_stock_session')?.value;
+    if (!stockToken) {
+      const loginUrl = new URL('/stock/login', request.url);
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    try {
+      const { payload } = await jwtVerify(stockToken, JWT_KEY);
+      // Permissions live in the JWT payload — gate entry on STOCK_VIEW.
+      const permissions = Array.isArray(payload.permissions)
+        ? payload.permissions
+        : [];
+      if (!permissions.includes('STOCK_VIEW')) {
+        return NextResponse.redirect(new URL('/stock/login', request.url));
+      }
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    } catch {
+      const loginUrl = new URL('/stock/login', request.url);
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
   return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/account/:path*'],
+  matcher: ['/admin/:path*', '/account/:path*', '/stock/:path*'],
 };

@@ -39,6 +39,7 @@ model User {
 
   customer     Customer?
   adminProfile AdminProfile?
+  employeeProfile EmployeeProfile?
   auditLogs    AuditLog[]
 
   @@map("users")
@@ -214,6 +215,8 @@ model Sku {
   orderItems   OrderItem[]
   bundleItems  BundleItem[]
   movements    InventoryMovement[]
+  stockAlerts     StockAlert[]
+  reconciliations StockReconciliation[]
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
 
@@ -536,4 +539,90 @@ model AuditLog {
   createdAt DateTime @default(now())
 
   @@map("audit_logs")
+}
+
+
+// ==========================================
+// 30. EMPLOYEE PANEL — Stock Monitor (ADR-026)
+// ==========================================
+
+// Permissions an employee can have — superadmin assigns per-user
+enum StockPermission {
+  STOCK_VIEW          // view inventory dashboard + alerts
+  STOCK_ADJUST        // adjust stock levels (in/out movements)
+  STOCK_RECONCILE     // physical count sessions + reconciliation
+  STOCK_EXPORT        // export reports / CSV
+  STOCK_MANAGE_ALERTS // acknowledge + resolve alerts
+}
+
+model EmployeeProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName        String
+  employeeCode    String?  @unique // e.g., "EMP-001"
+  phone           String?  // separate from login phone (for warehouse contact)
+  permissions     StockPermission[] @default([STOCK_VIEW])
+  isActive        Boolean  @default(true)
+  createdBy        String?  // admin user ID who created this employee
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("employee_profiles")
+}
+
+// Stock alert — triggered when inventory drops below threshold
+model StockAlert {
+  id             String   @id @default(uuid())
+  skuId          String
+  sku            Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  alertType      String   // 'LOW_STOCK' | 'OUT_OF_STOCK' | 'OVERSTOCK'
+  threshold      Int
+  currentStock   Int
+  status         String   @default("OPEN") // 'OPEN' | 'ACKNOWLEDGED' | 'RESOLVED'
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime @default(now())
+
+  @@index([status, createdAt])
+  @@map("stock_alerts")
+}
+
+// Stock count session — a batch physical count event
+model StockCountSession {
+  id           String   @id @default(uuid())
+  name         String   // e.g., "Q3 2026 Full Count"
+  status       String   @default("SCHEDULED") // 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+  startedAt    DateTime?
+  completedAt  DateTime?
+  assignedTo    String?  // employee user ID
+  createdBy     String   // admin user ID
+  createdAt    DateTime @default(now())
+
+  reconciliations StockReconciliation[]
+
+  @@map("stock_count_sessions")
+}
+
+// Stock reconciliation — physical count vs database
+model StockReconciliation {
+  id              String   @id @default(uuid())
+  sessionId       String?
+  session         StockCountSession? @relation(fields: [sessionId], references: [id])
+  skuId           String
+  sku             Sku      @relation(fields: [skuId], references: [id])
+  expectedQty     Int
+  countedQty      Int?
+  variance        Int?     // countedQty - expectedQty
+  reason          String?
+  status          String   @default("PENDING") // 'PENDING' | 'MATCHED' | 'DISCREPANCY' | 'RESOLVED'
+  countedBy       String?  // employee user ID
+  approvedBy      String?
+  createdAt       DateTime @default(now())
+  resolvedAt      DateTime?
+
+  @@index([status, createdAt])
+  @@map("stock_reconciliations")
 }
