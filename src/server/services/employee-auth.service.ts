@@ -1,10 +1,11 @@
 import { cookies } from 'next/headers';
 import { SignJWT, jwtVerify } from 'jose';
 import { prisma } from '@/server/db';
-import { StockPermission } from '@prisma/client';
+import { UserRole } from '@prisma/client';
+import { hasPermission as hasPermissionUtil } from '@/lib/permissions';
 
 /**
- * Employee authentication service — Stock Monitor Panel.
+ * Employee authentication service — Stock Monitor Panel + Staff Panel.
  *
  * Mirrors the AdminAuthService pattern but with an ISOLATED session cookie
  * (`pn_stock_session`), separate from the admin (`pn_admin_session`) and
@@ -14,7 +15,9 @@ import { StockPermission } from '@prisma/client';
  * sessions colliding.
  *
  * Session payload (JWT): { employeeId, userId, email, fullName, employeeCode,
- * permissions: StockPermission[] }
+ * role: 'STAFF', permissions: string[] }
+ *
+ * Permissions are plain string literals from @/lib/permissions (ALL_PERMISSIONS).
  */
 
 export const EMPLOYEE_COOKIE_NAME = 'pn_stock_session';
@@ -32,13 +35,21 @@ const DEFAULT_EMPLOYEE_EMAIL =
 const DEFAULT_EMPLOYEE_PASSWORD =
   process.env.EMPLOYEE_PASSWORD || 'stock@2026';
 
+// Default permissions granted to the fallback account when no DB row exists.
+const DEFAULT_FALLBACK_PERMISSIONS: string[] = [
+  'STOCK_VIEW',
+  'INVENTORY_ADJUST',
+  'STOCK_EXPORT',
+];
+
 export interface EmployeeSessionPayload {
   employeeId: string;
   userId: string;
   email: string;
   fullName: string;
   employeeCode: string | null;
-  permissions: StockPermission[];
+  role: 'STAFF';
+  permissions: string[];
   iat?: number;
   exp?: number;
 }
@@ -64,7 +75,7 @@ export class EmployeeAuthService {
       email: string;
       fullName: string;
       employeeCode: string | null;
-      permissions: StockPermission[];
+      permissions: string[];
     };
   }> {
     const email = emailInput.trim().toLowerCase();
@@ -76,12 +87,13 @@ export class EmployeeAuthService {
 
     let payload: EmployeeSessionPayload | null = null;
 
-    // 1. Database lookup — real employee account created via /admin/employees
+    // 1. Database lookup — real staff account created via /admin/employees
     try {
       const dbUser = await prisma.user.findFirst({
         where: {
           email,
           isActive: true,
+          role: UserRole.STAFF,
           employeeProfile: { isActive: true },
         },
         include: { employeeProfile: true },
@@ -95,6 +107,7 @@ export class EmployeeAuthService {
             email: dbUser.email || email,
             fullName: dbUser.employeeProfile.fullName,
             employeeCode: dbUser.employeeProfile.employeeCode,
+            role: 'STAFF',
             permissions: dbUser.employeeProfile.permissions,
           };
         }
@@ -115,11 +128,8 @@ export class EmployeeAuthService {
           email: DEFAULT_EMPLOYEE_EMAIL,
           fullName: 'Warehouse Stock Operator',
           employeeCode: 'EMP-001',
-          permissions: [
-            StockPermission.STOCK_VIEW,
-            StockPermission.STOCK_ADJUST,
-            StockPermission.STOCK_EXPORT,
-          ],
+          role: 'STAFF',
+          permissions: DEFAULT_FALLBACK_PERMISSIONS,
         };
       }
     }
@@ -127,7 +137,7 @@ export class EmployeeAuthService {
     if (!payload) {
       return {
         success: false,
-        error: 'Invalid employee credentials. Contact the operations manager if you have forgotten your access key.',
+        error: 'Invalid staff credentials. Contact the operations manager if you have forgotten your access key.',
       };
     }
 
@@ -138,6 +148,7 @@ export class EmployeeAuthService {
       email: payload.email,
       fullName: payload.fullName,
       employeeCode: payload.employeeCode,
+      role: payload.role,
       permissions: payload.permissions,
     })
       .setProtectedHeader({ alg: 'HS256' })
@@ -207,14 +218,23 @@ export class EmployeeAuthService {
 
   /**
    * Returns true if the session has the requested permission.
-   * Used by both server components and server actions to gate UI + writes.
+   * Uses the shared @/lib/permissions hasPermission() so role + permissions
+   * are interpreted consistently across the proxy, layouts, server actions,
+   * and the admin sidebar.
+   *
+   * For stock-panel sessions the role is always 'STAFF', so this reduces to a
+   * plain `permissions.includes(permission)` check.
    */
   static hasPermission(
     session: EmployeeSessionPayload | null,
-    permission: StockPermission
+    permission: string
   ): boolean {
-    if (!session || !Array.isArray(session.permissions)) return false;
-    return session.permissions.includes(permission);
+    if (!session) return false;
+    return hasPermissionUtil(
+      session.role ?? 'STAFF',
+      session.permissions,
+      permission
+    );
   }
 }
 

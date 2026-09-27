@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminAuthService } from '@/server/services/admin-auth.service';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Operations & Logistics Command Center | Patel Networks Admin',
@@ -25,10 +26,21 @@ export default async function AdminLayout({
 
   const session = await AdminAuthService.getAdminSession();
 
+  // Belt + suspenders — proxy.ts already redirects unauthenticated / non-
+  // SUPER_ADMIN-or-STAFF users to /admin/login, but redirect defensively if
+  // the cookie is missing or invalid here too.
+  if (!session) {
+    redirect('/admin/login');
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex antialiased">
-      {/* Operations sidebar — fixed left, hairline right border */}
-      <AdminSidebar />
+      {/* Operations sidebar — fixed left, hairline right border.
+          Filters nav items by the staff member's permissions. */}
+      <AdminSidebar
+        userRole={session.role}
+        userPermissions={session.permissions}
+      />
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">

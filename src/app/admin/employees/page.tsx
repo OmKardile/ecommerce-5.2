@@ -9,15 +9,15 @@ export const revalidate = 0; // Dynamic server component
 /**
  * AdminEmployeesPage — server component.
  *
- * Fetches every user with the INVENTORY_MANAGER role and the matching
- * EmployeeProfile row, then hands them to the client console for CRUD.
+ * Fetches every user with the STAFF role and the matching EmployeeProfile
+ * row, then hands them to the client console for CRUD.
  *
  * Layout chrome (sidebar + header) is provided by /admin/layout.tsx.
  */
 export default async function AdminEmployeesPage() {
   const profiles = await prisma.employeeProfile.findMany({
     where: {
-      user: { role: UserRole.INVENTORY_MANAGER },
+      user: { role: UserRole.STAFF },
     },
     include: { user: true },
     orderBy: { createdAt: 'asc' },

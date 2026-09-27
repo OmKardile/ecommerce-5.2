@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/server/db';
-import { StockPermission } from '@prisma/client';
 import {
   EmployeeAuthService,
   type EmployeeSessionPayload,
@@ -46,7 +45,7 @@ async function requireSession(): Promise<EmployeeSessionPayload> {
 }
 
 async function requirePermission(
-  permission: StockPermission
+  permission: string
 ): Promise<EmployeeSessionPayload> {
   const session = await requireSession();
   if (!EmployeeAuthService.hasPermission(session, permission)) {
@@ -74,7 +73,7 @@ export async function employeeLoginAction(formData: FormData): Promise<LoginResu
 
   // Re-read the freshly-set cookie so we can enforce STOCK_VIEW on entry.
   const session = await EmployeeAuthService.getEmployeeSession();
-  if (!EmployeeAuthService.hasPermission(session, StockPermission.STOCK_VIEW)) {
+  if (!EmployeeAuthService.hasPermission(session, 'STOCK_VIEW')) {
     await EmployeeAuthService.clearEmployeeSession();
     return {
       success: false,
@@ -102,7 +101,7 @@ export async function employeeLogoutAction(): Promise<void> {
 export async function acknowledgeAlertAction(alertId: string): Promise<ActionResult> {
   let session: EmployeeSessionPayload;
   try {
-    session = await requirePermission(StockPermission.STOCK_MANAGE_ALERTS);
+    session = await requirePermission('STOCK_ALERTS_MANAGE');
   } catch (err: any) {
     return { success: false, error: err?.message || 'Unauthorized' };
   }
@@ -137,7 +136,7 @@ export async function acknowledgeAlertAction(alertId: string): Promise<ActionRes
 export async function resolveAlertAction(alertId: string): Promise<ActionResult> {
   let session: EmployeeSessionPayload;
   try {
-    session = await requirePermission(StockPermission.STOCK_MANAGE_ALERTS);
+    session = await requirePermission('STOCK_ALERTS_MANAGE');
   } catch (err: any) {
     return { success: false, error: err?.message || 'Unauthorized' };
   }
@@ -177,7 +176,7 @@ export async function generateAlertsAction(): Promise<
   ActionResult & { created?: number; skipped?: number }
 > {
   try {
-    await requirePermission(StockPermission.STOCK_MANAGE_ALERTS);
+    await requirePermission('STOCK_ALERTS_MANAGE');
   } catch (err: any) {
     return { success: false, error: err?.message || 'Unauthorized' };
   }
@@ -238,7 +237,7 @@ export async function createCountSessionAction(
 ): Promise<ActionResult & { sessionId?: string }> {
   let session: EmployeeSessionPayload;
   try {
-    session = await requirePermission(StockPermission.STOCK_RECONCILE);
+    session = await requirePermission('STOCK_COUNT');
   } catch (err: any) {
     return { success: false, error: err?.message || 'Unauthorized' };
   }
@@ -294,7 +293,7 @@ export async function submitStockCountAction(
 ): Promise<ActionResult> {
   let session: EmployeeSessionPayload;
   try {
-    session = await requirePermission(StockPermission.STOCK_RECONCILE);
+    session = await requirePermission('STOCK_COUNT');
   } catch (err: any) {
     return { success: false, error: err?.message || 'Unauthorized' };
   }

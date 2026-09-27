@@ -1614,3 +1614,214 @@ Stage Summary:
 - Default employee: stock@patelnetworks.in / stock@2026
 - Separate session (pn_stock_session), separate panel (/stock/*), separate login (/stock/login)
 - Admin employee management at /admin/employees
+
+---
+Task ID: 20-DESIGN-WEIGHT
+Agent: Sub Agent (general-purpose, Z.ai Code)
+Task: Add visual "weight" to the Patel Networks design — the client called the current look "Zara coded (minimalistic)" and asked for "some weight in it". Make surfaces, borders, type, and components feel more substantial, confident, and solid — NOT airy/delicate. Keep the Clean Trust palette (white + blue), keep the layout/structure, keep the 3-level border hierarchy (just make each level more visible). No new gradients/shadows/decoration.
+
+Work Log (actions performed):
+
+1. Read worklog.md (last 2 entries: 19-STOCK-PANEL + 19-STOCK-PANEL-IMPLEMENTATION) for context — confirmed the Clean Trust theme is live, 3-level border hierarchy (border-strong / border / border-subtle) is established, surface tokens (surface-1/2/3) are registered, design primitives (.eyebrow, .btn-ink, .btn-ghost, .dot-rec, .link-underline) are in globals.css. Read all 8 target files in full before modifying to ensure consistent weight application.
+
+2. Updated `/home/z/my-project/src/app/globals.css` — strengthened the entire design token base:
+   - **Light mode borders** (more visible presence at every level):
+     - `--border-strong`: #CBD5E1 (slate-300) → #94A3B8 (slate-400)
+     - `--border`: #E2E8F0 (slate-200) → #CBD5E1 (slate-300)
+     - `--border-subtle`: #F1F5F9 (slate-50) → #E2E8F0 (slate-200)
+   - **Dark mode borders** (parallel weight bump):
+     - `--border-strong`: #57534E (stone-600) → #78716C (stone-500)
+     - `--border`: #44403C (stone-700) → #57534E (stone-600)
+     - `--border-subtle`: #292524 (stone-800) → #44403C (stone-700)
+   - **`.btn-ink` padding**: `0.875rem 1.5rem` (py-3.5 px-6) → `0.875rem 1.75rem` (py-3.5 px-7) — more substantial primary button.
+   - **`.btn-ghost` padding**: matched — `calc(0.875rem - 1px) calc(1.75rem - 1px)`.
+   - **`.display` font-weight**: 400 → 500 (heavier serif headings).
+   - **`.eyebrow` font-weight**: 500 → 600 (slightly bolder small-caps labels).
+   - Net effect: every component that uses border-border / border-border-strong / border-border-subtle / .btn-ink / .btn-ghost / .display / .eyebrow across the codebase automatically inherits the heavier treatment — high-leverage single-file change.
+
+3. Updated `/home/z/my-project/src/app/page.tsx` (homepage) — tightened rhythm + heavier headings + solid surfaces:
+   - **Section py**: `py-20 lg:py-28` → `py-16 lg:py-20` on every section (Categories, Featured, Discipline, Kit Builder, Brands). Tighter vertical rhythm, denser information feel.
+   - **All h1/h2 headings**: `font-bold` → `font-extrabold` (hero h1, all section h2s).
+   - **Hero trust stats**: was a hairline-divider row with `border-t border-border-subtle`. Now a solid panel: `bg-surface-2 border border-border-strong` with `px-3 py-4` padding. Three stats read as a real callout box, not delicate dividers.
+   - **Featured products grid**: parent grid bg went from `bg-surface-2` → `bg-border-strong` (so the gap-px grid lines between cards are now clearly visible structural separators). Each card's wrapper bg went `bg-background` → `bg-card` (solid white cards distinct from the bg-surface-2 section band behind them).
+   - **Kit builder media frame**: `border border-border` → `border border-border-strong` (the framed product image reads as a more substantial structural element).
+   - **Category list rows**: `py-5` → `py-6` (taller, more presence per row); category name `text-base sm:text-lg` → `text-base sm:text-xl` (bigger label per row).
+
+4. Updated `/home/z/my-project/src/components/storefront/Header.tsx` — heavier top-of-page chrome:
+   - **Main bar height**: `h-[68px]` → `h-[72px]` (more substantial bar).
+   - **Logo wordmark**: `text-[22px] sm:text-[26px]` → `text-[24px] sm:text-[28px]` (heavier brand lockup).
+   - **Nav links (Catalog, Kit Builder)**: added `font-semibold` (default 400 → 600).
+   - **Account + Cart buttons**: padding `px-3 py-2` → `px-3.5 py-2.5`; added `bg-surface-2` base + `hover:bg-accent` + border bumped from `border-transparent`/`border-border` to `border-border-strong` + `hover:border-foreground`. They now read as solid little panels instead of bare text links with hairline edges.
+
+5. Updated `/home/z/my-project/src/components/storefront/Footer.tsx`:
+   - **Trust strip**: added `bg-surface-2` (was transparent — now visibly distinct from the main footer bg, reads as a separate trust band).
+   - **Three link-column headings** (Categories, Brands, Customer & Tools): added `font-bold` to the `.eyebrow` labels (overrides the 600 from the .eyebrow class → 700 — heavier column labels).
+
+6. Updated `/home/z/my-project/src/components/storefront/ProductCard.tsx`:
+   - **Card border**: `border border-border` → `border border-border-strong` (cards are now structurally more present in the grid, no longer read as delicate tiles).
+   - **Card bg**: kept `bg-card` (already solid white, distinct from any bg-surface-2 section band behind it).
+   - **Title h3**: added `font-bold` (heavier than the 500 it inherits from `.display`).
+   - **Price**: `text-lg` → `text-xl` (the price is the most important number on the card — give it more presence).
+   - Hover already used `border-foreground` (left as-is, still the strongest hover state).
+
+7. Updated `/home/z/my-project/src/app/products/page.tsx`:
+   - **Page h1**: added `font-extrabold` (overrides the `.display` 500 weight).
+   - **Filter sidebar `<aside>`**: was bare floating `space-y-8`. Now `bg-surface-2 border border-border-strong p-5` + tightened inner `space-y-6`. Reads as a solid left-panel rather than floating hairline dividers.
+   - **Link dividers inside sidebar** (Category + Brand lists): `divide-border-subtle` → `divide-border-strong` (visible rows, not whisper-thin separators).
+   - **Section top borders** (Category / Brand / In-stock): already `border-t border-border-strong` (kept — they reinforce the panel structure).
+   - **Product grid**: kept `gap-px bg-border-strong` (the visible grid lines between cards are now even more prominent since border-strong itself got stronger in step 2).
+
+8. Updated `/home/z/my-project/src/components/admin/AdminSidebar.tsx`:
+   - **Sidebar bg**: `bg-card` → `bg-surface-2` (solid panel, distinct from the main content bg-background).
+   - **Active nav item bg**: `bg-background` → `bg-surface-3` (more visible active state — the active row is now a distinct raised surface, not just "the same bg as the page").
+   - **Inactive hover bg**: `hover:bg-background/60` → `hover:bg-surface-3/60` (consistent with the new active bg).
+   - **Storefront link (external)** hover bg: `hover:bg-background/60` → `hover:bg-surface-3/60` (same treatment).
+   - **Nav label weight** (every NAV_ITEMS link + the Storefront link): `font-medium` → `font-semibold` (heavier labels).
+   - Py-2.5 was already in place (matches spec intent).
+
+9. Updated `/home/z/my-project/src/components/admin/AdminHeader.tsx`:
+   - **Header bg**: `bg-background` → `bg-surface-1` (solid, distinct from the sidebar's `bg-surface-2`).
+   - **Header bottom border**: `border-b border-border` → `border-b border-border-strong` (structural separator between header and content area).
+
+VALIDATION:
+- `bun run lint` → exit 0, **0 errors, 0 warnings** across all 8 modified files.
+- `bunx tsc --noEmit` → grep for the 7 files I touched in this task (page.tsx, products/page.tsx, Header.tsx, Footer.tsx, ProductCard.tsx, AdminSidebar.tsx, AdminHeader.tsx) → **0 errors in any modified file**. (Pre-existing TS errors in unrelated stock/employee files from prior tasks remain — they require `bunx prisma generate` after the schema added the StockPermission enum + INVENTORY_MANAGER role; not in scope for this design task.)
+
+Stage Summary:
+- **Borders globally stronger** — every level (border-strong / border / border-subtle) bumped one slate/stone shade darker in both light and dark themes. Visible structural presence without changing the palette.
+- **Type globally heavier** — `.display` 400→500, `.eyebrow` 500→600. Page h1/h2 headings go `font-bold` → `font-extrabold`. ProductCard title gets `font-bold`. AdminSidebar nav labels `font-medium` → `font-semibold`. Header nav links get `font-semibold`. Footer column headings get `font-bold`.
+- **Buttons more substantial** — `.btn-ink` and `.btn-ghost` horizontal padding bumped px-6 → px-7 (28px) so primary/secondary CTAs take up more physical space.
+- **Surfaces more distinct** — ProductCard already `bg-card` (kept, now reads as solid tile thanks to the stronger border-strong around it). Homepage featured grid: cards `bg-card` on a `bg-surface-2` band with `bg-border-strong` gap lines (clear separation). Homepage trust stats: promoted from a hairline row to a solid `bg-surface-2` panel with `border-border-strong`. Footer trust strip: now `bg-surface-2` (was transparent). Products sidebar: now `bg-surface-2 border-border-strong p-5` panel (was bare hairline dividers). AdminSidebar: `bg-card` → `bg-surface-2`. AdminHeader: `bg-background` → `bg-surface-1` (now visually distinct from sidebar).
+- **Active state more visible** — AdminSidebar active nav item bg now `bg-surface-3` (a real raised surface, not just bg-background with a colored left border).
+- **Header chrome heavier** — main bar height 68px → 72px, logo 22/26px → 24/28px, account + cart buttons now have `bg-surface-2` + `border-border-strong` + larger padding (solid little panels).
+- **Density tightened** — homepage section py 20/28 → 16/20 across the page. Sidebar spacing `space-y-8` → `space-y-6`. Category rows `py-5` → `py-6` (taller, more presence). Category names `text-lg` → `text-xl`. ProductCard price `text-lg` → `text-xl`.
+- **No palette change** — Clean Trust white + deep blue (#1E40AF) preserved exactly. Industrial Steel dark theme preserved exactly. The weight comes from borders + surfaces + type weight + spacing, NOT new colors or decoration.
+- **No layout / structural change** — every component keeps its existing markup structure; only Tailwind classes + CSS variables were adjusted.
+- **No new gradients / shadows / decorative elements** added — per the spec rules.
+
+Files modified (8): src/app/globals.css, src/app/page.tsx, src/components/storefront/Header.tsx, src/components/storefront/Footer.tsx, src/components/storefront/ProductCard.tsx, src/app/products/page.tsx, src/components/admin/AdminSidebar.tsx, src/components/admin/AdminHeader.tsx.
+
+
+
+---
+Task ID: 20-STAFF-WIZARD-ROLES
+Agent: Lead Developer (subagent)
+Task: Build the Staff Creation Wizard + update all role references across the Patel Networks codebase. The old roles (ADMIN, INVENTORY_MANAGER, ORDER_MANAGER, CONTENT_MANAGER) have been removed from the DB. The Prisma schema now has UserRole { SUPER_ADMIN, STAFF, CUSTOMER }. StockPermission enum is gone — permissions are stored as String[] on EmployeeProfile and validated against ALL_PERMISSIONS in @/lib/permissions.
+
+Work Log:
+1. Read context: worklog.md (last 2 entries — Task 19 stock panel + Task 11 components), src/lib/permissions.ts (PERMISSION_GROUPS, ALL_PERMISSIONS, hasPermission(), getPermissionLabel(), getPermissionModule()). Surveyed: src/app/actions/employee.actions.ts, src/server/services/employee-auth.service.ts, src/server/services/admin-auth.service.ts, src/server/services/stock.service.ts, src/app/stock/actions/stock.actions.ts, src/app/stock/actions/export.actions.ts, src/app/stock/layout.tsx, src/app/stock/{alerts,movements,count}/page.tsx, src/proxy.ts, src/components/admin/{AdminSidebar,AdminHeader,EmployeeManagementConsole}.tsx, src/app/admin/{layout,employees/page}.tsx, prisma/schema.prisma, src/app/globals.css (design tokens).
+
+2. Created `/home/z/my-project/src/components/admin/StaffCreationWizard.tsx`:
+   - 3-step modal wizard for creating a new staff member.
+   - Step 1: identity (fullName, email, phone, password, employeeCode) with inline validation gating the Continue button.
+   - Step 2: visual permission matrix — every group in PERMISSION_GROUPS rendered as a solid bg-card block with module name + description header + one checkbox per permission. Each block has an "All/Clear" group-toggle button. DASHBOARD_VIEW is locked (base permission, cannot be unchecked). Footer shows "X of N permissions granted" live counter.
+   - Step 3: review summary — identity card + permissions list (label + module + value) + confirmation note.
+   - On submit: builds FormData (fullName/email/phone/password/employeeCode + permissions[] appended) → calls createEmployeeAction → onCreated(emp) callback.
+   - Clean Trust design system: bg-card surfaces, border-border-strong for structural borders, border-border for component-level borders, border-border-subtle for internal dividers. .eyebrow section headers, .btn-ink primary actions, .btn-ghost secondary, .dot-rec status dots, blue accent via [var(--brand)]. Stepper at top with numbered circles + check icons for completed steps.
+
+3. Modified `/home/z/my-project/src/components/admin/EmployeeManagementConsole.tsx`:
+   - Removed StockPermission import + PERMISSION_CATALOG (was only the 5 stock-panel permissions).
+   - Now imports PERMISSION_GROUPS, ALL_PERMISSIONS, DEFAULT_PERMISSIONS, getPermissionLabel, getPermissionModule from @/lib/permissions.
+   - The "Create Employee" button now opens the StaffCreationWizard (replaces the inline create form).
+   - The Edit modal now shows the FULL permission matrix (all 9 groups, 17 permissions) — same visual matrix as the wizard's Step 2.
+   - Roster table: solid header row (bg-foreground/5 + border-b-2 border-border-strong + font-semibold), denser rows, permission chips now show the raw permission value (e.g. ORDERS_MANAGE) with a title attribute for the human label.
+   - Employees → "Staff" rename in headings, copy, and button labels.
+   - Removed the unused `Plus` and `createEmployeeAction` imports.
+
+4. Modified `/home/z/my-project/src/app/actions/employee.actions.ts`:
+   - Removed StockPermission import; replaced with `import { ALL_PERMISSIONS, DEFAULT_PERMISSIONS } from '@/lib/permissions'`.
+   - All `StockPermission[]` types → `string[]`.
+   - STOCK_PERMISSION_VALUES constant → ALL_PERMISSIONS_SET (a ReadonlySet<string> for O(1) membership checks).
+   - parsePermissions() validates each string against ALL_PERMISSIONS_SET; falls back to DEFAULT_PERMISSIONS (['DASHBOARD_VIEW']) when empty.
+   - createEmployeeAction: now creates User with `role: UserRole.STAFF` (was INVENTORY_MANAGER).
+   - updateEmployeeAction: accepts permissions as string[] via the same parsePermissions() path.
+   - updateEmployeePermissionsAction: signature changed from `StockPermission[]` → `string[]`.
+   - Error/copy strings updated from "employee" → "staff member".
+
+5. Modified `/home/z/my-project/src/server/services/employee-auth.service.ts`:
+   - Removed StockPermission import; added `import { hasPermission as hasPermissionUtil } from '@/lib/permissions'` and `import { UserRole } from '@prisma/client'`.
+   - EmployeeSessionPayload now includes `role: 'STAFF'` and `permissions: string[]`.
+   - DB lookup now filters on `role: UserRole.STAFF` (was implicit via employeeProfile relation).
+   - Default fallback account: permissions updated from [STOCK_VIEW, STOCK_ADJUST, STOCK_EXPORT] → ['STOCK_VIEW', 'INVENTORY_ADJUST', 'STOCK_EXPORT'] (matches the new permission catalog — STOCK_ADJUST is gone, INVENTORY_ADJUST is the new equivalent).
+   - hasPermission() now delegates to @/lib/permissions hasPermission() so role + permissions are interpreted consistently.
+
+6. Modified `/home/z/my-project/src/app/stock/actions/stock.actions.ts`:
+   - Removed StockPermission import.
+   - requirePermission() signature: `StockPermission` → `string`.
+   - All requirePermission() call sites updated: STOCK_MANAGE_ALERTS → 'STOCK_ALERTS_MANAGE' (renamed in new catalog), STOCK_RECONCILE → 'STOCK_COUNT' (renamed), STOCK_VIEW → 'STOCK_VIEW' (string literal), STOCK_EXPORT unchanged.
+   - employeeLoginAction's STOCK_VIEW check now uses the string literal 'STOCK_VIEW'.
+
+7. Modified `/home/z/my-project/src/app/stock/actions/export.actions.ts`:
+   - Removed StockPermission import.
+   - STOCK_EXPORT permission check now uses the string literal 'STOCK_EXPORT'.
+
+8. Modified `/home/z/my-project/src/server/services/stock.service.ts`:
+   - Removed StockPermission from the @prisma/client import (kept Prisma + MovementReason).
+   - getStockDashboardData()'s canReconcile/canExport/canManageAlerts now use string literals: 'STOCK_COUNT', 'STOCK_EXPORT', 'STOCK_ALERTS_MANAGE'.
+
+9. Modified `/home/z/my-project/src/app/stock/layout.tsx`:
+   - Removed StockPermission import.
+   - The STOCK_VIEW gate now calls `EmployeeAuthService.hasPermission(session, 'STOCK_VIEW')` (string literal).
+
+10. Modified `/home/z/my-project/src/app/stock/alerts/page.tsx`:
+    - Removed StockPermission import.
+    - canManageAlerts now checks `'STOCK_ALERTS_MANAGE'` (was StockPermission.STOCK_MANAGE_ALERTS).
+
+11. Modified `/home/z/my-project/src/app/stock/movements/page.tsx`:
+    - Removed StockPermission import.
+    - canExport now checks `'STOCK_EXPORT'` (was StockPermission.STOCK_EXPORT).
+
+12. Modified `/home/z/my-project/src/app/stock/count/page.tsx`:
+    - Removed StockPermission import.
+    - canReconcile now checks `'STOCK_COUNT'` (was StockPermission.STOCK_RECONCILE).
+
+13. Modified `/home/z/my-project/src/server/services/admin-auth.service.ts`:
+    - loginAdmin() now accepts both SUPER_ADMIN and STAFF roles for /admin/login (was already filtering on SUPER_ADMIN + ADMIN + INVENTORY_MANAGER + ORDER_MANAGER — replaced with SUPER_ADMIN + STAFF per the new schema).
+    - For STAFF logins, the function now also fetches the user's EmployeeProfile.permissions and includes it in the JWT payload as `permissions: string[]`. SUPER_ADMIN sessions omit the permissions claim (they have unrestricted access).
+    - AdminSessionPayload interface updated to include optional `permissions?: string[]`.
+    - DB lookup now includes employeeProfile alongside adminProfile.
+
+14. Modified `/home/z/my-project/src/proxy.ts`:
+    - The /admin/* guard now verifies the JWT's `role` claim is exactly SUPER_ADMIN or STAFF (was just verifying the JWT was valid). Login flow on /admin/login also redirects already-authenticated SUPER_ADMIN or STAFF users to /admin (was previously just any valid JWT).
+    - The /stock/* guard already checked 'STOCK_VIEW' as a string — verified and tightened the payload typing (`as unknown[]` cast then `.includes('STOCK_VIEW')`).
+    - Added comprehensive file header comment documenting the three independent route guards + the SUPER_ADMIN/STAFF role check.
+
+15. Modified `/home/z/my-project/src/components/admin/AdminSidebar.tsx`:
+    - Now accepts props `userRole?: string` + `userPermissions?: string[]`.
+    - Each NAV_ITEMS entry now carries a `requiredPermission` field:
+      - Dashboard → DASHBOARD_VIEW
+      - Orders → ORDERS_VIEW
+      - Products → PRODUCTS_VIEW
+      - Inventory → INVENTORY_VIEW
+      - Customers → CUSTOMERS_VIEW
+      - Employees → EMPLOYEES_VIEW
+      - Reports → REPORTS_VIEW
+      - Settings → SETTINGS_VIEW
+    - Uses hasPermission() from @/lib/permissions to filter visibleItems. SUPER_ADMIN sees all; STAFF sees only items whose required permission they have; CUSTOMER (shouldn't reach here due to proxy guard) sees an empty list with a "no permissions assigned" empty state.
+    - "Employees" nav item label renamed to "Staff".
+
+16. Modified `/home/z/my-project/src/app/admin/layout.tsx`:
+    - Reads the admin session via AdminAuthService.getAdminSession().
+    - Passes session.role + session.permissions to <AdminSidebar /> for permission-based filtering.
+    - Belt-and-suspenders redirect to /admin/login if session is null (proxy.ts already redirects, but this guards against any edge case).
+
+17. Modified `/home/z/my-project/src/app/admin/employees/page.tsx`:
+    - DB query now filters on `role: UserRole.STAFF` (was UserRole.INVENTORY_MANAGER).
+    - JSDoc comment updated.
+
+18. Searched the entire src/ tree for any remaining `StockPermission` references and any `UserRole.(ADMIN|INVENTORY_MANAGER|ORDER_MANAGER|CONTENT_MANAGER)` references — all clean (remaining matches are only in markdown documentation, which is intentional historical record).
+
+VALIDATION:
+- `bun run lint` → exit 0, 0 errors, 0 warnings across all 16 modified/created files.
+- `bunx tsc --noEmit` → exit 0, 0 type errors.
+
+Stage Summary:
+- Staff Creation Wizard live at /admin/employees (3-step modal: identity → permission matrix → review).
+- Role system simplified: SUPER_ADMIN (full access, no permission checks), STAFF (dynamic permissions via @/lib/permissions), CUSTOMER (no admin access).
+- All old role references (ADMIN, INVENTORY_MANAGER, ORDER_MANAGER, CONTENT_MANAGER) replaced with STAFF.
+- All StockPermission enum references replaced with string literals.
+- Permission catalog expanded from 5 (stock-only) to 17 permissions across 9 modules (Dashboard, Orders, Products, Inventory, Customers, Reports, Stock Panel, Employees, Settings).
+- Admin sidebar now filters nav items by the signed-in user's permissions.
+- /admin/* proxy guard now explicitly checks the role claim is SUPER_ADMIN or STAFF.
+- Stock-panel permission values renamed to match the new catalog: STOCK_MANAGE_ALERTS → STOCK_ALERTS_MANAGE, STOCK_RECONCILE → STOCK_COUNT. STOCK_ADJUST removed (use INVENTORY_ADJUST instead).
+- Lint: 0 errors / 0 warnings. TypeScript: 0 errors.

@@ -1,21 +1,24 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { UserRole, StockPermission } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { AdminAuthService } from '@/server/services/admin-auth.service';
+import { ALL_PERMISSIONS, DEFAULT_PERMISSIONS } from '@/lib/permissions';
 
 /**
- * Employee management server actions.
+ * Employee / staff management server actions.
  *
  * Every action verifies the caller is a SUPER_ADMIN via the admin session
  * cookie (AdminAuthService.getAdminSession). Unauthorised callers receive
  * a structured error rather than throwing — so the client UI can display it.
+ *
+ * Permissions are stored as String[] (the EmployeeProfile.permissions column).
+ * Validation uses ALL_PERMISSIONS from @/lib/permissions so the set is the
+ * single source of truth across the wizard, sidebar, and stock panel.
  */
 
-export const STOCK_PERMISSION_VALUES: readonly StockPermission[] = Object.values(
-  StockPermission
-) as StockPermission[];
+const ALL_PERMISSIONS_SET: ReadonlySet<string> = new Set(ALL_PERMISSIONS);
 
 export interface EmployeeSummary {
   id: string; // EmployeeProfile.id
@@ -25,7 +28,7 @@ export interface EmployeeSummary {
   phone: string | null;
   loginPhone: string;
   employeeCode: string | null;
-  permissions: StockPermission[];
+  permissions: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -37,7 +40,7 @@ interface EmployeeRow {
   fullName: string;
   employeeCode: string | null;
   phone: string | null;
-  permissions: StockPermission[];
+  permissions: string[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -68,19 +71,22 @@ async function requireSuperAdmin() {
   return session;
 }
 
-function parsePermissions(raw: unknown): StockPermission[] {
-  if (!Array.isArray(raw) || raw.length === 0) return [StockPermission.STOCK_VIEW];
-  const seen = new Set<StockPermission>();
-  const out: StockPermission[] = [];
+/**
+ * Parse + validate a raw permissions array (from FormData or a direct call).
+ * Falls back to DEFAULT_PERMISSIONS (['DASHBOARD_VIEW']) when empty/invalid.
+ */
+function parsePermissions(raw: unknown): string[] {
+  if (!Array.isArray(raw) || raw.length === 0) return [...DEFAULT_PERMISSIONS];
+  const seen = new Set<string>();
+  const out: string[] = [];
   for (const value of raw) {
     if (typeof value !== 'string') continue;
-    if (!STOCK_PERMISSION_VALUES.includes(value as StockPermission)) continue;
-    const p = value as StockPermission;
-    if (seen.has(p)) continue;
-    seen.add(p);
-    out.push(p);
+    if (!ALL_PERMISSIONS_SET.has(value)) continue;
+    if (seen.has(value)) continue;
+    seen.add(value);
+    out.push(value);
   }
-  return out.length > 0 ? out : [StockPermission.STOCK_VIEW];
+  return out.length > 0 ? out : [...DEFAULT_PERMISSIONS];
 }
 
 function toResult<T>(data: T) {
@@ -143,7 +149,7 @@ export async function createEmployeeAction(formData: FormData) {
         phone,
         email,
         passwordHash: password,
-        role: UserRole.INVENTORY_MANAGER,
+        role: UserRole.STAFF,
         isActive: true,
       },
     });
@@ -164,7 +170,7 @@ export async function createEmployeeAction(formData: FormData) {
     revalidatePath('/admin/employees');
     return toResult(serialize(profile as EmployeeRow));
   } catch (err: any) {
-    return toError(err?.message || 'Failed to create employee.');
+    return toError(err?.message || 'Failed to create staff member.');
   }
 }
 
@@ -183,7 +189,7 @@ export async function updateEmployeeAction(employeeId: string, formData: FormDat
       where: { id: employeeId },
       include: { user: true },
     });
-    if (!existing) return toError('Employee not found.');
+    if (!existing) return toError('Staff member not found.');
 
     const fullName = String(formData.get('fullName') || '').trim();
     const phone = String(formData.get('phone') || '').trim();
@@ -226,7 +232,7 @@ export async function updateEmployeeAction(employeeId: string, formData: FormDat
       include: { user: true },
     });
 
-    // Keep User.isActive in sync so deactivated employees can't log in.
+    // Keep User.isActive in sync so deactivated staff can't log in.
     if (updated.user.isActive !== updated.isActive) {
       await prisma.user.update({
         where: { id: updated.userId },
@@ -244,7 +250,7 @@ export async function updateEmployeeAction(employeeId: string, formData: FormDat
     revalidatePath('/admin/employees');
     return toResult(serialize(updated as EmployeeRow));
   } catch (err: any) {
-    return toError(err?.message || 'Failed to update employee.');
+    return toError(err?.message || 'Failed to update staff member.');
   }
 }
 
@@ -263,7 +269,7 @@ export async function toggleEmployeeActiveAction(employeeId: string) {
       where: { id: employeeId },
       include: { user: true },
     });
-    if (!existing) return toError('Employee not found.');
+    if (!existing) return toError('Staff member not found.');
 
     const nextActive = !existing.isActive;
 
@@ -283,7 +289,7 @@ export async function toggleEmployeeActiveAction(employeeId: string) {
     revalidatePath('/admin/employees');
     return toResult(serialize(updated as EmployeeRow));
   } catch (err: any) {
-    return toError(err?.message || 'Failed to toggle employee status.');
+    return toError(err?.message || 'Failed to toggle staff status.');
   }
 }
 
@@ -292,7 +298,7 @@ export async function toggleEmployeeActiveAction(employeeId: string) {
 /* ------------------------------------------------------------------ */
 export async function updateEmployeePermissionsAction(
   employeeId: string,
-  permissions: StockPermission[]
+  permissions: string[]
 ) {
   try {
     await requireSuperAdmin();
@@ -305,7 +311,7 @@ export async function updateEmployeePermissionsAction(
       where: { id: employeeId },
       select: { id: true },
     });
-    if (!existing) return toError('Employee not found.');
+    if (!existing) return toError('Staff member not found.');
 
     const next = parsePermissions(permissions);
 
@@ -344,7 +350,7 @@ export async function resetEmployeePasswordAction(
       where: { id: employeeId },
       select: { userId: true },
     });
-    if (!existing) return toError('Employee not found.');
+    if (!existing) return toError('Staff member not found.');
 
     await prisma.user.update({
       where: { id: existing.userId },

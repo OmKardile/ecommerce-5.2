@@ -9,7 +9,6 @@ import {
 import { EmployeeAuthService } from '@/server/services/employee-auth.service';
 import { getStockMovements } from '@/server/services/stock.service';
 import { MovementsFilters } from '@/components/stock/MovementsFilters';
-import { StockPermission } from '@prisma/client';
 
 export const revalidate = 0; // Dynamic server component
 
@@ -34,7 +33,7 @@ export default async function StockMovementsPage({
 }) {
   const params = await searchParams;
   const session = await EmployeeAuthService.getEmployeeSession();
-  const canExport = !!session?.permissions?.includes(StockPermission.STOCK_EXPORT);
+  const canExport = !!session?.permissions?.includes('STOCK_EXPORT');
 
   const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
 

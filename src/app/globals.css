@@ -83,10 +83,10 @@
   --brand-soft: #3B82F6;     /* blue-500 */
   --brand-tint: #EFF6FF;     /* blue-50 */
 
-  /* 3-level border hierarchy (ADR-025) */
-  --border-strong: #CBD5E1;   /* level 1 — structural: page sections, major containers */
-  --border: #E2E8F0;          /* level 2 — component: cards, inputs, tables */
-  --border-subtle: #F1F5F9;   /* level 3 — divider: hairlines within cards */
+  /* 3-level border hierarchy (ADR-025) — strengthened for visual weight */
+  --border-strong: #94A3B8;   /* level 1 — structural: slate-400, more visible */
+  --border: #CBD5E1;          /* level 2 — component: slate-300 */
+  --border-subtle: #E2E8F0;  /* level 3 — divider: slate-200 */
 
   /* Surface hierarchy */
   --surface-1: #FFFFFF;       /* primary container (same as bg, uses border for separation) */
@@ -147,10 +147,10 @@
   --brand-soft: #FBBF24;     /* amber-400 */
   --brand-tint: #422006;     /* amber-950 — whisper on dark */
 
-  /* 3-level border hierarchy (ADR-025) */
-  --border-strong: #57534E;   /* level 1 — structural: stone-600 */
-  --border: #44403C;          /* level 2 — component: stone-700 */
-  --border-subtle: #292524;   /* level 3 — divider: stone-800 */
+  /* 3-level border hierarchy (ADR-025) — strengthened for visual weight */
+  --border-strong: #78716C;   /* level 1 — structural: stone-500, more visible */
+  --border: #57534E;          /* level 2 — component: stone-600 */
+  --border-subtle: #44403C;   /* level 3 — divider: stone-700 */
 
   /* Surface hierarchy */
   --surface-1: #292524;       /* primary container (stone-800) */
@@ -237,7 +237,7 @@
   line-height: 1;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--stone);
 }
 
@@ -245,7 +245,7 @@
 .display {
   font-family: var(--font-serif), Georgia, serif;
   font-optical-sizing: auto;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.02;
 }
@@ -273,7 +273,7 @@
   font-weight: 500;
   font-size: 13px;
   line-height: 1;
-  padding: 0.875rem 1.5rem;
+  padding: 0.875rem 1.75rem;
   border-radius: 3px;
   transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
               opacity 0.18s ease,
@@ -293,7 +293,7 @@
   font-weight: 500;
   font-size: 13px;
   line-height: 1;
-  padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+  padding: calc(0.875rem - 1px) calc(1.75rem - 1px);
   border: 1px solid var(--hairline-strong);
   border-radius: 3px;
   transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);

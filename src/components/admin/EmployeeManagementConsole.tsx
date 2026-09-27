@@ -3,7 +3,6 @@
 import React, { useMemo, useState, useTransition } from 'react';
 import {
   Search,
-  Plus,
   X,
   Pencil,
   Power,
@@ -12,66 +11,25 @@ import {
   CheckCircle2,
   AlertTriangle,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
-import { StockPermission } from '@prisma/client';
 import {
-  createEmployeeAction,
+  PERMISSION_GROUPS,
+  ALL_PERMISSIONS,
+  DEFAULT_PERMISSIONS,
+  getPermissionLabel,
+  getPermissionModule,
+} from '@/lib/permissions';
+import {
   updateEmployeeAction,
   toggleEmployeeActiveAction,
   resetEmployeePasswordAction,
   type EmployeeSummary,
 } from '@/app/actions/employee.actions';
+import { StaffCreationWizard } from '@/components/admin/StaffCreationWizard';
 
 /* ------------------------------------------------------------------ */
-/*  Permission catalog                                               */
-/* ------------------------------------------------------------------ */
-
-interface PermissionMeta {
-  value: StockPermission;
-  label: string;
-  description: string;
-}
-
-const PERMISSION_CATALOG: PermissionMeta[] = [
-  {
-    value: StockPermission.STOCK_VIEW,
-    label: 'Stock View',
-    description: 'View inventory dashboard, SKU matrix & low-stock alerts.',
-  },
-  {
-    value: StockPermission.STOCK_ADJUST,
-    label: 'Stock Adjust',
-    description: 'Adjust stock levels — record in/out audit movements.',
-  },
-  {
-    value: StockPermission.STOCK_RECONCILE,
-    label: 'Reconcile',
-    description: 'Run physical count sessions & resolve discrepancies.',
-  },
-  {
-    value: StockPermission.STOCK_EXPORT,
-    label: 'Export',
-    description: 'Export inventory & stock reports as CSV.',
-  },
-  {
-    value: StockPermission.STOCK_MANAGE_ALERTS,
-    label: 'Manage Alerts',
-    description: 'Acknowledge & resolve low-stock / overstock alerts.',
-  },
-];
-
-const PERMISSION_LABELS: Record<StockPermission, string> = PERMISSION_CATALOG.reduce(
-  (acc, p) => {
-    acc[p.value] = p.label;
-    return acc;
-  },
-  {} as Record<StockPermission, string>
-);
-
-const DEFAULT_NEW_PERMISSIONS: StockPermission[] = [StockPermission.STOCK_VIEW];
-
-/* ------------------------------------------------------------------ */
-/*  Form state                                                       */
+/*  Form state                                                        */
 /* ------------------------------------------------------------------ */
 
 interface EmployeeFormState {
@@ -80,17 +38,17 @@ interface EmployeeFormState {
   phone: string;
   password: string;
   employeeCode: string;
-  permissions: StockPermission[];
+  permissions: string[];
   isActive: boolean;
 }
 
-const EMPTY_FORM: EmployeeFormState = {
+const EMPTY_EDIT_FORM: EmployeeFormState = {
   fullName: '',
   email: '',
   phone: '',
   password: '',
   employeeCode: '',
-  permissions: DEFAULT_NEW_PERMISSIONS,
+  permissions: DEFAULT_PERMISSIONS,
   isActive: true,
 };
 
@@ -105,9 +63,9 @@ interface Props {
 export function EmployeeManagementConsole({ initialEmployees }: Props) {
   const [employees, setEmployees] = useState<EmployeeSummary[]>(initialEmployees);
   const [searchQuery, setSearchQuery] = useState('');
-  const [mode, setMode] = useState<'create' | 'edit' | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [editing, setEditing] = useState<EmployeeSummary | null>(null);
-  const [form, setForm] = useState<EmployeeFormState>(EMPTY_FORM);
+  const [form, setForm] = useState<EmployeeFormState>(EMPTY_EDIT_FORM);
   const [formError, setFormError] = useState<string | null>(null);
   const [resetTarget, setResetTarget] = useState<EmployeeSummary | null>(null);
   const [resetPassword, setResetPassword] = useState('');
@@ -144,14 +102,10 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
 
   /* ---------------- modal openers ---------------- */
   const openCreate = () => {
-    setMode('create');
-    setEditing(null);
-    setForm(EMPTY_FORM);
-    setFormError(null);
+    setWizardOpen(true);
   };
 
   const openEdit = (emp: EmployeeSummary) => {
-    setMode('edit');
     setEditing(emp);
     setForm({
       fullName: emp.fullName,
@@ -159,14 +113,15 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
       phone: emp.phone || emp.loginPhone,
       password: '',
       employeeCode: emp.employeeCode || '',
-      permissions: emp.permissions.length ? emp.permissions : DEFAULT_NEW_PERMISSIONS,
+      permissions: emp.permissions.length
+        ? emp.permissions
+        : DEFAULT_PERMISSIONS,
       isActive: emp.isActive,
     });
     setFormError(null);
   };
 
   const closeModal = () => {
-    setMode(null);
     setEditing(null);
     setFormError(null);
   };
@@ -184,55 +139,76 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
   };
 
   /* ---------------- handlers ---------------- */
-  const togglePermission = (perm: StockPermission) => {
+  const togglePermission = (perm: string) => {
     setForm((prev) => {
       const has = prev.permissions.includes(perm);
-      // STOCK_VIEW cannot be removed — it's the base permission.
-      if (perm === StockPermission.STOCK_VIEW && has) return prev;
+      // DASHBOARD_VIEW is the base permission — cannot be removed.
+      if (perm === 'DASHBOARD_VIEW' && has) return prev;
       const next = has
         ? prev.permissions.filter((p) => p !== perm)
         : [...prev.permissions, perm];
-      return { ...prev, permissions: next.length ? next : DEFAULT_NEW_PERMISSIONS };
+      return {
+        ...prev,
+        permissions: next.length ? next : DEFAULT_PERMISSIONS,
+      };
     });
+  };
+
+  const toggleGroup = (group: (typeof PERMISSION_GROUPS)[number]) => {
+    setForm((prev) => {
+      const groupPerms = group.permissions.map((p) => p.value);
+      const allOn = groupPerms.every((p) => prev.permissions.includes(p));
+      let next: string[];
+      if (allOn) {
+        next = prev.permissions.filter(
+          (p) => !groupPerms.includes(p) || p === 'DASHBOARD_VIEW'
+        );
+      } else {
+        next = Array.from(new Set([...prev.permissions, ...groupPerms]));
+      }
+      return {
+        ...prev,
+        permissions: next.length ? next : DEFAULT_PERMISSIONS,
+      };
+    });
+  };
+
+  const handleCreated = (emp: EmployeeSummary) => {
+    setEmployees((prev) => {
+      const idx = prev.findIndex((e) => e.id === emp.id);
+      if (idx === -1) return [...prev, emp];
+      const copy = prev.slice();
+      copy[idx] = emp;
+      return copy;
+    });
+    setFeedback(
+      `Created ${emp.fullName}${emp.employeeCode ? ` · ${emp.employeeCode}` : ''}`
+    );
+    setWizardOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editing) return;
     setFormError(null);
 
     const fd = new FormData();
     fd.set('fullName', form.fullName.trim());
-    fd.set('email', form.email.trim().toLowerCase());
     fd.set('phone', form.phone.trim());
     fd.set('employeeCode', form.employeeCode.trim());
-    if (mode === 'create' || form.password) {
-      fd.set('password', form.password);
-    }
     fd.set('isActive', String(form.isActive));
     for (const p of form.permissions) {
       fd.append('permissions', p);
     }
 
     startTransition(async () => {
-      const res =
-        mode === 'create'
-          ? await createEmployeeAction(fd)
-          : await updateEmployeeAction(editing!.id, fd);
-
+      const res = await updateEmployeeAction(editing.id, fd);
       if (res.success) {
         const next = res.data;
-        setEmployees((prev) => {
-          const idx = prev.findIndex((e) => e.id === next.id);
-          if (idx === -1) return [...prev, next];
-          const copy = prev.slice();
-          copy[idx] = next;
-          return copy;
-        });
-        setFeedback(
-          mode === 'create'
-            ? `Created ${next.fullName}${next.employeeCode ? ` · ${next.employeeCode}` : ''}`
-            : `Saved ${next.fullName}`
+        setEmployees((prev) =>
+          prev.map((e) => (e.id === next.id ? next : e))
         );
+        setFeedback(`Saved ${next.fullName}`);
         closeModal();
       } else {
         setFormError(res.error || 'Something went wrong.');
@@ -308,7 +284,7 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-strong pb-5">
         <div className="flex items-baseline gap-4 flex-wrap">
           <div className="eyebrow text-stone-500 flex items-center gap-2">
-            <span className="dot-rec" /> Employee Roster
+            <span className="dot-rec" /> Staff Roster
           </div>
           <div className="text-xs font-mono text-stone-400">
             {filtered.length} of {employees.length} shown
@@ -340,24 +316,24 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
             className="btn-ink text-xs"
             style={{ padding: '0.5rem 1rem' }}
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Employee</span>
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Create Staff</span>
           </button>
         </div>
       </div>
 
-      {/* Employee roster table */}
+      {/* Employee roster table — solid header + denser rows */}
       <div className="border border-border-strong bg-card overflow-hidden rounded-sm">
         <div className="overflow-x-auto scrollbar-thin">
           <table className="w-full text-left">
-            <thead className="border-b border-border-subtle bg-background/30">
+            <thead className="bg-foreground/5 border-b-2 border-border-strong">
               <tr>
-                <th className="eyebrow py-3 px-4 font-medium">Code</th>
-                <th className="eyebrow py-3 px-4 font-medium">Employee</th>
-                <th className="eyebrow py-3 px-4 font-medium">Contact</th>
-                <th className="eyebrow py-3 px-4 font-medium">Permissions</th>
-                <th className="eyebrow py-3 px-4 font-medium">Status</th>
-                <th className="eyebrow py-3 px-4 font-medium text-right">Actions</th>
+                <th className="eyebrow py-3.5 px-4 font-semibold">Code</th>
+                <th className="eyebrow py-3.5 px-4 font-semibold">Employee</th>
+                <th className="eyebrow py-3.5 px-4 font-semibold">Contact</th>
+                <th className="eyebrow py-3.5 px-4 font-semibold">Permissions</th>
+                <th className="eyebrow py-3.5 px-4 font-semibold">Status</th>
+                <th className="eyebrow py-3.5 px-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -365,25 +341,25 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-xs text-stone-500">
                     {employees.length === 0
-                      ? 'No employees yet — click “Create Employee” to add your first warehouse team member.'
-                      : 'No employees match the current search.'}
+                      ? 'No staff yet — click “Create Staff” to launch the wizard and add your first team member.'
+                      : 'No staff match the current search.'}
                   </td>
                 </tr>
               ) : (
                 filtered.map((emp) => (
                   <tr
                     key={emp.id}
-                    className={`hover:bg-background/30 transition-colors ${
+                    className={`hover:bg-background/40 transition-colors ${
                       !emp.isActive ? 'opacity-60' : ''
                     }`}
                   >
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       <div className="font-mono text-[11px] text-[var(--brand)]">
                         {emp.employeeCode || '—'}
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       <div className="text-sm text-foreground font-medium">
                         {emp.fullName}
                       </div>
@@ -397,7 +373,7 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       <div className="text-[11px] text-foreground font-mono">
                         {emp.email || '—'}
                       </div>
@@ -406,7 +382,7 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
                         {emp.permissions.length === 0 ? (
                           <span className="text-[10px] text-stone-500 italic">
@@ -416,16 +392,17 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                           emp.permissions.map((p) => (
                             <span
                               key={p}
-                              className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider border border-border-subtle text-stone-500 bg-background/60 rounded-sm"
+                              title={`${getPermissionModule(p)} · ${getPermissionLabel(p)}`}
+                              className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider border border-border-subtle text-stone-600 dark:text-stone-300 bg-background/60 rounded-sm"
                             >
-                              {PERMISSION_LABELS[p]}
+                              {p}
                             </span>
                           ))
                         )}
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       {emp.isActive ? (
                         <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
@@ -439,13 +416,13 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
                           onClick={() => openEdit(emp)}
                           className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-foreground border border-border hover:border-border-strong hover:bg-background/40 rounded-sm transition-colors"
-                          title="Edit employee"
+                          title="Edit staff member"
                         >
                           <Pencil className="w-3 h-3" />
                           <span className="hidden sm:inline">Edit</span>
@@ -467,7 +444,7 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                               ? 'text-amber-600 dark:text-amber-400 border-amber-500/40 hover:border-amber-500'
                               : 'text-emerald-600 dark:text-emerald-400 border-emerald-500/40 hover:border-emerald-500'
                           }`}
-                          title={emp.isActive ? 'Deactivate employee' : 'Activate employee'}
+                          title={emp.isActive ? 'Deactivate staff' : 'Activate staff'}
                         >
                           <Power className="w-3 h-3" />
                           <span className="hidden sm:inline">
@@ -484,29 +461,35 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
         </div>
       </div>
 
-      {/* Create / Edit modal */}
-      {mode && (
+      {/* Staff Creation Wizard (modal) */}
+      {wizardOpen && (
+        <StaffCreationWizard
+          onClose={() => setWizardOpen(false)}
+          onCreated={handleCreated}
+        />
+      )}
+
+      {/* Edit modal — full permission matrix */}
+      {editing && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-card border border-border-strong max-w-2xl w-full rounded-sm my-8">
+          <div className="bg-card border border-border-strong max-w-3xl w-full rounded-sm my-8 shadow-xl">
             {/* Modal header */}
-            <div className="flex items-start justify-between p-5 border-b border-border-subtle">
+            <div className="flex items-start justify-between p-5 border-b border-border-strong">
               <div>
                 <div className="eyebrow text-stone-500 mb-2 flex items-center gap-2">
                   <span className="dot-rec" />
-                  {mode === 'create' ? 'New Employee' : 'Edit Employee'}
+                  Edit Staff Member
                 </div>
                 <h3 className="text-base font-sans font-bold tracking-tight text-foreground">
-                  {mode === 'create'
-                    ? 'Create Warehouse Employee'
-                    : editing?.fullName || 'Edit Employee'}
+                  {editing.fullName}
                 </h3>
                 <p className="text-[11px] text-stone-500 mt-1 leading-relaxed max-w-md">
-                  {mode === 'create'
-                    ? 'Creates an INVENTORY_MANAGER account with a default STOCK_VIEW permission. Add more permissions below.'
-                    : 'Update profile, contact, permissions, and active state. Leave password blank to keep the existing one.'}
+                  Update profile, contact, and the full permission set across every
+                  module. Leave password blank to keep the existing one.
                 </p>
               </div>
               <button
+                type="button"
                 onClick={closeModal}
                 className="text-stone-400 hover:text-foreground transition-colors p-1"
                 aria-label="Close"
@@ -546,18 +529,17 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
               {/* Contact row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field
-                  label="Email *"
-                  hint={mode === 'edit' ? 'Email changes are not permitted from this form.' : undefined}
+                  label="Email"
+                  hint="Email changes are not permitted from this form."
                 >
                   <input
                     type="email"
-                    required
                     value={form.email}
                     onChange={(e) =>
                       setForm((p) => ({ ...p, email: e.target.value }))
                     }
                     placeholder="rajesh@patelnetworks.in"
-                    disabled={mode === 'edit'}
+                    disabled
                     className={`${inputClass} disabled:opacity-60 disabled:cursor-not-allowed`}
                   />
                 </Field>
@@ -575,19 +557,14 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                 </Field>
               </div>
 
-              {/* Password row */}
+              {/* Password + active */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field
-                  label={mode === 'edit' ? 'New Password' : 'Password *'}
-                  hint={
-                    mode === 'edit'
-                      ? 'Leave blank to keep existing password.'
-                      : 'Min 6 characters.'
-                  }
+                  label="New Password"
+                  hint="Leave blank to keep existing password."
                 >
                   <input
                     type="password"
-                    required={mode === 'create'}
                     minLength={form.password ? 6 : undefined}
                     value={form.password}
                     onChange={(e) =>
@@ -597,72 +574,114 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                     className={inputClass}
                   />
                 </Field>
-                {mode === 'edit' && (
-                  <Field label="Active State">
-                    <label className="flex items-center gap-2.5 h-9 px-3 border border-border bg-background rounded-sm cursor-pointer hover:border-border-strong transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={form.isActive}
-                        onChange={(e) =>
-                          setForm((p) => ({ ...p, isActive: e.target.checked }))
-                        }
-                        className="w-3.5 h-3.5 accent-[var(--brand)] cursor-pointer"
-                      />
-                      <span className="text-[12px] text-foreground">
-                        {form.isActive ? 'Active' : 'Deactivated'}
-                      </span>
-                    </label>
-                  </Field>
-                )}
+                <Field label="Active State">
+                  <label className="flex items-center gap-2.5 h-9 px-3 border border-border bg-background rounded-sm cursor-pointer hover:border-border-strong transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={form.isActive}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, isActive: e.target.checked }))
+                      }
+                      className="w-3.5 h-3.5 accent-[var(--brand)] cursor-pointer"
+                    />
+                    <span className="text-[12px] text-foreground">
+                      {form.isActive ? 'Active' : 'Deactivated'}
+                    </span>
+                  </label>
+                </Field>
               </div>
 
-              {/* Permission editor */}
-              <div className="space-y-2.5">
-                <div className="flex items-baseline justify-between">
-                  <label className="eyebrow text-stone-500">
-                    Stock Panel Permissions
-                  </label>
+              {/* Full permission matrix */}
+              <div className="space-y-3">
+                <div className="flex items-baseline justify-between border-b border-border-subtle pb-2">
+                  <div className="eyebrow text-stone-500 flex items-center gap-2">
+                    <ShieldCheck className="w-3 h-3" />
+                    Permission Matrix
+                  </div>
                   <span className="text-[10px] font-mono text-stone-500">
-                    {form.permissions.length} of {PERMISSION_CATALOG.length} granted
+                    {form.permissions.length} of {ALL_PERMISSIONS.length} granted
                   </span>
                 </div>
-                <div className="border border-border-subtle bg-background/40 rounded-sm divide-y divide-border-subtle">
-                  {PERMISSION_CATALOG.map((perm) => {
-                    const checked = form.permissions.includes(perm.value);
-                    const locked = perm.value === StockPermission.STOCK_VIEW;
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  {PERMISSION_GROUPS.map((group) => {
+                    const groupPerms = group.permissions.map((p) => p.value);
+                    const allOn = groupPerms.every((p) =>
+                      form.permissions.includes(p)
+                    );
+                    const someOn =
+                      !allOn &&
+                      groupPerms.some((p) => form.permissions.includes(p));
+
                     return (
-                      <label
-                        key={perm.value}
-                        className={`flex items-start gap-3 px-3.5 py-2.5 cursor-pointer transition-colors ${
-                          checked ? 'bg-background/60' : 'hover:bg-background/30'
+                      <div
+                        key={group.module}
+                        className={`border bg-card rounded-sm overflow-hidden transition-colors ${
+                          allOn || someOn
+                            ? 'border-border-strong'
+                            : 'border-border'
                         }`}
                       >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={locked}
-                          onChange={() => togglePermission(perm.value)}
-                          className="mt-0.5 w-3.5 h-3.5 accent-[var(--brand)] cursor-pointer disabled:cursor-not-allowed"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[12px] font-medium text-foreground">
-                              {perm.label}
-                            </span>
-                            <span className="font-mono text-[10px] text-[var(--brand)] uppercase tracking-wider">
-                              {perm.value}
-                            </span>
-                            {locked && (
-                              <span className="text-[9px] uppercase tracking-wider text-stone-500 border border-border-subtle px-1 py-0.5 leading-none">
-                                base
-                              </span>
-                            )}
+                        <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle bg-background/30">
+                          <div className="min-w-0">
+                            <div className="text-[12px] font-sans font-bold tracking-tight text-foreground">
+                              {group.module}
+                            </div>
+                            <div className="text-[10px] text-stone-500 mt-0.5 leading-tight">
+                              {group.description}
+                            </div>
                           </div>
-                          <div className="text-[11px] text-stone-500 mt-0.5 leading-relaxed">
-                            {perm.description}
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => toggleGroup(group)}
+                            className="text-[10px] font-mono uppercase tracking-wider text-[var(--brand)] hover:underline px-2 py-1 border border-border-subtle hover:border-border rounded-sm transition-colors shrink-0"
+                          >
+                            {allOn ? 'Clear' : 'All'}
+                          </button>
                         </div>
-                      </label>
+                        <div className="divide-y divide-border-subtle">
+                          {group.permissions.map((perm) => {
+                            const checked = form.permissions.includes(perm.value);
+                            const locked = perm.value === 'DASHBOARD_VIEW';
+                            return (
+                              <label
+                                key={perm.value}
+                                className={`flex items-start gap-3 px-3 py-2 cursor-pointer transition-colors ${
+                                  checked
+                                    ? 'bg-background/60'
+                                    : 'hover:bg-background/30'
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  disabled={locked}
+                                  onChange={() => togglePermission(perm.value)}
+                                  className="mt-0.5 w-3.5 h-3.5 accent-[var(--brand)] cursor-pointer disabled:cursor-not-allowed shrink-0"
+                                />
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-[11.5px] font-medium text-foreground">
+                                      {perm.label}
+                                    </span>
+                                    <span className="font-mono text-[10px] text-[var(--brand)] uppercase tracking-wider">
+                                      {perm.value}
+                                    </span>
+                                    {locked && (
+                                      <span className="text-[9px] uppercase tracking-wider text-stone-500 border border-border-subtle px-1 py-0.5 leading-none">
+                                        base
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[10.5px] text-stone-500 mt-0.5 leading-relaxed">
+                                    {perm.description}
+                                  </div>
+                                </div>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -692,11 +711,7 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                   className="btn-ink disabled:opacity-50 disabled:cursor-not-allowed text-xs"
                   style={{ padding: '0.5rem 1.25rem' }}
                 >
-                  {isPending
-                    ? 'Saving…'
-                    : mode === 'create'
-                    ? 'Create Employee'
-                    : 'Save Changes'}
+                  {isPending ? 'Saving…' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -718,11 +733,12 @@ export function EmployeeManagementConsole({ initialEmployees }: Props) {
                   {resetTarget.fullName}
                 </h3>
                 <p className="text-[11px] text-stone-500 mt-1 leading-relaxed">
-                  Sets a new password hash on the employee&apos;s user account. The
-                  previous password is overwritten immediately.
+                  Sets a new password hash on the staff member&apos;s user account.
+                  The previous password is overwritten immediately.
                 </p>
               </div>
               <button
+                type="button"
                 onClick={closeReset}
                 className="text-stone-400 hover:text-foreground transition-colors p-1"
                 aria-label="Close"

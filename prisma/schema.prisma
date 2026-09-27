@@ -19,10 +19,7 @@ generator client {
 
 enum UserRole {
   SUPER_ADMIN
-  ADMIN
-  INVENTORY_MANAGER
-  ORDER_MANAGER
-  CONTENT_MANAGER
+  STAFF
   CUSTOMER
 }
 
@@ -547,13 +544,6 @@ model AuditLog {
 // ==========================================
 
 // Permissions an employee can have — superadmin assigns per-user
-enum StockPermission {
-  STOCK_VIEW          // view inventory dashboard + alerts
-  STOCK_ADJUST        // adjust stock levels (in/out movements)
-  STOCK_RECONCILE     // physical count sessions + reconciliation
-  STOCK_EXPORT        // export reports / CSV
-  STOCK_MANAGE_ALERTS // acknowledge + resolve alerts
-}
 
 model EmployeeProfile {
   id              String   @id @default(uuid())
@@ -562,7 +552,7 @@ model EmployeeProfile {
   fullName        String
   employeeCode    String?  @unique // e.g., "EMP-001"
   phone           String?  // separate from login phone (for warehouse contact)
-  permissions     StockPermission[] @default([STOCK_VIEW])
+  permissions     String[] @default(["DASHBOARD_VIEW"]) // dynamic per-staff permissions
   isActive        Boolean  @default(true)
   createdBy        String?  // admin user ID who created this employee
   createdAt       DateTime @default(now())

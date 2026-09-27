@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { EmployeeAuthService } from '@/server/services/employee-auth.service';
 import { prisma } from '@/server/db';
-import { StockPermission } from '@prisma/client';
 import { StockCountSessions } from '@/components/stock/StockCountSessions';
 
 export const revalidate = 0; // Dynamic server component
@@ -16,7 +15,7 @@ export const revalidate = 0; // Dynamic server component
  */
 export default async function StockCountPage() {
   const session = await EmployeeAuthService.getEmployeeSession();
-  const canReconcile = !!session?.permissions?.includes(StockPermission.STOCK_RECONCILE);
+  const canReconcile = !!session?.permissions?.includes('STOCK_COUNT');
 
   const [sessions, skus] = await Promise.all([
     prisma.stockCountSession.findMany({

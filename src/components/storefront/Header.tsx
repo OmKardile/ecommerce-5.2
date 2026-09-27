@@ -161,10 +161,10 @@ export function Header() {
 
       {/* Main bar */}
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
-        <div className="flex items-center justify-between h-[68px] gap-6">
+        <div className="flex items-center justify-between h-[72px] gap-6">
           {/* Logo lockup — editorial */}
           <Link href="/" className="flex items-baseline gap-2 shrink-0 group" aria-label="Patel Networks home">
-            <span className="display text-[22px] sm:text-[26px] leading-none text-foreground">
+            <span className="display text-[24px] sm:text-[28px] leading-none text-foreground">
               Patel<span className="text-[var(--brand)]">.</span>Networks
             </span>
             <span className="hidden sm:inline eyebrow text-stone-500 dark:text-stone-500 ml-1">
@@ -251,13 +251,13 @@ export function Header() {
             <nav className="hidden lg:flex items-center gap-6 mr-2">
               <Link
                 href="/products"
-                className="text-sm text-stone-700 dark:text-stone-300 hover:text-foreground link-underline transition-colors"
+                className="text-sm font-semibold text-stone-700 dark:text-stone-300 hover:text-foreground link-underline transition-colors"
               >
                 Catalog
               </Link>
               <Link
                 href="/kit-builder"
-                className="text-sm text-stone-700 dark:text-stone-300 hover:text-foreground link-underline transition-colors"
+                className="text-sm font-semibold text-stone-700 dark:text-stone-300 hover:text-foreground link-underline transition-colors"
               >
                 Kit Builder
               </Link>
@@ -267,7 +267,7 @@ export function Header() {
             {currentUser ? (
               <Link
                 href="/account"
-                className="px-3 py-2 text-sm text-stone-700 dark:text-stone-300 hover:text-foreground border border-transparent hover:border-border transition-colors flex items-center gap-2"
+                className="px-3.5 py-2.5 text-sm text-stone-700 dark:text-stone-300 hover:text-foreground bg-surface-2 hover:bg-accent border border-border-strong hover:border-foreground transition-colors flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
                 <span className="hidden sm:inline">
@@ -277,7 +277,7 @@ export function Header() {
             ) : (
               <Link
                 href="/account/login"
-                className="px-3 py-2 text-sm text-stone-700 dark:text-stone-300 hover:text-foreground border border-transparent hover:border-border transition-colors flex items-center gap-2"
+                className="px-3.5 py-2.5 text-sm text-stone-700 dark:text-stone-300 hover:text-foreground bg-surface-2 hover:bg-accent border border-border-strong hover:border-foreground transition-colors flex items-center gap-2"
               >
                 <User className="w-4 h-4" />
                 <span className="hidden sm:inline">Account</span>
@@ -287,7 +287,7 @@ export function Header() {
             {/* Cart — minimal count, no pill */}
             <Link
               href="/cart"
-              className="relative px-3 py-2 text-sm text-foreground hover:bg-accent border border-border hover:border-foreground transition-colors flex items-center gap-2"
+              className="relative px-3.5 py-2.5 text-sm text-foreground bg-surface-2 hover:bg-accent border border-border-strong hover:border-foreground transition-colors flex items-center gap-2"
             >
               <ShoppingCart className="w-4 h-4" />
               <span className="hidden sm:inline">Cart</span>

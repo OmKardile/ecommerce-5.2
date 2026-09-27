@@ -82,7 +82,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="display text-[clamp(1.6rem,5vw,2.8rem)] leading-tight text-foreground break-words">
+              <h1 className="display text-[clamp(1.6rem,5vw,2.8rem)] font-extrabold leading-tight text-foreground break-words">
                 {heading}
               </h1>
               <p className="text-sm text-stone-500 mt-2">
@@ -115,10 +115,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         {/* Layout: sidebar (desktop only) + grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Desktop filter sidebar — hidden on mobile, replaced by drawer */}
-          <aside className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 space-y-8 overflow-hidden">
+          <aside className="hidden lg:block lg:col-span-3 lg:sticky lg:top-24 space-y-6 overflow-hidden bg-surface-2 border border-border-strong p-5">
             <div className="border-t border-border-strong pt-5">
               <div className="eyebrow text-stone-500 mb-2">Category</div>
-              <div className="divide-y divide-border-subtle">
+              <div className="divide-y divide-border-strong">
                 <Link
                   href={`/products${brandSlug ? `?brand=${brandSlug}` : ''}`}
                   className={`block py-2 text-sm transition-colors truncate ${
@@ -148,7 +148,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
             <div className="border-t border-border-strong pt-5">
               <div className="eyebrow text-stone-500 mb-2">Brand</div>
-              <div className="divide-y divide-border-subtle">
+              <div className="divide-y divide-border-strong">
                 <Link
                   href={`/products${categorySlug ? `?category=${categorySlug}` : ''}`}
                   className={`block py-2 text-sm transition-colors ${

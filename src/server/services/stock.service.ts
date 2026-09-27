@@ -1,5 +1,5 @@
 import { prisma } from '@/server/db';
-import { StockPermission, Prisma, MovementReason } from '@prisma/client';
+import { Prisma, MovementReason } from '@prisma/client';
 import type { EmployeeSessionPayload } from '@/server/services/employee-auth.service';
 
 /* ------------------------------------------------------------------ */
@@ -167,9 +167,9 @@ export async function getStockDashboardData(
     outOfStockCount,
     recentAlerts,
     recentMovements,
-    canReconcile: session?.permissions?.includes(StockPermission.STOCK_RECONCILE) ?? false,
-    canExport: session?.permissions?.includes(StockPermission.STOCK_EXPORT) ?? false,
-    canManageAlerts: session?.permissions?.includes(StockPermission.STOCK_MANAGE_ALERTS) ?? false,
+    canReconcile: session?.permissions?.includes('STOCK_COUNT') ?? false,
+    canExport: session?.permissions?.includes('STOCK_EXPORT') ?? false,
+    canManageAlerts: session?.permissions?.includes('STOCK_ALERTS_MANAGE') ?? false,
   };
 }
 

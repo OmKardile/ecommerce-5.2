@@ -60,7 +60,7 @@ export default async function HomePage() {
                   </div>
                 </Reveal>
                 <Reveal delay={60}>
-                  <h1 className="text-[clamp(2rem,6vw,4rem)] font-bold leading-[1.05] text-foreground tracking-tight max-w-xl">
+                  <h1 className="text-[clamp(2rem,6vw,4rem)] font-extrabold leading-[1.05] text-foreground tracking-tight max-w-xl">
                     Surveillance hardware,{' '}
                     <span className="text-[var(--brand)]">precisely</span> specified.
                   </h1>
@@ -86,7 +86,7 @@ export default async function HomePage() {
                 </Reveal>
                 {/* Trust stats */}
                 <Reveal delay={240}>
-                  <div className="mt-8 pt-5 border-t border-border-subtle grid grid-cols-3 gap-6 max-w-md">
+                  <div className="mt-8 pt-5 border-t border-border grid grid-cols-3 gap-6 max-w-md bg-surface-2 -mx-3 px-3 py-4 border-l border-r border-border-strong">
                     <div>
                       <div className="text-2xl font-mono text-foreground">{brands.length}</div>
                       <div className="text-[11px] text-stone-500 mt-1">brands</div>
@@ -122,12 +122,12 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* CATEGORIES — clean hairline index */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <Reveal>
               <div>
                 <div className="eyebrow text-stone-500 mb-2">01 — Categories</div>
-                <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight text-foreground tracking-tight max-w-xl">
+                <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-extrabold leading-tight text-foreground tracking-tight max-w-xl">
                   Six disciplines of security hardware.
                 </h2>
               </div>
@@ -147,12 +147,12 @@ export default async function HomePage() {
               <Reveal key={cat!.id} delay={idx * 40}>
                 <Link
                   href={`/products?category=${cat!.slug}`}
-                  className="group grid grid-cols-12 items-center gap-4 py-5 border-b border-border hover:bg-accent/40 transition-colors duration-200 px-2 -mx-2"
+                  className="group grid grid-cols-12 items-center gap-4 py-6 border-b border-border hover:bg-accent/40 transition-colors duration-200 px-2 -mx-2"
                 >
                   <span className="col-span-2 sm:col-span-1 font-mono text-xs text-stone-400 group-hover:text-foreground transition-colors">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
-                  <span className="col-span-7 sm:col-span-5 text-base sm:text-lg font-semibold text-foreground group-hover:text-[var(--brand)] transition-colors duration-200 tracking-tight">
+                  <span className="col-span-7 sm:col-span-5 text-base sm:text-xl font-semibold text-foreground group-hover:text-[var(--brand)] transition-colors duration-200 tracking-tight">
                     {cat!.name}
                   </span>
                   <span className="hidden sm:block col-span-5 text-sm text-stone-500">
@@ -171,12 +171,12 @@ export default async function HomePage() {
         {/* FEATURED PRODUCTS — clean grid */}
         {/* ============================================================ */}
         <section className="border-y border-border-strong bg-surface-2">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
               <Reveal>
                 <div>
                   <div className="eyebrow text-stone-500 mb-2">02 — Featured</div>
-                  <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight text-foreground tracking-tight max-w-xl">
+                  <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-extrabold leading-tight text-foreground tracking-tight max-w-xl">
                     High-demand surveillance models.
                   </h2>
                   <p className="text-sm text-stone-500 mt-1.5 max-w-md">
@@ -191,9 +191,9 @@ export default async function HomePage() {
               </Reveal>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-surface-2 border border-border-strong">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border-strong border border-border-strong">
               {featuredProducts.slice(0, 4).map((product, idx) => (
-                <Reveal key={product.id} delay={idx * 50} className="bg-background">
+                <Reveal key={product.id} delay={idx * 50} className="bg-card">
                   <ProductCard product={product} />
                 </Reveal>
               ))}
@@ -204,14 +204,14 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* DISCIPLINE — image + text */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-5 order-2 lg:order-1">
               <Reveal>
                 <div className="eyebrow text-stone-500 mb-3">The discipline</div>
               </Reveal>
               <Reveal delay={60}>
-                <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight text-foreground tracking-tight">
+                <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-extrabold leading-tight text-foreground tracking-tight">
                   Hardware chosen by people who install it.
                 </h2>
               </Reveal>
@@ -248,10 +248,10 @@ export default async function HomePage() {
         {/* KIT BUILDER */}
         {/* ============================================================ */}
         <section className="border-t border-border-strong bg-surface-2">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20 lg:py-28">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <Reveal className="lg:col-span-6 order-1">
-                <div className="media-frame relative aspect-[4/3] bg-background border border-border">
+                <div className="media-frame relative aspect-[4/3] bg-background border border-border-strong">
                   <Image
                     src="/editorial/product-nvr-recorder.jpg"
                     alt="16-channel NVR network video recorder"
@@ -267,7 +267,7 @@ export default async function HomePage() {
                   <div className="eyebrow text-stone-500">03 — Configuration tool</div>
                 </Reveal>
                 <Reveal delay={60}>
-                  <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold leading-[1.05] text-foreground tracking-tight">
+                  <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold leading-[1.05] text-foreground tracking-tight">
                     Don&apos;t know which parts fit together?
                   </h2>
                 </Reveal>
@@ -312,7 +312,7 @@ export default async function HomePage() {
         {/* ============================================================ */}
         {/* BRANDS — static grid */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-20">
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16">
           <Reveal>
             <div className="eyebrow text-stone-500 mb-6 text-center">
               Authorized supply — premier security & networking brands

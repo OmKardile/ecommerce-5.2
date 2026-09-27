@@ -16,18 +16,35 @@ export interface AdminSessionPayload {
   email: string;
   fullName: string;
   role: UserRole;
+  /**
+   * Populated only for STAFF sessions (the staff member's effective
+   * permissions array). SUPER_ADMIN sessions omit this — they have
+   * unrestricted access via hasPermission() in @/lib/permissions.
+   */
+  permissions?: string[];
   iat?: number;
   exp?: number;
 }
 
 export class AdminAuthService {
   /**
-   * Authenticates an admin user via email & password and sets an isolated HTTP-only session cookie.
+   * Authenticates an admin or staff user via email & password and sets an
+   * isolated HTTP-only session cookie (`pn_admin_session`).
+   *
+   * Both SUPER_ADMIN and STAFF roles may sign in here. STAFF sessions
+   * include a `permissions: string[]` claim populated from the user's
+   * EmployeeProfile — used by the admin sidebar + page-level guards to
+   * scope the UI to what the staff member can actually do.
    */
   static async loginAdmin(emailInput: string, passwordInput: string): Promise<{
     success: boolean;
     error?: string;
-    admin?: { email: string; fullName: string; role: string };
+    admin?: {
+      email: string;
+      fullName: string;
+      role: string;
+      permissions?: string[];
+    };
   }> {
     const email = emailInput.trim().toLowerCase();
     const password = passwordInput.trim();
@@ -39,26 +56,38 @@ export class AdminAuthService {
     let isValid = false;
     let adminPayload: AdminSessionPayload | null = null;
 
-    // 1. Check database for existing admin user
+    // 1. Check database for existing admin/staff user
     try {
       const dbUser = await prisma.user.findFirst({
         where: {
           email,
-          role: { in: [UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.INVENTORY_MANAGER, UserRole.ORDER_MANAGER] },
+          role: { in: [UserRole.SUPER_ADMIN, UserRole.STAFF] },
           isActive: true,
         },
-        include: { adminProfile: true },
+        include: {
+          adminProfile: true,
+          employeeProfile: true,
+        },
       });
 
       if (dbUser && dbUser.passwordHash) {
         // Direct match or standard check
         if (dbUser.passwordHash === password) {
           isValid = true;
+          const fullName =
+            dbUser.adminProfile?.fullName ||
+            dbUser.employeeProfile?.fullName ||
+            'Patel Networks Operator';
+          const permissions =
+            dbUser.role === UserRole.STAFF
+              ? dbUser.employeeProfile?.permissions ?? []
+              : undefined;
           adminPayload = {
             adminId: dbUser.id,
             email: dbUser.email || email,
-            fullName: dbUser.adminProfile?.fullName || 'Super Administrator',
+            fullName,
             role: dbUser.role,
+            permissions,
           };
         }
       }
@@ -83,13 +112,18 @@ export class AdminAuthService {
       return { success: false, error: 'Invalid admin credentials or unauthorized account.' };
     }
 
-    // 3. Issue secure 7-day Admin JWT
-    const token = await new SignJWT({
+    // 3. Issue secure 7-day Admin JWT — include permissions only when role=STAFF
+    const jwtBody: Record<string, unknown> = {
       adminId: adminPayload.adminId,
       email: adminPayload.email,
       fullName: adminPayload.fullName,
       role: adminPayload.role,
-    })
+    };
+    if (adminPayload.role === UserRole.STAFF && adminPayload.permissions) {
+      jwtBody.permissions = adminPayload.permissions;
+    }
+
+    const token = await new SignJWT(jwtBody)
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setExpirationTime('7d')
@@ -115,12 +149,14 @@ export class AdminAuthService {
         email: adminPayload.email,
         fullName: adminPayload.fullName,
         role: adminPayload.role,
+        permissions: adminPayload.permissions,
       },
     };
   }
 
   /**
    * Reads and verifies the admin session from HTTP cookies.
+   * Returns null if missing or invalid (caller should redirect to /admin/login).
    */
   static async getAdminSession(): Promise<AdminSessionPayload | null> {
     try {

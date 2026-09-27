@@ -41,7 +41,7 @@ export function AdminHeader({ session }: Props) {
     .toUpperCase();
 
   return (
-    <header className="h-14 bg-background border-b border-border flex items-center justify-between px-5 sm:px-6 sticky top-0 z-30">
+    <header className="h-14 bg-surface-1 border-b border-border-strong flex items-center justify-between px-5 sm:px-6 sticky top-0 z-30">
       {/* Left — wordmark + node identity */}
       <div className="flex items-center gap-5 min-w-0">
         <Link href="/admin" className="flex items-baseline gap-2 shrink-0 group" aria-label="Patel Networks admin home">

@@ -5,7 +5,6 @@ import { Prisma, MovementReason } from '@prisma/client';
 import {
   EmployeeAuthService,
 } from '@/server/services/employee-auth.service';
-import { StockPermission } from '@prisma/client';
 import type { MovementFilters } from '@/server/services/stock.service';
 
 /**
@@ -24,7 +23,7 @@ export async function exportMovementsCsvAction(
     if (!session) {
       return { success: false, error: 'Unauthorized — no active session.' };
     }
-    if (!EmployeeAuthService.hasPermission(session, StockPermission.STOCK_EXPORT)) {
+    if (!EmployeeAuthService.hasPermission(session, 'STOCK_EXPORT')) {
       return { success: false, error: 'Unauthorized — missing STOCK_EXPORT permission.' };
     }
   } catch (err: any) {

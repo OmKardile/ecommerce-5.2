@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { AlertTriangle, ArrowRight } from 'lucide-react';
 import { EmployeeAuthService } from '@/server/services/employee-auth.service';
 import { getStockAlerts } from '@/server/services/stock.service';
-import { StockPermission } from '@prisma/client';
 import { AlertsTable } from '@/components/stock/AlertsTable';
 import { GenerateAlertsButton } from '@/components/stock/GenerateAlertsButton';
 
@@ -29,7 +28,7 @@ export default async function StockAlertsPage({
   const status = (STATUSES as readonly string[]).includes(rawStatus) ? rawStatus : 'ALL';
 
   const alerts = await getStockAlerts(status);
-  const canManageAlerts = !!session?.permissions?.includes(StockPermission.STOCK_MANAGE_ALERTS);
+  const canManageAlerts = !!session?.permissions?.includes('STOCK_ALERTS_MANAGE');
 
   const counts: Record<string, number> = { ALL: 0, OPEN: 0, ACKNOWLEDGED: 0, RESOLVED: 0 };
   for (const a of alerts) {

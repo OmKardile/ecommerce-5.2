@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { StockSidebar } from '@/components/stock/StockSidebar';
 import { StockHeader } from '@/components/stock/StockHeader';
 import { EmployeeAuthService } from '@/server/services/employee-auth.service';
-import { StockPermission } from '@prisma/client';
 
 export const metadata = {
   title: 'Stock Monitor Panel | Patel Networks Warehouse',
@@ -40,7 +39,7 @@ export default async function StockLayout({
     redirect('/stock/login');
   }
 
-  if (!EmployeeAuthService.hasPermission(session, StockPermission.STOCK_VIEW)) {
+  if (!EmployeeAuthService.hasPermission(session, 'STOCK_VIEW')) {
     redirect('/stock/login');
   }
 

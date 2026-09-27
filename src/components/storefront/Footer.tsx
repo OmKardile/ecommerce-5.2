@@ -5,8 +5,8 @@ import { ArrowUpRight } from 'lucide-react';
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-border-strong bg-background">
-      {/* Trust strip — single hairline row, no colored icon tiles */}
-      <div className="border-b border-border-strong">
+      {/* Trust strip — solid surface panel for visible weight */}
+      <div className="border-b border-border-strong bg-surface-2">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-8 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
           {[
             { k: 'Genuine brands', v: 'Serial-tracked, manufacturer warranty on CP Plus, Hikvision & Dahua.' },
@@ -58,7 +58,7 @@ export function Footer() {
 
           {/* Link columns */}
           <div className="md:col-span-2">
-            <div className="eyebrow text-stone-500 mb-4">Categories</div>
+            <div className="eyebrow text-stone-500 mb-4 font-bold">Categories</div>
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/products?category=hd-analog-cameras" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">HD Analog Cameras</Link></li>
               <li><Link href="/products?category=network-ip-cameras" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Network IP Cameras</Link></li>
@@ -70,7 +70,7 @@ export function Footer() {
           </div>
 
           <div className="md:col-span-2">
-            <div className="eyebrow text-stone-500 mb-4">Brands</div>
+            <div className="eyebrow text-stone-500 mb-4 font-bold">Brands</div>
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/products?brand=cp-plus" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">CP Plus</Link></li>
               <li><Link href="/products?brand=hikvision" className="text-stone-600 dark:text-stone-400 hover:text-foreground link-underline transition-colors">Hikvision</Link></li>
@@ -81,7 +81,7 @@ export function Footer() {
           </div>
 
           <div className="md:col-span-3">
-            <div className="eyebrow text-stone-500 mb-4">Customer & Tools</div>
+            <div className="eyebrow text-stone-500 mb-4 font-bold">Customer & Tools</div>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link href="/kit-builder" className="text-foreground hover:text-[var(--brand)] transition-colors flex items-center gap-1.5">

@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group relative flex flex-col bg-card border border-border hover:border-foreground transition-colors duration-300"
+      className="group relative flex flex-col bg-card border border-border-strong hover:border-foreground transition-colors duration-300"
     >
       {/* Image — sharp, contained, subtle zoom */}
       <div className="media-frame relative block w-full aspect-[4/3]">
@@ -94,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Title — editorial serif */}
-        <h3 className="display text-[17px] leading-snug text-foreground line-clamp-2 group-hover:text-[var(--brand)] transition-colors">
+        <h3 className="display text-[17px] font-bold leading-snug text-foreground line-clamp-2 group-hover:text-[var(--brand)] transition-colors">
           {product.name}
         </h3>
 
@@ -115,7 +115,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   {fromPrice && (
                     <span className="text-[10px] uppercase tracking-[0.14em] text-stone-400 mr-1">from</span>
                   )}
-                  <span className="text-lg font-mono text-foreground">{formatPrice(minPrice)}</span>
+                  <span className="text-xl font-mono text-foreground">{formatPrice(minPrice)}</span>
                   {correspondingMrp > minPrice && (
                     <span className="text-[11px] text-stone-400 line-through font-mono">
                       {formatPrice(correspondingMrp)}
