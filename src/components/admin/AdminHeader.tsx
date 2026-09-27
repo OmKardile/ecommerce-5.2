@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { LogOut, Loader2, ExternalLink } from 'lucide-react';
 import { AdminSessionPayload } from '@/server/services/admin-auth.service';
 import { adminLogoutAction } from '@/app/actions/admin-auth.actions';
+import { ThemeToggle } from '@/components/storefront/ThemeToggle';
 
 interface Props {
   session?: AdminSessionPayload | null;
@@ -106,6 +107,8 @@ export function AdminHeader({ session }: Props) {
           )}
           <span className="hidden sm:inline">Sign Out</span>
         </button>
+
+        <ThemeToggle />
       </div>
     </header>
   );

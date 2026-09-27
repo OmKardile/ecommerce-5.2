@@ -342,7 +342,7 @@ export default function CheckoutPage() {
     'w-full bg-transparent border-b border-border focus:border-foreground focus:outline-none font-mono text-foreground text-sm py-2.5 tracking-wider placeholder:text-stone-400';
 
   return (
-    <div className="dark flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
 
       <main className="flex-1 w-full max-w-[1400px] mx-auto px-6 lg:px-10 py-10 sm:py-14">

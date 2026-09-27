@@ -14,6 +14,7 @@ import { getCartAction } from '@/app/actions/cart.actions';
 import { getCurrentUserAction } from '@/app/actions/auth.actions';
 import { quickSearchAction } from '@/app/actions/catalog.actions';
 import { formatInr } from '@/lib/utils';
+import { ThemeToggle } from '@/components/storefront/ThemeToggle';
 
 interface HeaderUser {
   id: string;
@@ -296,6 +297,9 @@ export function Header() {
                 </span>
               )}
             </Link>
+
+            {/* Theme toggle — Clean Trust ↔ Industrial Steel */}
+            <ThemeToggle />
 
             {/* Mobile toggle */}
             <button

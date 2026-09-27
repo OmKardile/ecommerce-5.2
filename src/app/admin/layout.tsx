@@ -26,7 +26,7 @@ export default async function AdminLayout({
   const session = await AdminAuthService.getAdminSession();
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground flex antialiased">
+    <div className="min-h-screen bg-background text-foreground flex antialiased">
       {/* Operations sidebar — fixed left, hairline right border */}
       <AdminSidebar />
 
