@@ -79,7 +79,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
     startTransition(async () => {
       const res = await adjustStockAction({
         skuId: selectedSku.id,
-        quantityDelta: delta,
+        delta: delta,
         reason,
         notes: notes.trim() || undefined,
       });

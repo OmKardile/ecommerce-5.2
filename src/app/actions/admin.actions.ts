@@ -13,12 +13,17 @@ import { OrderStatus, MovementReason } from '@prisma/client';
 
 export async function adjustStockAction(input: {
   skuId: string;
-  quantityDelta: number;
-  reason: MovementReason;
+  delta: number;
+  reason: string;
   notes?: string;
 }) {
   try {
-    const updated = await adjustSkuStock(input);
+    const updated = await adjustSkuStock({
+      skuId: input.skuId,
+      quantityDelta: input.delta,
+      reason: input.reason as MovementReason,
+      notes: input.notes,
+    });
     revalidatePath('/admin');
     revalidatePath('/admin/inventory');
     return { success: true, data: updated };
@@ -36,17 +41,6 @@ export async function toggleProductCodAction(productId: string, isCodAllowed: bo
     return { success: true, data: updated };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to toggle COD policy' };
-  }
-}
-
-export async function toggleProductActiveAction(productId: string, isActive: boolean) {
-  try {
-    const updated = await toggleProductActive(productId, isActive);
-    revalidatePath('/admin/products');
-    revalidatePath('/products');
-    return { success: true, data: updated };
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Failed to toggle product status' };
   }
 }
 

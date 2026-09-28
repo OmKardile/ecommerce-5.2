@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -8,6 +8,7 @@ import {
   Bell,
   ArrowLeftRight,
   ClipboardList,
+  PackagePlus,
 } from 'lucide-react';
 import type { EmployeeSessionPayload } from '@/server/services/employee-auth.service';
 
@@ -20,24 +21,20 @@ type NavItem = {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
+  permission?: string;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/stock', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/stock/alerts', label: 'Alerts', icon: Bell },
-  { href: '/stock/movements', label: 'Movements', icon: ArrowLeftRight },
-  { href: '/stock/count', label: 'Count Sessions', icon: ClipboardList },
+  { href: '/stock', label: 'Dashboard', icon: LayoutDashboard, exact: true, permission: 'STOCK_VIEW' },
+  { href: '/stock/alerts', label: 'Alerts', icon: Bell, permission: 'STOCK_VIEW' },
+  { href: '/stock/adjust', label: 'Adjust Stock', icon: PackagePlus, permission: 'INVENTORY_ADJUST' },
+  { href: '/stock/movements', label: 'Movements', icon: ArrowLeftRight, permission: 'STOCK_VIEW' },
+  { href: '/stock/count', label: 'Count Sessions', icon: ClipboardList, permission: 'STOCK_COUNT' },
 ];
 
-/**
- * StockSidebar — left nav for the warehouse stock panel.
- *
- * Clean Trust theme (light by default). Active state uses a brand-blue left
- * border + foreground text + slightly raised surface, mirroring the admin
- * sidebar pattern. Sign-out lives in the header per the task spec.
- */
 export function StockSidebar({ session }: StockSidebarProps) {
   const pathname = usePathname();
+  const permissions = session?.permissions || [];
 
   const employeeName = session?.fullName || 'Warehouse Operator';
   const employeeCode = session?.employeeCode || null;
@@ -48,6 +45,11 @@ export function StockSidebar({ session }: StockSidebarProps) {
     .slice(0, 2)
     .join('')
     .toUpperCase();
+
+  const visibleItems = NAV_ITEMS.filter((item) => {
+    if (!item.permission) return true;
+    return permissions.includes(item.permission);
+  });
 
   return (
     <aside className="w-64 bg-card text-foreground flex flex-col shrink-0 border-r border-border-strong select-none min-h-screen">
@@ -64,11 +66,11 @@ export function StockSidebar({ session }: StockSidebarProps) {
         </Link>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation — filtered by permissions */}
       <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto scrollbar-thin">
         <div className="eyebrow text-stone-500 px-3 mb-2">Warehouse Operations</div>
 
-        {NAV_ITEMS.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.exact
             ? pathname === item.href
