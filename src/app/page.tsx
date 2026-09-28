@@ -4,10 +4,9 @@ import Image from 'next/image';
 import {
   ArrowRight,
   Wrench,
-  Truck,
   ShieldCheck,
   FileText,
-  Search,
+  Truck,
 } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
@@ -46,48 +45,46 @@ export default async function HomePage() {
 
       <main className="flex-1">
         {/* ============================================================ */}
-        {/* HERO BANNER — product image + strong headline + search CTA */}
+        {/* HERO — editorial, spacious, asymmetric */}
         {/* ============================================================ */}
-        <section className="bg-gradient-to-r from-[var(--brand)] to-indigo-700 text-white">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-12 lg:py-16">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-8">
-                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold mb-4">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Authorized Distributor — CP Plus · Hikvision · Dahua
+        <section className="border-b border-border-subtle">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-32">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-end">
+              {/* Left — large editorial headline */}
+              <div className="lg:col-span-7">
+                <div className="flex items-center gap-3 mb-8">
+                  <span className="w-2 h-2 rounded-full bg-[var(--brand)]" />
+                  <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-stone">
+                    Authorized Indian Distributor
+                  </span>
                 </div>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-3">
-                  Commercial CCTV & Surveillance Hardware
+                <h1 className="text-[clamp(2.5rem,6vw,5rem)] font-serif font-medium leading-[1.02] tracking-tight text-foreground mb-6">
+                  Surveillance hardware,<br />
+                  <em className="not-italic text-[var(--brand)]">precisely</em> specified.
                 </h1>
-                <p className="text-base text-white/80 max-w-xl mb-6">
-                  Genuine cameras, DVRs, NVRs, hard drives and Cat6 cabling.
-                  GST invoicing, pan-India dispatch, manufacturer warranty.
+                <p className="text-base text-stone leading-relaxed max-w-md mb-8">
+                  Certified HD analog cameras, AI AcuSense recorders, 24/7
+                  surveillance drives and Cat6 cabling — with verified 18%
+                  GST invoicing and immediate pan-India dispatch.
                 </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link
-                    href="/products"
-                    className="inline-flex items-center gap-2 bg-white text-[var(--brand)] px-6 py-3 rounded-lg font-bold text-sm hover:bg-gray-100 transition-colors active:scale-95"
-                  >
-                    <Search className="w-4 h-4" />
-                    Browse Products
+                <div className="flex items-center gap-4">
+                  <Link href="/products" className="btn-ink">
+                    Browse Catalogue <ArrowRight className="w-4 h-4" />
                   </Link>
-                  <Link
-                    href="/kit-builder"
-                    className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-lg font-bold text-sm hover:bg-white/20 transition-colors active:scale-95"
-                  >
-                    <Wrench className="w-4 h-4" />
-                    Build a Kit
+                  <Link href="/kit-builder" className="text-sm font-medium text-foreground hover:text-[var(--brand)] transition-colors">
+                    Build a CCTV kit →
                   </Link>
                 </div>
               </div>
-              <div className="lg:col-span-4 hidden lg:block">
-                <div className="relative aspect-square rounded-xl overflow-hidden bg-white/10">
+              {/* Right — product image, asymmetric */}
+              <div className="lg:col-span-5">
+                <div className="relative aspect-[3/4] bg-surface-2 overflow-hidden">
                   <Image
                     src="/editorial/product-dome-camera.jpg"
                     alt="CCTV security camera"
                     fill
                     priority
-                    sizes="33vw"
+                    sizes="(max-width: 1024px) 100vw, 42vw"
                     className="object-cover"
                   />
                 </div>
@@ -97,22 +94,22 @@ export default async function HomePage() {
         </section>
 
         {/* ============================================================ */}
-        {/* TRUST BAR */}
+        {/* TRUST STRIP — minimal, architectural */}
         {/* ============================================================ */}
-        <section className="bg-surface-2 border-b border-border">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <section className="border-b border-border-subtle">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { icon: ShieldCheck, label: '100% Genuine', sub: 'Serial-tracked' },
-                { icon: FileText, label: '18% GST ITC', sub: 'B2B invoicing' },
+                { icon: ShieldCheck, label: '100% Genuine', sub: 'Serial-tracked warranty' },
+                { icon: FileText, label: '18% GST ITC', sub: 'B2B tax invoicing' },
                 { icon: Truck, label: 'Pan-India', sub: 'Express dispatch' },
-                { icon: ShieldCheck, label: 'Warranty', sub: 'Manufacturer-backed' },
+                { icon: ShieldCheck, label: 'On-site', sub: 'Manufacturer RMA' },
               ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2.5">
-                  <item.icon className="w-5 h-5 text-[var(--brand)] shrink-0" />
+                <div key={item.label} className="flex items-center gap-3">
+                  <item.icon className="w-4 h-4 text-[var(--brand)] shrink-0" strokeWidth={1.5} />
                   <div>
-                    <div className="text-xs font-bold text-foreground">{item.label}</div>
-                    <div className="text-[10px] text-stone-500">{item.sub}</div>
+                    <div className="text-sm font-medium text-foreground">{item.label}</div>
+                    <div className="text-[11px] text-stone">{item.sub}</div>
                   </div>
                 </div>
               ))}
@@ -121,89 +118,106 @@ export default async function HomePage() {
         </section>
 
         {/* ============================================================ */}
-        {/* CATEGORIES — quick access grid */}
+        {/* CATEGORIES — editorial index */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-6">
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+          <div className="flex items-baseline justify-between mb-8">
+            <h2 className="text-2xl font-serif font-medium text-foreground tracking-tight">Categories</h2>
+            <Link href="/products" className="text-sm text-stone hover:text-foreground transition-colors">
+              View all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-border-subtle">
             {curatedCategories.map((cat) => (
               <Link
                 key={cat!.id}
                 href={`/products?category=${cat!.slug}`}
-                className="group flex flex-col items-center justify-center p-3 bg-card border border-border rounded-lg hover:border-[var(--brand)] hover:shadow-md transition-all text-center"
+                className="group bg-card p-5 hover:bg-surface-2 transition-colors text-center"
               >
-                <span className="text-xs font-bold text-foreground group-hover:text-[var(--brand)] transition-colors">
+                <div className="text-sm font-medium text-foreground group-hover:text-[var(--brand)] transition-colors">
                   {cat!.name}
-                </span>
-                <span className="text-[10px] text-stone-500 mt-0.5">{cat!._count.products} items</span>
+                </div>
+                <div className="text-[10px] text-stone mt-1">{cat!._count.products} products</div>
               </Link>
             ))}
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* FEATURED PRODUCTS — main shopping grid */}
+        {/* FEATURED PRODUCTS — spacious catalogue */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-6">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-xl font-extrabold text-foreground tracking-tight">Featured Products</h2>
-              <p className="text-xs text-stone-500 mt-0.5">{featuredProducts.length} models in stock</p>
+        <section className="border-t border-border-subtle">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 lg:py-20">
+            <div className="flex items-baseline justify-between mb-10">
+              <div>
+                <h2 className="text-2xl font-serif font-medium text-foreground tracking-tight">Featured Products</h2>
+                <p className="text-sm text-stone mt-1">{featuredProducts.length} models in stock</p>
+              </div>
+              <Link href="/products" className="text-sm text-stone hover:text-foreground transition-colors">
+                View all →
+              </Link>
             </div>
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-1 text-sm font-bold text-[var(--brand)] hover:underline"
-            >
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {featuredProducts.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.slice(0, 8).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* KIT BUILDER CTA */}
+        {/* KIT BUILDER — editorial CTA */}
         {/* ============================================================ */}
-        <section className="bg-surface-2 border-y border-border">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-[var(--brand)] flex items-center justify-center shrink-0">
-                  <Wrench className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-foreground">Build a Custom CCTV Kit</h3>
-                  <p className="text-xs text-stone-500">Pick your DVR, cameras, storage & accessories — automatic bundle discount</p>
+        <section className="bg-surface-2 border-y border-border-subtle">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-20 lg:py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-7">
+                <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-stone mb-4 block">
+                  Configuration Tool
+                </span>
+                <h2 className="text-3xl font-serif font-medium text-foreground tracking-tight mb-4">
+                  Don't know which parts fit together?
+                </h2>
+                <p className="text-sm text-stone leading-relaxed max-w-md mb-6">
+                  Build a complete surveillance package step by step — pick DVR channel
+                  capacity, mix dome and bullet cameras, calculate required recording days,
+                  and receive an automatic bundle discount.
+                </p>
+                <Link href="/kit-builder" className="btn-ink">
+                  <Wrench className="w-4 h-4" />
+                  Start the kit builder
+                </Link>
+              </div>
+              <div className="lg:col-span-5">
+                <div className="relative aspect-[4/3] bg-card border border-border-subtle overflow-hidden">
+                  <Image
+                    src="/editorial/product-nvr-recorder.jpg"
+                    alt="NVR recorder"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 42vw"
+                    className="object-cover"
+                  />
                 </div>
               </div>
-              <Link
-                href="/kit-builder"
-                className="inline-flex items-center gap-2 bg-[var(--brand)] text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-[var(--brand-soft)] transition-colors active:scale-95 shrink-0"
-              >
-                Start Builder <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* BRANDS */}
+        {/* BRANDS — editorial wordmark index */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-8">
-          <h2 className="text-sm font-bold text-stone-500 uppercase tracking-wide mb-4 text-center">Shop by Brand</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+        <section className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+          <h2 className="text-sm font-medium text-stone uppercase tracking-[0.15em] mb-8 text-center">
+            Authorized Supply
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-12">
             {brands.map((b) => (
               <Link
                 key={b.id}
                 href={`/products?brand=${b.slug}`}
-                className="group flex items-center justify-center py-5 px-4 bg-card border border-border rounded-lg hover:border-[var(--brand)] hover:shadow-sm transition-all"
+                className="text-lg font-serif font-medium text-stone hover:text-foreground transition-colors"
               >
-                <span className="text-sm font-bold text-foreground group-hover:text-[var(--brand)] transition-colors">
-                  {b.name}
-                </span>
+                {b.name}
               </Link>
             ))}
           </div>

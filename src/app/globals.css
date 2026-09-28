@@ -63,34 +63,35 @@
   --radius-xl: 8px;
 }
 
-/* ---------- STOREFRONT: Bold Commerce ---------- */
-/* Deep navy base + electric accent — confident, substantial, real store */
+/* ---------- STOREFRONT: Editorial Premium ---------- */
+/* Warm off-white + deep charcoal + restrained cobalt accent */
+/* "Luxury in presentation, precision in functionality" */
 :root {
-  --radius: 6px;
+  --radius: 2px;
 
-  /* Core neutrals — warm slate with navy undertone */
-  --ink: #0B1120;            /* near-black navy — text */
-  --paper: #FFFFFF;          /* white background */
-  --bone: #F3F4F6;           /* gray-100 — alt section */
-  --stone: #4B5563;          /* gray-600 — secondary text */
-  --stone-soft: #6B7280;     /* gray-500 — tertiary text */
-  --hairline: #D1D5DB;       /* gray-300 — borders */
-  --hairline-strong: #9CA3AF; /* gray-400 */
+  /* Core neutrals — warm, architectural */
+  --ink: #1A1A1A;            /* near-black, warm — primary text */
+  --paper: #FAF8F5;          /* warm off-white — background */
+  --bone: #F3F0EB;           /* warm light gray — alt surface */
+  --stone: #6B6B6B;          /* warm gray — secondary text */
+  --stone-soft: #9B9B9B;     /* light gray — tertiary text */
+  --hairline: #E5E2DD;       /* warm border */
+  --hairline-strong: #D1CEC9; /* darker border */
 
-  /* Brand accent — electric indigo (confident, modern, not generic blue) */
-  --brand: #4F46E5;          /* indigo-600 */
-  --brand-soft: #818CF8;     /* indigo-400 */
-  --brand-tint: #EEF2FF;     /* indigo-50 */
+  /* Accent — restrained cobalt (functional, not decorative) */
+  --brand: #1E3A5F;          /* deep cobalt — confident, not loud */
+  --brand-soft: #2C5282;     /* medium cobalt — hover/active */
+  --brand-tint: #EBF2FA;     /* whisper cobalt — hover bg */
 
   /* 3-level border hierarchy */
-  --border-strong: #9CA3AF;   /* level 1 — structural: gray-400 */
-  --border: #D1D5DB;           /* level 2 — component: gray-300 */
-  --border-subtle: #E5E7EB;   /* level 3 — divider: gray-200 */
+  --border-strong: #D1CEC9;   /* level 1 — structural */
+  --border: #E5E2DD;           /* level 2 — component */
+  --border-subtle: #F0EDE8;   /* level 3 — divider */
 
   /* Surface hierarchy */
-  --surface-1: #FFFFFF;       /* primary container */
-  --surface-2: #F9FAFB;       /* gray-50 — alt section */
-  --surface-3: #F3F4F6;       /* gray-100 — interactive/input */
+  --surface-1: #FFFFFF;       /* primary container — white card on off-white bg */
+  --surface-2: #F3F0EB;       /* alt section / warm gray */
+  --surface-3: #EAE7E2;       /* interactive/input */
 
   /* Semantic mapping */
   --background: var(--paper);
@@ -99,15 +100,15 @@
   --card-foreground: var(--ink);
   --popover: var(--surface-1);
   --popover-foreground: var(--ink);
-  --primary: var(--brand);            /* primary buttons = indigo */
-  --primary-foreground: #FFFFFF;
+  --primary: var(--ink);            /* primary buttons = dark charcoal */
+  --primary-foreground: #FAF8F5;
   --secondary: var(--surface-2);
   --secondary-foreground: var(--ink);
   --muted: var(--surface-2);
   --muted-foreground: var(--stone);
   --accent: var(--brand-tint);
   --accent-foreground: var(--brand);
-  --destructive: #DC2626;
+  --destructive: #B91C1C;
   --border: var(--border);
   --input: var(--border);
   --ring: var(--brand);
@@ -115,15 +116,15 @@
   --hairline-strong: var(--border-strong);
 
   --chart-1: var(--brand);
-  --chart-2: #6366F1;
-  --chart-3: #A5B4FC;
-  --chart-4: #C7D2FE;
-  --chart-5: #0B1120;
+  --chart-2: #6B6B6B;
+  --chart-3: #9B9B9B;
+  --chart-4: #2C5282;
+  --chart-5: #1A1A1A;
 
   --sidebar: #FFFFFF;
   --sidebar-foreground: var(--ink);
-  --sidebar-primary: var(--brand);
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #FAF8F5;
   --sidebar-accent: var(--surface-2);
   --sidebar-accent-foreground: var(--ink);
   --sidebar-border: var(--border);
@@ -207,11 +208,19 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     overflow-x: hidden;
   }
-  /* Editorial display headings — Fraunces with optical sizing */
-  h1, h2, h3 {
+  /* Editorial display headings — Fraunces serif, used for major statements */
+  h1, h2 {
     font-family: var(--font-serif), Georgia, serif;
     font-optical-sizing: auto;
+    font-weight: 500;
     letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  /* h3+ remain sans-serif for UI/data contexts */
+  h3, h4, h5, h6 {
+    font-family: var(--font-sans), sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   /* Selection — brand blue, the only flourish */
   ::selection {
@@ -262,24 +271,23 @@
   width: 100%;
 }
 
-/* Sharp interactive — primary indigo button */
+/* Sharp interactive — primary charcoal button */
 .btn-ink {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--brand);
-  color: #FFFFFF;
-  font-weight: 600;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
   font-size: 13px;
   line-height: 1;
-  padding: 0.75rem 1.75rem;
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius);
   transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
-              opacity 0.18s ease,
-              background 0.18s ease;
+              opacity 0.18s ease;
   will-change: transform;
 }
-.btn-ink:hover { transform: translateY(-1px); background: var(--brand-soft); }
+.btn-ink:hover { transform: translateY(-1px); }
 .btn-ink:active { transform: translateY(0) scale(0.985); }
 
 /* Ghost / secondary button — hairline border, no fill */
