@@ -1,0 +1,473 @@
+// Patel Networks — DBML schema for dbdocs.io
+// Copy this file's contents to https://dbdocs.io or run:
+//   npx @dbdocs/cli build prisma/schema.dbml
+// Then publish with: npx @dbdocs/cli push
+
+// ============================================================
+// 1. AUTHENTICATION, USERS & EMPLOYEES
+// ============================================================
+
+Enum UserRole {
+  SUPER_ADMIN
+  STAFF
+  CUSTOMER
+}
+
+Enum StockPermission {
+  DASHBOARD_VIEW
+  ORDERS_VIEW
+  ORDERS_MANAGE
+  PRODUCTS_VIEW
+  PRODUCTS_MANAGE
+  INVENTORY_VIEW
+  INVENTORY_ADJUST
+  CUSTOMERS_VIEW
+  CUSTOMERS_MANAGE
+  REPORTS_VIEW
+  REPORTS_EXPORT
+  STOCK_VIEW
+  STOCK_ALERTS_MANAGE
+  STOCK_COUNT
+  STOCK_EXPORT
+  EMPLOYEES_VIEW
+  EMPLOYEES_MANAGE
+  SETTINGS_VIEW
+  SETTINGS_MANAGE
+}
+
+Table users {
+  id varchar [pk, default: gen_random_uuid()]
+  phone varchar [unique]
+  email varchar [unique, note: 'Optional for customers, required for admin/staff']
+  password_hash varchar [note: 'bcrypt hash for admin/staff accounts']
+  role UserRole [default: 'CUSTOMER']
+  is_active boolean [default: true]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+  deleted_at timestamp [note: 'Soft delete']
+}
+
+Table otp_verifications {
+  id varchar [pk]
+  phone varchar
+  otp_code varchar
+  expires_at timestamp
+  is_verified boolean [default: false]
+  attempts integer [default: 0]
+  created_at timestamp [default: now()]
+
+  Note: 'OTP for customer phone login (ADR-003/ADR-011)'
+}
+
+Table admin_profiles {
+  id varchar [pk]
+  user_id varchar [unique, ref: > users.id]
+  full_name varchar
+}
+
+Table employee_profiles {
+  id varchar [pk]
+  user_id varchar [unique, ref: > users.id]
+  full_name varchar
+  employee_code varchar [unique, note: 'e.g. EMP-001']
+  phone varchar [note: 'Warehouse contact number']
+  permissions text [array, note: 'Dynamic permissions array, e.g. {DASHBOARD_VIEW,INVENTORY_ADJUST}']
+  is_active boolean [default: true]
+  created_by varchar [note: 'Superadmin user ID who created this staff member']
+  created_at timestamp [default: now()]
+  updated_at timestamp
+
+  Note: 'Staff with dynamic permissions (ADR-027)'
+}
+
+Table audit_logs {
+  id varchar [pk]
+  user_id varchar [ref: > users.id]
+  action varchar
+  entity varchar
+  entity_id varchar
+  details json
+  ip_address varchar
+  created_at timestamp [default: now()]
+}
+
+// ============================================================
+// 2. CUSTOMER DOMAIN (B2C & B2B)
+// ============================================================
+
+Table customers {
+  id varchar [pk]
+  user_id varchar [unique, ref: > users.id]
+  full_name varchar
+  is_b2b boolean [default: false]
+  company_name varchar [note: 'Required if B2B']
+  gstin varchar [note: '15-char GST number for ITC (ADR-002)']
+  total_spent decimal(12,2) [default: 0]
+  total_orders integer [default: 0]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table addresses {
+  id varchar [pk]
+  customer_id varchar [ref: > customers.id]
+  full_name varchar
+  phone varchar
+  address_line1 varchar
+  address_line2 varchar
+  city varchar
+  state varchar
+  pincode varchar
+  is_default boolean [default: false]
+  created_at timestamp [default: now()]
+}
+
+// ============================================================
+// 3. CATALOG (Category → Brand → Product → Variant → SKU)
+// ============================================================
+
+Table categories {
+  id varchar [pk]
+  name varchar
+  slug varchar [unique]
+  description text
+  parent_id varchar [ref: > categories.id, note: 'NULL = top-level']
+  hsn_code varchar [note: 'HSN for GST classification']
+  is_active boolean [default: true]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table brands {
+  id varchar [pk]
+  name varchar
+  slug varchar [unique]
+  description text
+  is_active boolean [default: true]
+  created_at timestamp [default: now()]
+}
+
+Table products {
+  id varchar [pk]
+  name varchar
+  slug varchar [unique]
+  short_description text
+  description text
+  model_number varchar
+  is_featured boolean [default: false]
+  is_cod_allowed boolean [default: true, note: 'ADR-004: Selective COD']
+  is_active boolean [default: true]
+  specifications json
+  category_id varchar [ref: > categories.id]
+  brand_id varchar [ref: > brands.id]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table product_images {
+  id varchar [pk]
+  product_id varchar [ref: > products.id]
+  url varchar
+  alt_text varchar
+  sort_order integer [default: 0]
+}
+
+Table product_variants {
+  id varchar [pk]
+  product_id varchar [ref: > products.id]
+  name varchar [note: 'e.g. "2MP", "4MP", "8MP"']
+  attributes json [note: 'Flexible variant attributes (ADR-005)']
+  is_active boolean [default: true]
+  created_at timestamp [default: now()]
+}
+
+Table skus {
+  id varchar [pk]
+  code varchar [unique, note: 'e.g. CPP-B01-4MP-CV']
+  barcode varchar [unique]
+  mrp decimal(12,2) [note: 'Maximum Retail Price']
+  selling_price decimal(12,2) [note: 'GST-inclusive selling price']
+  weight_grams integer [default: 500]
+  dimensions_cm json [note: '{length, width, height}']
+  variant_id varchar [unique, ref: > product_variants.id]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+// ============================================================
+// 4. INVENTORY & STOCK AUDIT
+// ============================================================
+
+Enum MovementReason {
+  PURCHASE_RECEIPT
+  ORDER_RESERVED
+  ORDER_DISPATCHED
+  ORDER_CANCELLED_RESTOCK
+  RETURN_RESTOCK
+  MANUAL_ADJUSTMENT
+  DAMAGED_WRITE_OFF
+}
+
+Table inventory {
+  id varchar [pk]
+  sku_id varchar [unique, ref: > skus.id]
+  current_stock integer [default: 0, note: 'Physical units on shelf']
+  reserved_stock integer [default: 0, note: 'Locked in active checkouts']
+  low_stock_threshold integer [default: 5]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table inventory_movements {
+  id varchar [pk]
+  sku_id varchar [ref: > skus.id]
+  quantity_delta integer [note: '+ = stock in, - = stock out']
+  reason MovementReason
+  notes text
+  user_id varchar [ref: > users.id]
+  created_at timestamp [default: now()]
+}
+
+Table stock_alerts {
+  id varchar [pk]
+  sku_id varchar [ref: > skus.id]
+  alert_type varchar [note: 'LOW_STOCK | OUT_OF_STOCK | OVERSTOCK']
+  threshold integer
+  current_stock integer
+  status varchar [default: 'OPEN', note: 'OPEN | ACKNOWLEDGED | RESOLVED']
+  acknowledged_by varchar
+  acknowledged_at timestamp
+  resolved_by varchar
+  resolved_at timestamp
+  created_at timestamp [default: now()]
+}
+
+Table stock_count_sessions {
+  id varchar [pk]
+  name varchar [note: 'e.g. "Q3 2026 Full Count"']
+  status varchar [default: 'SCHEDULED', note: 'SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED']
+  started_at timestamp
+  completed_at timestamp
+  assigned_to varchar [note: 'Employee user ID']
+  created_by varchar [note: 'Superadmin user ID']
+  created_at timestamp [default: now()]
+}
+
+Table stock_reconciliations {
+  id varchar [pk]
+  session_id varchar [ref: > stock_count_sessions.id]
+  sku_id varchar [ref: > skus.id]
+  expected_qty integer
+  counted_qty integer
+  variance integer [note: 'countedQty - expectedQty']
+  reason text
+  status varchar [default: 'PENDING', note: 'PENDING | MATCHED | DISCREPANCY | RESOLVED']
+  counted_by varchar
+  approved_by varchar
+  created_at timestamp [default: now()]
+  resolved_at timestamp
+}
+
+// ============================================================
+// 5. CART & CHECKOUT
+// ============================================================
+
+Table carts {
+  id varchar [pk]
+  customer_id varchar [ref: > customers.id, note: 'NULL = anonymous cart']
+  anonymous_id varchar [note: 'Cookie-based ID for guest carts']
+  is_active boolean [default: true]
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table cart_items {
+  id varchar [pk]
+  cart_id varchar [ref: > carts.id]
+  sku_id varchar [ref: > skus.id]
+  quantity integer
+  unit_price decimal(12,2)
+  created_at timestamp [default: now()]
+}
+
+// ============================================================
+// 6. ORDERS & PAYMENTS
+// ============================================================
+
+Enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKING
+  READY_TO_SHIP
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+  REFUNDED
+  FAILED
+  PAYMENT_PENDING
+  PAYMENT_FAILED
+}
+
+Enum PaymentMethod {
+  RAZORPAY
+  CASH_ON_DELIVERY
+}
+
+Enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+Table orders {
+  id varchar [pk]
+  order_number varchar [unique, note: 'e.g. ORD-20260925-8480']
+  customer_id varchar [ref: > customers.id]
+  status OrderStatus [default: 'PENDING']
+  subtotal decimal(12,2) [note: 'Taxable base value']
+  gst_amount decimal(12,2) [note: '18% GST']
+  total_amount decimal(12,2) [note: 'GST-inclusive total']
+  payment_method PaymentMethod
+  is_b2b boolean [default: false]
+  company_name varchar
+  gstin varchar
+  recipient_name varchar
+  phone varchar
+  email varchar
+  address_line1 varchar
+  address_line2 varchar
+  city varchar
+  state varchar
+  pincode varchar
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table order_items {
+  id varchar [pk]
+  order_id varchar [ref: > orders.id]
+  sku_id varchar [ref: > skus.id]
+  product_name varchar
+  variant_name varchar
+  sku_code varchar
+  quantity integer
+  unit_price decimal(12,2)
+  line_total decimal(12,2)
+}
+
+Table order_status_history {
+  id varchar [pk]
+  order_id varchar [ref: > orders.id]
+  status OrderStatus
+  comment text
+  changed_by varchar
+  created_at timestamp [default: now()]
+}
+
+Table payments {
+  id varchar [pk]
+  order_id varchar [ref: > orders.id]
+  payment_method PaymentMethod
+  amount decimal(12,2)
+  status PaymentStatus [default: 'PENDING']
+  razorpay_order_id varchar
+  razorpay_payment_id varchar
+  razorpay_signature varchar
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table payment_events {
+  id varchar [pk]
+  payment_id varchar [ref: > payments.id]
+  event_type varchar
+  raw_payload json
+  created_at timestamp [default: now()]
+}
+
+// ============================================================
+// 7. SHIPPING & LOGISTICS
+// ============================================================
+
+Table shipments {
+  id varchar [pk]
+  order_id varchar [ref: > orders.id]
+  carrier varchar [note: 'Shiprocket / Delhivery']
+  awb_number varchar
+  status varchar [default: 'PENDING', note: 'PENDING | PICKED_UP | IN_TRANSIT | OUT_FOR_DELIVERY | DELIVERED | FAILED']
+  tracking_url varchar
+  created_at timestamp [default: now()]
+  updated_at timestamp
+}
+
+Table shipment_events {
+  id varchar [pk]
+  shipment_id varchar [ref: > shipments.id]
+  status varchar
+  location varchar
+  description text
+  event_timestamp timestamp
+  created_at timestamp [default: now()]
+}
+
+// ============================================================
+// 8. REVIEWS, BUNDLES & WISHLISTS
+// ============================================================
+
+Table reviews {
+  id varchar [pk]
+  product_id varchar [ref: > products.id]
+  customer_id varchar [ref: > customers.id]
+  rating integer [note: '1-5 stars']
+  title varchar
+  body text
+  is_verified boolean [default: false]
+  is_approved boolean [default: false]
+  created_at timestamp [default: now()]
+}
+
+Table bundles {
+  id varchar [pk]
+  name varchar
+  slug varchar [unique]
+  description text
+  discount_percentage decimal(5,2) [default: 5.00, note: 'Bundle discount (ADR-006)']
+  is_active boolean [default: true]
+  created_at timestamp [default: now()]
+}
+
+Table bundle_items {
+  id varchar [pk]
+  bundle_id varchar [ref: > bundles.id]
+  sku_id varchar [ref: > skus.id]
+  quantity integer
+}
+
+Table wishlists {
+  id varchar [pk]
+  customer_id varchar [ref: > customers.id]
+  created_at timestamp [default: now()]
+}
+
+Table wishlist_items {
+  id varchar [pk]
+  wishlist_id varchar [ref: > wishlists.id]
+  product_id varchar [ref: > products.id]
+  created_at timestamp [default: now()]
+}
+
+// ============================================================
+// 9. WEBHOOKS
+// ============================================================
+
+Table webhook_events {
+  id varchar [pk]
+  source varchar [note: 'razorpay | shipping | whatsapp']
+  event_type varchar
+  raw_payload json
+  processed boolean [default: false]
+  created_at timestamp [default: now()]
+}
