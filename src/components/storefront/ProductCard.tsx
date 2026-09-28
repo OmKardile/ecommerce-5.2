@@ -80,89 +80,94 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group flex flex-col bg-card border border-border-subtle hover:border-border-strong transition-colors duration-300">
+    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden border border-border hover:shadow-xl transition-all duration-300">
       {/* Image */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative block w-full aspect-[4/3] bg-surface-2 overflow-hidden"
+        className="relative block w-full aspect-square bg-surface-2 overflow-hidden"
       >
         <Image
           src={mainImage}
           alt={product.images[0]?.altText || product.name}
           fill
           sizes="(max-width: 768px) 50vw, 25vw"
-          className={`object-contain p-6 transition-transform duration-700 group-hover:scale-105 ${isOutOfStock ? 'opacity-50 grayscale' : ''}`}
+          className={`object-contain p-6 transition-transform duration-500 group-hover:scale-110 ${isOutOfStock ? 'opacity-50' : ''}`}
         />
+        {/* Discount badge */}
         {discountPct > 0 && !isOutOfStock && (
-          <span className="absolute top-3 left-3 text-[11px] font-medium text-[var(--brand)]">
+          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
             −{discountPct}%
-          </span>
+          </div>
         )}
+        {/* Stock badge */}
+        <div className="absolute top-3 right-3">
+          {isOutOfStock ? (
+            <span className="bg-gray-800 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+              Sold Out
+            </span>
+          ) : totalAvailableStock <= 5 ? (
+            <span className="bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+              {totalAvailableStock} Left
+            </span>
+          ) : null}
+        </div>
       </Link>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-5">
+      <div className="flex flex-col flex-1 p-4">
         {/* Brand */}
-        <span className="text-[10px] tracking-[0.18em] uppercase font-medium text-stone mb-2">
-          {product.brand.name}
-        </span>
+        <div className="flex items-baseline justify-between gap-2 mb-1">
+          <span className="text-[10px] font-bold text-[var(--brand)] uppercase tracking-wide">{product.brand.name}</span>
+          {product.modelNumber && (
+            <span className="font-mono text-[9px] text-stone-400">{product.modelNumber}</span>
+          )}
+        </div>
 
         {/* Title */}
         <Link
           href={`/products/${product.slug}`}
-          className="text-sm font-medium text-foreground leading-snug line-clamp-2 hover:text-[var(--brand)] transition-colors mb-3"
+          className="block text-sm font-semibold text-foreground leading-snug line-clamp-2 hover:text-[var(--brand)] transition-colors mb-2"
         >
           {product.name}
         </Link>
 
-        {/* Stock */}
-        <div className="mb-3 text-[11px]">
-          {totalAvailableStock > 5 ? (
-            <span className="text-stone">In stock</span>
-          ) : totalAvailableStock > 0 ? (
-            <span className="text-[var(--brand)]">{totalAvailableStock} remaining</span>
+        {/* Price */}
+        <div className="flex items-baseline gap-2 mb-3">
+          {minPrice > 0 ? (
+            <>
+              {fromPrice && <span className="text-[10px] text-stone-400">from</span>}
+              <span className="text-lg font-bold text-foreground">{formatPrice(minPrice)}</span>
+              {correspondingMrp > minPrice && (
+                <span className="text-xs text-stone-400 line-through">{formatPrice(correspondingMrp)}</span>
+              )}
+            </>
           ) : (
-            <span className="text-stone-soft">Sold out</span>
+            <span className="text-sm text-stone-500 italic">Price on request</span>
           )}
         </div>
 
-        {/* Price + Add to cart */}
-        <div className="mt-auto pt-3 border-t border-border-subtle flex items-end justify-between">
-          <div>
-            {minPrice > 0 ? (
-              <div className="flex items-baseline gap-1.5">
-                {fromPrice && <span className="text-[10px] text-stone-soft">from</span>}
-                <span className="text-base font-medium text-foreground">{formatPrice(minPrice)}</span>
-                {correspondingMrp > minPrice && (
-                  <span className="text-[11px] text-stone-soft line-through">{formatPrice(correspondingMrp)}</span>
-                )}
-              </div>
-            ) : (
-              <span className="text-xs text-stone italic">Price on request</span>
-            )}
-          </div>
-
-          <button
-            onClick={handleAddToCart}
-            disabled={isOutOfStock || adding}
-            aria-label="Add to cart"
-            className={`p-2.5 rounded-sm border transition-all active:scale-95 ${
-              added
-                ? 'bg-[var(--brand)] border-[var(--brand)] text-white'
-                : isOutOfStock
-                ? 'border-border-subtle text-stone-soft cursor-not-allowed'
-                : 'border-border hover:border-foreground hover:bg-surface-3 text-foreground'
-            }`}
-          >
-            {added ? (
-              <Check className="w-4 h-4" />
-            ) : adding ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <ShoppingBag className="w-4 h-4" />
-            )}
-          </button>
-        </div>
+        {/* Add to cart */}
+        <button
+          onClick={handleAddToCart}
+          disabled={isOutOfStock || adding}
+          className={`mt-auto w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold rounded-lg transition-all active:scale-95 ${
+            added
+              ? 'bg-green-600 text-white'
+              : isOutOfStock
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-border'
+              : 'bg-[var(--brand)] text-white hover:bg-[var(--brand-soft)]'
+          }`}
+        >
+          {added ? (
+            <><Check className="w-4 h-4" /> Added!</>
+          ) : adding ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</>
+          ) : isOutOfStock ? (
+            'Out of Stock'
+          ) : (
+            <><ShoppingBag className="w-4 h-4" /> Add to Cart</>
+          )}
+        </button>
       </div>
     </div>
   );

@@ -5,10 +5,8 @@ import {
   ArrowRight,
   Wrench,
   ShieldCheck,
-  FileText,
   Truck,
-  Search,
-  ChevronRight,
+  FileText,
 } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
@@ -41,92 +39,96 @@ export default async function HomePage() {
     .filter(Boolean)
     .slice(0, 6);
 
+  // Split products for the two rows
+  const firstRow = featuredProducts.slice(0, 4);
+  const secondRow = featuredProducts.slice(4, 8);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
 
       <main className="flex-1">
         {/* ============================================================ */}
-        {/* HERO — split: large headline left, product image right */}
+        {/* HERO — Apple-style: full-bleed image, centered text overlay */}
         {/* ============================================================ */}
-        <section className="border-b border-border-subtle">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              {/* Left — editorial headline */}
-              <div className="lg:col-span-7">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand)]" />
-                  <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-stone">
-                    Authorized Indian Distributor
-                  </span>
-                </div>
-                <h1 className="text-[clamp(2.2rem,6vw,4.5rem)] font-serif font-medium leading-[1.02] tracking-tight text-foreground mb-5">
-                  Surveillance hardware,<br />
-                  <em className="not-italic text-[var(--brand)]">precisely</em> specified.
-                </h1>
-                <p className="text-base text-stone leading-relaxed max-w-md mb-8">
-                  Genuine Hikvision, CP Plus, and Dahua cameras, DVRs, NVRs, hard drives
-                  and Cat6 cabling. GST invoicing, pan-India dispatch, manufacturer warranty.
-                </p>
-                <div className="flex flex-wrap items-center gap-3 mb-8">
-                  <Link href="/products" className="btn-ink">
-                    Browse Catalogue <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <Link href="/kit-builder" className="text-sm font-medium text-foreground hover:text-[var(--brand)] transition-colors flex items-center gap-1">
-                    Build a CCTV kit <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-                {/* Stats row */}
-                <div className="flex gap-8 pt-6 border-t border-border-subtle">
-                  <div>
-                    <div className="text-2xl font-serif font-medium text-foreground">{brands.length}</div>
-                    <div className="text-[11px] text-stone mt-0.5">brands</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-serif font-medium text-foreground">{categories.length}</div>
-                    <div className="text-[11px] text-stone mt-0.5">categories</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-serif font-medium text-foreground">{featuredProducts.length}+</div>
-                    <div className="text-[11px] text-stone mt-0.5">models</div>
-                  </div>
-                </div>
-              </div>
-              {/* Right — product image */}
-              <div className="lg:col-span-5">
-                <div className="relative aspect-[4/5] bg-surface-2 overflow-hidden">
-                  <Image
-                    src="/editorial/product-dome-camera.jpg"
-                    alt="CCTV security camera"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 42vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
+        <section className="relative h-[90vh] min-h-[600px] flex items-end justify-center overflow-hidden bg-[#1A1A1A]">
+          <Image
+            src="/editorial/hero-camera-dark.jpg"
+            alt="Premium CCTV security camera"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-90"
+          />
+          {/* Gradient overlay for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+
+          <div className="relative z-10 text-center text-white px-6 pb-16 lg:pb-24 max-w-3xl">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8BAAC4]" />
+              <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-white/70">
+                Authorized Indian Distributor
+              </span>
             </div>
+            <h1
+              className="text-[clamp(2rem,6vw,4rem)] font-medium leading-[1.05] tracking-tight mb-4"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              See everything.<br />Miss nothing.
+            </h1>
+            <p className="text-sm sm:text-base text-white/60 max-w-lg mx-auto mb-8">
+              Genuine Hikvision, CP Plus, and Dahua surveillance hardware.
+              GST invoicing, pan-India dispatch, manufacturer warranty.
+            </p>
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-7 py-3.5 rounded-lg font-bold text-sm hover:bg-white/90 transition-colors"
+            >
+              Shop Now <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* CATEGORIES — horizontal scroll cards */}
+        {/* TRUST BAR — Nike-style minimal strip */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-10 lg:py-14">
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="text-lg font-serif font-medium text-foreground tracking-tight">Shop by Category</h2>
-            <Link href="/products" className="text-xs text-stone hover:text-foreground transition-colors">
-              View all →
-            </Link>
+        <section className="bg-[#1A1A1A] text-white py-6 border-t border-white/10">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: ShieldCheck, label: '100% Genuine', sub: 'Serial-tracked' },
+              { icon: FileText, label: '18% GST ITC', sub: 'B2B invoicing' },
+              { icon: Truck, label: 'Pan-India', sub: 'Express dispatch' },
+              { icon: ShieldCheck, label: 'Warranty', sub: 'Manufacturer-backed' },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-3">
+                <item.icon className="w-5 h-5 text-[#8BAAC4] shrink-0" strokeWidth={1.5} />
+                <div>
+                  <div className="text-xs font-bold">{item.label}</div>
+                  <div className="text-[10px] text-white/40">{item.sub}</div>
+                </div>
+              </div>
+            ))}
           </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* CATEGORIES — Apple Store tile grid */}
+        {/* ============================================================ */}
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-12 lg:py-16">
+          <h2
+            className="text-xl lg:text-2xl font-medium tracking-tight mb-6"
+            style={{ fontFamily: 'Georgia, serif' }}
+          >
+            Shop by Category
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {curatedCategories.map((cat) => (
               <Link
                 key={cat!.id}
                 href={`/products?category=${cat!.slug}`}
-                className="group flex flex-col items-start p-4 bg-card border border-border-subtle hover:border-border-strong transition-colors"
+                className="group bg-card border border-border rounded-xl p-5 hover:shadow-lg transition-all duration-300 text-center"
               >
-                <div className="text-sm font-medium text-foreground group-hover:text-[var(--brand)] transition-colors">
+                <div className="text-sm font-bold text-foreground group-hover:text-[var(--brand)] transition-colors">
                   {cat!.name}
                 </div>
                 <div className="text-[10px] text-stone mt-1">{cat!._count.products} products</div>
@@ -136,65 +138,97 @@ export default async function HomePage() {
         </section>
 
         {/* ============================================================ */}
-        {/* FEATURED PRODUCTS — spacious grid */}
+        {/* FEATURED PRODUCTS — Allbirds/Nike product-first grid */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-12 lg:pb-16">
-          <div className="flex items-baseline justify-between mb-8">
-            <div>
-              <h2 className="text-lg font-serif font-medium text-foreground tracking-tight">Featured Products</h2>
-              <p className="text-xs text-stone mt-0.5">{featuredProducts.length} models in stock</p>
-            </div>
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-8 lg:pb-12">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2
+              className="text-xl lg:text-2xl font-medium tracking-tight"
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
+              Featured Products
+            </h2>
             <Link href="/products" className="text-xs text-stone hover:text-foreground transition-colors">
               View all →
             </Link>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            {featuredProducts.slice(0, 8).map((product) => (
+            {firstRow.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* KIT BUILDER CTA */}
+        {/* KIT BUILDER — Apple-style full-bleed banner */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-12 lg:pb-16">
-          <div className="bg-surface-2 border border-border-subtle p-8 lg:p-12 flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 shrink-0 bg-[var(--brand)] flex items-center justify-center">
-                <Wrench className="w-6 h-6 text-white" strokeWidth={1.5} />
-              </div>
-              <div>
-                <h3 className="text-lg font-serif font-medium text-foreground">Build a Custom CCTV Kit</h3>
-                <p className="text-xs text-stone mt-1">Pick your DVR, cameras, storage & accessories — bundle discount applied</p>
-              </div>
+        <section className="relative h-[400px] lg:h-[500px] overflow-hidden bg-[#1A1A1A] my-8 lg:my-12">
+          <Image
+            src="/editorial/hero-camera-light.jpg"
+            alt="Build a CCTV kit"
+            fill
+            sizes="100vw"
+            className="object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
+          <div className="relative z-10 h-full flex items-center px-6 lg:px-16">
+            <div className="max-w-lg text-white">
+              <h2
+                className="text-[clamp(1.5rem,4vw,2.5rem)] font-medium tracking-tight mb-4"
+                style={{ fontFamily: 'Georgia, serif' }}
+              >
+                Build a Custom CCTV Kit
+              </h2>
+              <p className="text-sm text-white/60 mb-6 max-w-md">
+                Pick your DVR, cameras, storage & accessories in 5 steps.
+                Automatic bundle discount applied.
+              </p>
+              <Link
+                href="/kit-builder"
+                className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-6 py-3 rounded-lg font-bold text-sm hover:bg-white/90 transition-colors"
+              >
+                <Wrench className="w-4 h-4" />
+                Start Builder
+              </Link>
             </div>
-            <Link
-              href="/kit-builder"
-              className="inline-flex items-center gap-2 bg-foreground text-white px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity shrink-0"
-            >
-              Start Builder <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* BRANDS */}
+        {/* MORE PRODUCTS — second row */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-12">
-          <h2 className="text-sm font-medium text-stone uppercase tracking-[0.15em] mb-6 text-center">
-            Authorized Supply
-          </h2>
-          <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-10">
-            {brands.map((b) => (
-              <Link
-                key={b.id}
-                href={`/products?brand=${b.slug}`}
-                className="text-lg font-serif font-medium text-stone hover:text-foreground transition-colors"
-              >
-                {b.name}
-              </Link>
-            ))}
+        {secondRow.length > 0 && (
+          <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-12 lg:pb-16">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              {secondRow.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ============================================================ */}
+        {/* BRANDS — Nike-style horizontal wordmark strip */}
+        {/* ============================================================ */}
+        <section className="bg-card border-y border-border py-12 lg:py-16">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+            <h2
+              className="text-sm font-medium text-stone uppercase tracking-[0.15em] mb-8 text-center"
+            >
+              Shop by Brand
+            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-10">
+              {brands.map((b) => (
+                <Link
+                  key={b.id}
+                  href={`/products?brand=${b.slug}`}
+                  className="text-lg lg:text-xl font-medium text-stone hover:text-foreground transition-colors"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  {b.name}
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       </main>
