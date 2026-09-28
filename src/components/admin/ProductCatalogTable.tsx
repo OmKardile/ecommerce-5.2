@@ -5,12 +5,9 @@ import Link from 'next/link';
 import {
   Search,
   ExternalLink,
-  Eye,
-  EyeOff,
 } from 'lucide-react';
 import {
   toggleProductCodAction,
-  toggleProductActiveAction,
 } from '@/app/actions/admin.actions';
 import { formatInr } from '@/lib/utils';
 
@@ -78,21 +75,7 @@ export function ProductCatalogTable({ initialProducts }: Props) {
     });
   };
 
-  const handleToggleActive = (productId: string, currentVal: boolean) => {
-    setFeedback(null);
-    const nextVal = !currentVal;
-    startTransition(async () => {
-      const res = await toggleProductActiveAction(productId, nextVal);
-      if (res.success) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === productId ? { ...p, isActive: nextVal } : p))
-        );
-        setFeedback(`Visibility updated · ${nextVal ? 'published' : 'hidden'}`);
-      } else {
-        alert(res.error || 'Failed to update product visibility');
-      }
-    });
-  };
+  // Visibility toggle removed — use stock=0 (out of stock) to hide products instead
 
   return (
     <div className="bg-background text-foreground space-y-6">
@@ -139,7 +122,6 @@ export function ProductCatalogTable({ initialProducts }: Props) {
                 <th className="eyebrow py-3 px-4 font-medium text-right">Base Price</th>
                 <th className="eyebrow py-3 px-4 font-medium text-right">Variants / Stock</th>
                 <th className="eyebrow py-3 px-4 font-medium">COD Policy</th>
-                <th className="eyebrow py-3 px-4 font-medium">Visibility</th>
                 <th className="eyebrow py-3 px-4 font-medium text-right">Storefront</th>
               </tr>
             </thead>
@@ -204,27 +186,6 @@ export function ProductCatalogTable({ initialProducts }: Props) {
                           title="Toggle COD eligibility (ADR-004)"
                         >
                           {product.isCodAllowed ? 'COD' : 'Prepaid'}
-                        </button>
-                      </td>
-
-                      {/* Visibility toggle */}
-                      <td className="py-3.5 px-4">
-                        <button
-                          disabled={isPending}
-                          onClick={() => handleToggleActive(product.id, product.isActive)}
-                          className={`p-1.5 border rounded-sm transition-colors ${
-                            product.isActive
-                              ? 'text-foreground border-border hover:border-border-strong'
-                              : 'text-stone-500 border-border-subtle hover:border-stone-400'
-                          }`}
-                          title={product.isActive ? 'Visible in catalog' : 'Hidden from catalog'}
-                          aria-label={product.isActive ? 'Hide product' : 'Show product'}
-                        >
-                          {product.isActive ? (
-                            <Eye className="w-3.5 h-3.5" />
-                          ) : (
-                            <EyeOff className="w-3.5 h-3.5" />
-                          )}
                         </button>
                       </td>
 
