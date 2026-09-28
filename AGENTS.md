@@ -8,10 +8,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Patel Networks (MegaTech) — AI Agent Operating Instructions
+# Patel Networks — AI Agent Operating Instructions
 
 1. **Master Context & Handoff**:
-   Always read [continue.md](file:///d:/work/megatech/patelnetworks/continue.md) and [compact.md](file:///d:/work/megatech/patelnetworks/compact.md) at the start of any conversation in Google AI Studio or any IDE.
+   Always read [continue.md](continue.md) and [compact.md](compact.md) at the start of any conversation in Google AI Studio or any IDE.
 2. **Continuous Documentation Maintenance**:
    With every code change, feature addition, or bugfix, you **MUST** continuously update:
    * `continue.md` (Update operational state, credentials reference, and completed milestones).

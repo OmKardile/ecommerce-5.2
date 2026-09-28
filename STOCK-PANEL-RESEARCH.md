@@ -336,6 +336,6 @@ don't already have an OPEN alert.
 ---
 
 <p align="center">
-<em>Authored by Omkar Kardile — Patel Networks / MegaTech</em><br/>
+<em>Authored by Omkar Kardile — Omkar Kardile</em><br/>
 <sub>Research document — not implemented</sub>
 </p>

@@ -1,4 +1,4 @@
-# Patel Networks (MegaTech) — Developer & AI Continuity Handoff Guide (`continue.md`)
+# Patel Networks — Developer & AI Continuity Handoff Guide (`continue.md`)
 
 > **IMPORTANT DIRECTIVE FOR ANY AI ASSISTANT / DEVELOPER IN GOOGLE AI STUDIO OR ANY WORKSPACE:**  
 > 1. **Read This File First**: This document is the primary source of truth for repository history, active architecture, credentials, environment configurations, and current operational state.  
@@ -8,7 +8,7 @@
 
 ## 📌 1. Project Overview & Business Identity
 
-* **Brand / Company**: **Patel Networks / MegaTech**
+* **Brand / Company**: **Omkar Kardile**
 * **Business Domain**: Authorized Commercial CCTV, Video Surveillance, Security Recorders (DVR/NVR), Surveillance Storage (HDD), and Structured Networking Hardware E-Commerce Platform (India).
 * **Central Hub / HQ**: Surat, Gujarat (Primary fulfillment node with Pan-India dispatch).
 * **Authorized Brand Alliances**: CP Plus, Hikvision, Dahua, Western Digital (Purple), D-Link.

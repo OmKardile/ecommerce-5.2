@@ -267,7 +267,7 @@ export default function PitchPage() {
       <footer className="bg-[#1A1A1A] text-white/40 border-t border-white/10 py-8">
         <div className="max-w-5xl mx-auto px-6 lg:px-10 text-center">
           <p className="text-xs">
-            Designed & developed by <span className="text-white font-medium">Omkar Kardile</span> — Patel Networks / MegaTech
+            Designed & developed by <span className="text-white font-medium">Omkar Kardile</span> — Omkar Kardile
           </p>
           <p className="text-[10px] mt-1 text-white/30">
             Surveillance hardware procurement platform · India · {new Date().getFullYear()}

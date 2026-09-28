@@ -170,7 +170,7 @@ This isn't a template. Every pixel was designed with intention.
 ## Contact
 
 **Omkar Kardile**
-Patel Networks / MegaTech
+Omkar Kardile
 📞 +91 98765 43210
 ✉️ sales@patelnetworks.com
 🌐 https://patel-5-2.onrender.com
@@ -178,6 +178,6 @@ Patel Networks / MegaTech
 ---
 
 <p align="center">
-<em>Designed & developed by Omkar Kardile — Patel Networks / MegaTech</em><br/>
+<em>Designed & developed by Omkar Kardile — Omkar Kardile</em><br/>
 <sub>Surveillance hardware procurement platform · India</sub>
 </p>

@@ -3,7 +3,7 @@
 > **Release Version**: v1.2.0 Commercial Grade  
 > **Target Audience**: Store Administrator, Business Owner, Operations Lead, and Deployment Engineer  
 > **Platform Scope**: CCTV, Surveillance & Structured Networking E-Commerce Platform (India)  
-> **Documentation Sync**: Fully aligned with [decisions.md](file:///d:/work/megatech/patelnetworks/decisions.md) (ADR-001 through ADR-019), [changelog.md](file:///d:/work/megatech/patelnetworks/changelog.md), [compact.md](file:///d:/work/megatech/patelnetworks/compact.md), [readme.md](file:///d:/work/megatech/patelnetworks/README.md), [technical-dcoumentation.md](file:///d:/work/megatech/patelnetworks/technical-dcoumentation.md), [business-documentation.md](file:///d:/work/megatech/patelnetworks/business-documentation.md), and [help.md](file:///d:/work/megatech/patelnetworks/help.md).
+> **Documentation Sync**: Fully aligned with [decisions.md](decisions.md) (ADR-001 through ADR-019), [changelog.md](changelog.md), [compact.md](compact.md), [readme.md](README.md), [technical-dcoumentation.md](technical-dcoumentation.md), [business-documentation.md](business-documentation.md), and [help.md](help.md).
 
 ---
 

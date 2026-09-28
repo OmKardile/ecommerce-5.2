@@ -1,5 +1,5 @@
 /**
- * Patel Networks / MegaTech CCTV - Indian Postal Code & Geo-Logistics Intelligence
+ * Patel Networks CCTV - Indian Postal Code & Geo-Logistics Intelligence
  * 
  * Provides 6-digit Indian PIN code validation, postal circle resolution,
  * regional zone categorization, COD eligibility, and SLA transit time calculation.
@@ -22,12 +22,12 @@ export interface PincodeServiceability {
   notes?: string;
 }
 
-// Origin Warehouse: MegaTech Central Fulfillment Center, Surat, Gujarat (PIN: 395003)
+// Origin Warehouse: Patel Networks Fulfillment Center, Surat, Gujarat (PIN: 395003)
 export const WAREHOUSE_ORIGIN = {
   pincode: '395003',
   city: 'Surat',
   state: 'Gujarat',
-  hub: 'MegaTech Central Logistics Hub, Surat',
+  hub: 'Patel Networks Logistics Hub, Surat',
 };
 
 // Known Indian Metro / Regional Postal Directory with Prefixes

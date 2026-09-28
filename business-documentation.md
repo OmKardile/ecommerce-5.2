@@ -1,9 +1,9 @@
 # Business Documentation & Operational Specifications
 
 > **E-Commerce Platform for CCTV, Surveillance & Networking Hardware**  
-> Brand: Patel Networks / MegaTech  
+> Brand: Patel Networks  
 > Target Region: India  
-> **Source of Truth for Decisions**: Refer to [decisions.md](file:///d:/work/megatech/patelnetworks/decisions.md)
+> **Source of Truth for Decisions**: Refer to [decisions.md](decisions.md)
 
 ---
 
@@ -55,7 +55,7 @@ Catalog
 > **`Product ➔ Variant ➔ SKU ➔ Inventory`**  
 > Products do not hold inventory directly. All stock counters, prices, barcodes, and physical packaging correlate directly to a unique purchasable SKU.
 
-### Flexible Multi-Attribute Dimensions ([ADR-005](file:///d:/work/megatech/patelnetworks/decisions.md#adr-005-multi-attribute-flexible-product-variants))
+### Flexible Multi-Attribute Dimensions ([ADR-005](decisions.md#adr-005-multi-attribute-flexible-product-variants))
 A single CCTV camera product model may branch across multiple physical attributes:
 * **Resolution (MP)**: 2 Megapixel (1080p), 4 Megapixel (2K), 8 Megapixel (4K), 16 Megapixel
 * **Lens Focal Length**: 2.8mm (Wide Field of View, 105°+), 3.6mm (Standard, ~85°), 6mm (Long Range Corridor)
@@ -73,7 +73,7 @@ A single CCTV camera product model may branch across multiple physical attribute
 
 ---
 
-## 4. Interactive CCTV Combo / Package Builder ([ADR-006](file:///d:/work/megatech/patelnetworks/decisions.md#adr-006-interactive-custom-cctv-kit--bundle-builder))
+## 4. Interactive CCTV Combo / Package Builder ([ADR-006](decisions.md#adr-006-interactive-custom-cctv-kit--bundle-builder))
 
 To simplify purchasing complete surveillance setups, the system features a dedicated **Interactive CCTV Kit Builder**:
 
@@ -102,7 +102,7 @@ To simplify purchasing complete surveillance setups, the system features a dedic
 
 ---
 
-## 5. Taxation, GST & Pricing Model ([ADR-002](file:///d:/work/megatech/patelnetworks/decisions.md#adr-002-hybrid-b2c--b2b-billing-with-gstin-input-credit))
+## 5. Taxation, GST & Pricing Model ([ADR-002](decisions.md#adr-002-hybrid-b2c--b2b-billing-with-gstin-input-credit))
 
 ### GST (Goods and Services Tax) Compliance (India)
 1. **HSN Code Categorization**:
@@ -123,7 +123,7 @@ To simplify purchasing complete surveillance setups, the system features a dedic
 
 ---
 
-## 6. Payment Methods & Selective COD ([ADR-004](file:///d:/work/megatech/patelnetworks/decisions.md#adr-004-selective-cash-on-delivery-cod-admin-controlled))
+## 6. Payment Methods & Selective COD ([ADR-004](decisions.md#adr-004-selective-cash-on-delivery-cod-admin-controlled))
 
 1. **Online Prepaid Payments**:
    * Powered by Razorpay (UPI, Google Pay, PhonePe, Credit/Debit Cards, NetBanking, and Cardless EMI).
@@ -135,7 +135,7 @@ To simplify purchasing complete surveillance setups, the system features a dedic
 
 ---
 
-## 7. Customer Authentication: Phone OTP ([ADR-003](file:///d:/work/megatech/patelnetworks/decisions.md#adr-003-phone-number--sms-otp-authentication))
+## 7. Customer Authentication: Phone OTP ([ADR-003](decisions.md#adr-003-phone-number--sms-otp-authentication))
 
 * **Customer Authentication**: Phone Number + 6-digit SMS OTP via Indian SMS Gateway (MSG91 / Fast2SMS / Firebase).
 * Eliminates forgotten passwords, increases checkout conversion, and guarantees verified phone numbers for delivery riders.
@@ -203,7 +203,7 @@ Every single addition, decrement, order reservation, cancel return, or warehouse
 
 ---
 
-## 11. WhatsApp Business Notifications & Customer Alerts ([ADR-007](file:///d:/work/megatech/patelnetworks/decisions.md#adr-007-integration-readiness--placeholder-fallback-for-razorpay--whatsapp-api))
+## 11. WhatsApp Business Notifications & Customer Alerts ([ADR-007](decisions.md#adr-007-integration-readiness--placeholder-fallback-for-razorpay--whatsapp-api))
 
 Because open rates on WhatsApp in India exceed 90%, transactional notifications are dispatched directly to the customer's registered WhatsApp phone number:
 
@@ -220,7 +220,7 @@ Because open rates on WhatsApp in India exceed 90%, transactional notifications 
 
 ## 12. Commercial Invoicing & Checkout Policies (Phase 3)
 
-### 12.1 Hybrid B2C & B2B GST Compliance ([ADR-002](file:///d:/work/megatech/patelnetworks/decisions.md#adr-002-hybrid-b2c--b2b-billing-with-gstin-input-credit))
+### 12.1 Hybrid B2C & B2B GST Compliance ([ADR-002](decisions.md#adr-002-hybrid-b2c--b2b-billing-with-gstin-input-credit))
 * **B2C Consumer Purchases**:
   * Default retail tax invoice generated with customer full name and delivery address.
   * Standard 18% GST collected and remitted to Indian tax authorities.
@@ -229,7 +229,7 @@ Because open rates on WhatsApp in India exceed 90%, transactional notifications 
   * Requires valid Registered Business Name and 15-character Indian GSTIN (`24...` for Gujarat, `27...` for Maharashtra, etc.).
   * Enables electrical contractors, commercial IT firms, and security installers to claim back 18% Input Tax Credit on their GSTR-2B filing.
 
-### 12.2 Cash on Delivery (COD) Risk Management ([ADR-004](file:///d:/work/megatech/patelnetworks/decisions.md#adr-004-selective-cash-on-delivery-cod-admin-controlled))
+### 12.2 Cash on Delivery (COD) Risk Management ([ADR-004](decisions.md#adr-004-selective-cash-on-delivery-cod-admin-controlled))
 * **Bulky & High-Value Items**:
   * 305-meter solid copper cable drums (e.g., `DL-C6-305M`) and multi-channel recorders incur high reverse logistics shipping penalties if rejected on delivery.
   * These items are designated `isCodAllowed: false`.
@@ -237,14 +237,14 @@ Because open rates on WhatsApp in India exceed 90%, transactional notifications 
 * **Eligible Items**:
   * Standard surveillance cameras, hard drives, and connectors allow Cash on Delivery with verification.
 
-### 12.3 Custom CCTV Kit Bundle Discount ([ADR-006](file:///d:/work/megatech/patelnetworks/decisions.md#adr-006-interactive-custom-cctv-kit--bundle-builder))
+### 12.3 Custom CCTV Kit Bundle Discount ([ADR-006](decisions.md#adr-006-interactive-custom-cctv-kit--bundle-builder))
 * The discount is itemized directly on the summary card and invoice to incentivize full-system purchases over individual piece-meal orders.
 
 ---
 
 ## 13. Customer Identity & Account Verification Policies (Phase 4)
 
-### 13.1 Passwordless Mobile Authentication ([ADR-003](file:///d:/work/megatech/patelnetworks/decisions.md#adr-003-phone-number--sms-otp-authentication), [ADR-011](file:///d:/work/megatech/patelnetworks/decisions.md#adr-011-phone-number--sms-otp-authentication-with-dual-mode-gateway-and-jwt-sessions))
+### 13.1 Passwordless Mobile Authentication ([ADR-003](decisions.md#adr-003-phone-number--sms-otp-authentication), [ADR-011](decisions.md#adr-011-phone-number--sms-otp-authentication-with-dual-mode-gateway-and-jwt-sessions))
 * **Primary Identifier**: Indian 10-digit mobile number (+91) serves as the primary unique customer key across all orders and delivery waybills.
 * **Friction Elimination**: Password creation, reset loops, and email verification friction are eliminated in favor of a 6-digit SMS OTP, increasing checkout conversion by an estimated 25-35%.
 * **Security Rate-Limiting**: To prevent SMS toll fraud and brute-forcing, OTP dispatches are throttled to a maximum of 3 requests per 10 minutes per mobile number.

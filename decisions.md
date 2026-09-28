@@ -1,6 +1,6 @@
 # Architectural & Business Decision Records (ADR)
 
-> **Project**: Patel Networks / MegaTech CCTV & Security E-Commerce Platform  
+> **Project**: Patel Networks CCTV & Security E-Commerce Platform  
 > **Source of Truth**: This document records all architectural, technical, operational, and business decisions locked in by the stakeholders. All future decisions must be appended to this log.
 
 ---

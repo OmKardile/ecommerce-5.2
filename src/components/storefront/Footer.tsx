@@ -33,7 +33,7 @@ export function Footer() {
               <span className="display text-[28px] leading-none text-foreground">
                 Patel<span className="text-[var(--brand)]">.</span>Networks
               </span>
-              <span className="eyebrow text-stone-500">Mega-Tech</span>
+              <span className="eyebrow text-stone-500"></span>
             </div>
             <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed max-w-sm">
               India&apos;s specialized procurement platform for commercial security,

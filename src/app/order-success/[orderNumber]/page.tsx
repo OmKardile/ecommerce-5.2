@@ -120,7 +120,7 @@ export default async function OrderSuccessPage({ params }: OrderSuccessPageProps
                 <span className="display text-2xl leading-none text-foreground">
                   Patel<span className="text-[var(--brand)]">.</span>Networks
                 </span>
-                <span className="eyebrow text-stone-500">Mega-Tech</span>
+                <span className="eyebrow text-stone-500"></span>
               </div>
               <p className="text-[11px] text-stone-500 mt-3 max-w-sm leading-relaxed">
                 Authorized Surveillance Hardware &amp; Networking Distributor<br />

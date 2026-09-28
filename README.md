@@ -18,12 +18,12 @@ The system is built as a **Unified Fullstack Next.js Application** containing:
 
 ## 📚 Documentation Index
 
-- ⚖️ [Architectural & Business Decisions (ADRs)](file:///d:/work/megatech/patelnetworks/decisions.md): **The single source of truth** for all locked-in technical and business decisions (ADR-001 through ADR-018).
-- 🔍 [Review, Testing & Follow-Up Guide](file:///d:/work/megatech/patelnetworks/review-test-followup.md): Detailed user action checklist, production configuration steps, smoke test matrix, and maintenance protocols.
-- 📋 [Business Documentation](file:///d:/work/megatech/patelnetworks/business-documentation.md): Product scope, taxonomy, B2B/B2C logic, pricing, GST compliance, inventory policies, and operational lifecycles.
-- ⚙️ [Technical Documentation](file:///d:/work/megatech/patelnetworks/technical-dcoumentation.md): Architecture specifications, Prisma database models, transaction boundaries, idempotent webhooks, API security, and deployment guidelines.
-- 📖 [Help & Operations Guide](file:///d:/work/megatech/patelnetworks/help.md): Admin user handbook, order fulfillment workflow, stock adjustments, and GSTR-1 tax reporting.
-- 📝 [Changelog](file:///d:/work/megatech/patelnetworks/changelog.md): Chronological history of releases, milestones, architectural decisions, and changes.
+- ⚖️ [Architectural & Business Decisions (ADRs)](decisions.md): **The single source of truth** for all locked-in technical and business decisions (ADR-001 through ADR-018).
+- 🔍 [Review, Testing & Follow-Up Guide](review-test-followup.md): Detailed user action checklist, production configuration steps, smoke test matrix, and maintenance protocols.
+- 📋 [Business Documentation](business-documentation.md): Product scope, taxonomy, B2B/B2C logic, pricing, GST compliance, inventory policies, and operational lifecycles.
+- ⚙️ [Technical Documentation](technical-dcoumentation.md): Architecture specifications, Prisma database models, transaction boundaries, idempotent webhooks, API security, and deployment guidelines.
+- 📖 [Help & Operations Guide](help.md): Admin user handbook, order fulfillment workflow, stock adjustments, and GSTR-1 tax reporting.
+- 📝 [Changelog](changelog.md): Chronological history of releases, milestones, architectural decisions, and changes.
 
 ---
 

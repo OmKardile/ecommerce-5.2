@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Patel Networks — System Guide</title>
+<style>
+:root{
+  --paper:#FAF8F5; --card:#FFFFFF; --ink:#1A1A1A; --muted:#6B6B6B; --faint:#9B9B9B;
+  --line:#E5E2DD; --cobalt:#1E3A5F; --cobalt-soft:#EBF2FA; --brass:#A8743A; --brass-soft:#F7EFE3;
+  --red-soft:#F9ECEA; --red:#8C3A2E; --green:#1A6B4F; --green-soft:#E8F5F0;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --display:Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* top nav */
+.topnav{position:sticky;top:0;z-index:50;background:rgba(250,248,245,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topnav .wrap{display:flex;align-items:center;gap:6px;height:56px;overflow-x:auto;scrollbar-width:none}
+.topnav .wrap::-webkit-scrollbar{display:none}
+.brand{font-family:var(--display);font-weight:700;color:var(--cobalt);white-space:nowrap;margin-right:10px;font-size:16px}
+.brand small{display:block;font-family:var(--sans);font-weight:600;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.topnav a.nl{white-space:nowrap;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 11px;border-radius:999px}
+.topnav a.nl:hover{color:var(--cobalt);background:var(--cobalt-soft)}
+.printbtn{margin-left:auto;white-space:nowrap;font-size:12px;font-weight:700;color:var(--cobalt);border:1.5px solid var(--cobalt);background:transparent;padding:6px 13px;border-radius:999px;cursor:pointer}
+.printbtn:hover{background:var(--cobalt);color:#fff}
+
+/* hero */
+header.hero{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#F3F0EB 0%,var(--paper) 100%);padding:52px 0 40px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--brass)}
+h1{font-family:var(--display);font-size:clamp(30px,5vw,46px);line-height:1.12;font-weight:700;color:var(--ink);margin:10px 0 14px;max-width:760px}
+.lede{max-width:720px;color:var(--muted);font-size:16px}
+.metachips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.mchip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13px;font-weight:600;color:var(--cobalt)}
+.mchip b{font-family:var(--display);font-size:15px}
+
+/* sections */
+section{padding:52px 0 8px}
+.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+h2{font-family:var(--display);font-size:clamp(24px,3.4vw,32px);color:var(--ink);margin:8px 0 8px}
+.sec-sub{color:var(--muted);max-width:760px;margin-bottom:28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+
+table.simple{width:100%;border-collapse:collapse;font-size:13.5px}
+table.simple th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:700;padding:8px 10px;border-bottom:1.5px solid var(--line)}
+table.simple td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.simple tr:last-child td{border-bottom:none}
+.k{font-family:var(--mono);font-size:12px;background:var(--cobalt-soft);color:var(--cobalt);border-radius:6px;padding:2px 7px;font-weight:600}
+
+/* bands */
+.band{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.band h3{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;background:var(--paper);color:var(--ink)}
+.chip.hl{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.chip.brass{background:var(--brass-soft);border-color:#E4D3B8;color:#6B4A1F}
+
+/* entity spine */
+.spine{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.spine-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;row-gap:12px}
+.ent{border:1.5px solid var(--cobalt);color:var(--cobalt);background:var(--cobalt-soft);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700}
+.ent.gold{border-color:var(--brass);color:#6B4A1F;background:var(--brass-soft)}
+.ent.gray{border-color:var(--line);color:var(--muted);background:var(--paper);font-weight:600}
+.arr{color:var(--faint);font-size:14px;font-weight:700}
+.spine-cap{font-size:12.5px;color:var(--muted);margin-top:10px}
+
+/* roles */
+.rolecard{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:20px}
+.rolecard.owner{border-color:var(--cobalt);box-shadow:0 2px 0 0 var(--cobalt)}
+.rolecard.staff{border-color:var(--brass)}
+.rolecard h3{font-family:var(--display);font-size:19px;color:var(--cobalt)}
+.rolecard .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;border-radius:5px;padding:2px 8px;margin-bottom:10px}
+.rolecard.owner .tag{background:var(--cobalt);color:#fff}
+.rolecard.staff .tag{background:var(--brass-soft);color:#6B4A1F}
+.rolecard.cust .tag{background:var(--paper);color:var(--muted);border:1px solid var(--line)}
+.rolecard ul{list-style:none;margin-top:8px}
+.rolecard li{font-size:13px;color:var(--muted);padding:4px 0 4px 20px;position:relative}
+.rolecard li::before{content:"✓";position:absolute;left:0;color:var(--brass);font-weight:800}
+
+/* order phases */
+.phase{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.phase h3{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:17px;color:var(--cobalt)}
+.phase h3 .num{font-size:11px;font-weight:800;color:#fff;background:var(--cobalt);border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--sans)}
+.st{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 13px;font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+.st.pay{border-color:#C9B280;background:var(--brass-soft);color:#6B4A1F}
+.st.run{border-color:var(--cobalt);background:var(--cobalt-soft);color:var(--cobalt)}
+.st.done{border-color:var(--cobalt);background:var(--cobalt);color:#fff}
+.st.term{border-color:#E4C4BC;background:var(--red-soft);color:var(--red)}
+
+/* routes */
+.routes{display:flex;flex-wrap:wrap;gap:7px}
+.rt{font-family:var(--mono);font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:7px;padding:5px 10px;color:var(--ink)}
+.rt i{font-style:normal;color:var(--faint);font-size:10.5px;margin-left:6px}
+.rt.scoped{border-left:3px solid var(--brass)}
+
+/* dbdocs embed */
+.canvas-frame{position:relative;border:1.5px solid var(--cobalt);border-radius:14px;overflow:hidden;height:600px;margin-top:18px}
+.canvas-frame iframe{width:100%;height:100%;border:0}
+
+footer{border-top:1px solid var(--line);margin-top:64px;padding:26px 0 40px;color:var(--faint);font-size:12.5px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+
+@media print{.topnav,.printbtn{display:none}body{background:#fff;font-size:12px}section{padding:26px 0 0;page-break-inside:avoid}header.hero{padding:24px 0}a{color:inherit;text-decoration:none}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ TOP NAV ════════════════════ -->
+<nav class="topnav"><div class="wrap">
+  <div class="brand">Patel.Networks<small>by Omkar Kardile</small></div>
+  <a class="nl" href="#overview">Overview</a>
+  <a class="nl" href="#system">System Flow</a>
+  <a class="nl" href="#database">Database</a>
+  <a class="nl" href="#access">Roles</a>
+  <a class="nl" href="#orders">Order Lifecycle</a>
+  <a class="nl" href="#routes">Routes</a>
+  <button class="printbtn" onclick="window.print()">Print / PDF</button>
+</div></nav>
+
+<!-- ════════════════════ 1. OVERVIEW ════════════════════ -->
+<header class="hero" id="overview">
+  <div class="wrap">
+    <div class="eyebrow">Section 1</div>
+    <h1>Patel Networks — System Guide</h1>
+    <p class="lede">A premium B2B + B2C e-commerce platform for commercial CCTV and security hardware, built from scratch for the Indian market. 33 database tables, 26 routes, 18 staff permissions, 3 isolated auth systems — one unified platform.</p>
+    <div class="metachips">
+      <span class="mchip"><b>Next.js 16</b> fullstack</span>
+      <span class="mchip"><b>PostgreSQL 16</b> + Prisma</span>
+      <span class="mchip"><b>33</b> DB tables</span>
+      <span class="mchip"><b>26</b> routes</span>
+      <span class="mchip"><b>18</b> staff permissions</span>
+      <span class="mchip"><b>3</b> auth systems</span>
+      <span class="mchip"><b>10+</b> brands</span>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════ 2. SYSTEM FLOW ════════════════════ -->
+<section id="system">
+  <div class="wrap">
+    <div class="sec-eyebrow">Section 2</div>
+    <h2>How a request flows through the backend</h2>
+    <p class="sec-sub">Every request passes through the Edge proxy, which checks session cookies and redirects unauthenticated users. Server components fetch data via Prisma. Server actions handle mutations.</p>
+
+    <div class="band" style="margin-bottom:16px">
+      <h3>Storefront Request</h3>
+      <div class="chips">
+        <span class="chip">Browser</span><span class="chip">→</span>
+        <span class="chip hl">Edge Proxy (proxy.ts)</span><span class="chip">→</span>
+        <span class="chip">Server Component</span><span class="chip">→</span>
+        <span class="chip hl">Prisma Client</span><span class="chip">→</span>
+        <span class="chip">PostgreSQL</span>
+      </div>
+    </div>
+    <div class="band" style="margin-bottom:16px">
+      <h3>Admin Request (protected)</h3>
+      <div class="chips">
+        <span class="chip">Browser</span><span class="chip">→</span>
+        <span class="chip hl">Edge Proxy</span><span class="chip brass">checks pn_admin_session JWT</span><span class="chip">→</span>
+        <span class="chip hl" style="background:var(--red-soft);border-color:#E4C4BC;color:var(--red)">307 redirect if invalid</span>
+        <span class="chip">→ Admin Layout</span><span class="chip">→ Sidebar (permission-filtered)</span><span class="chip">→ Page</span>
+      </div>
+    </div>
+    <div class="band">
+      <h3>Stock Panel Request (protected)</h3>
+      <div class="chips">
+        <span class="chip">Browser</span><span class="chip">→</span>
+        <span class="chip hl">Edge Proxy</span><span class="chip brass">checks pn_stock_session JWT</span><span class="chip">→</span>
+        <span class="chip hl" style="background:var(--red-soft);border-color:#E4C4BC;color:var(--red)">307 redirect if invalid</span>
+        <span class="chip">→ Stock Layout</span><span class="chip">→ Sidebar (permission-filtered)</span><span class="chip">→ Page</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ 3. DATABASE ════════════════════ -->
+<section id="database">
+  <div class="wrap">
+    <div class="sec-eyebrow">Section 3</div>
+    <h2>The database — 33 tables in 9 domains</h2>
+    <p class="sec-sub">PostgreSQL 16, managed via Prisma ORM. All tables map to snake_case via @@map. Money fields are Decimal(12,2). Serials stored as String. Cascade deletes on User/Product children; Orders preserved.</p>
+
+    <div class="grid3" style="margin-bottom:28px">
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">1. Auth & Users</h3>
+        <div class="chips"><span class="k">users</span><span class="k">otp_verifications</span><span class="k">admin_profiles</span><span class="k">employee_profiles</span><span class="k">audit_logs</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">2. Customers</h3>
+        <div class="chips"><span class="k">customers</span><span class="k">addresses</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">3. Catalog</h3>
+        <div class="chips"><span class="k">categories</span><span class="k">brands</span><span class="k">products</span><span class="k">product_images</span><span class="k">product_variants</span><span class="k">skus</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">4. Inventory</h3>
+        <div class="chips"><span class="k">inventory</span><span class="k">inventory_movements</span><span class="k">stock_alerts</span><span class="k">stock_count_sessions</span><span class="k">stock_reconciliations</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">5. Cart & Checkout</h3>
+        <div class="chips"><span class="k">carts</span><span class="k">cart_items</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">6. Orders & Payments</h3>
+        <div class="chips"><span class="k">orders</span><span class="k">order_items</span><span class="k">order_status_history</span><span class="k">payments</span><span class="k">payment_events</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">7. Shipping</h3>
+        <div class="chips"><span class="k">shipments</span><span class="k">shipment_events</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">8. Reviews & Bundles</h3>
+        <div class="chips"><span class="k">reviews</span><span class="k">bundles</span><span class="k">bundle_items</span><span class="k">wishlists</span><span class="k">wishlist_items</span></div></div>
+      <div class="card"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px">9. Webhooks</h3>
+        <div class="chips"><span class="k">webhook_events</span></div></div>
+    </div>
+
+    <h2 style="font-size:22px;margin-top:20px">The catalog spine — how one camera reaches a customer</h2>
+    <div class="spine" style="margin-top:16px">
+      <div class="spine-row">
+        <span class="ent">Category</span><span class="arr">→</span>
+        <span class="ent">Brand</span><span class="arr">→</span>
+        <span class="ent">Product</span><span class="arr">→</span>
+        <span class="ent">ProductVariant</span><span class="arr">→</span>
+        <span class="ent gold">SKU</span><span class="arr">→</span>
+        <span class="ent gold">Inventory</span><span class="arr">→</span>
+        <span class="ent gray">CartItem</span><span class="arr">→</span>
+        <span class="ent gray">OrderItem</span><span class="arr">→</span>
+        <span class="ent gray">Order</span>
+      </div>
+      <p class="spine-cap">Stock tracked strictly at SKU level. Cart and orders reference SKU codes. Inventory locking happens inside Prisma interactive transactions (ADR-010).</p>
+    </div>
+
+    <h2 style="font-size:22px;margin-top:44px">Interactive schema — explore all 33 tables</h2>
+    <div class="canvas-frame">
+      <iframe src="https://dbdocs.io/galat31868kingdaiscom/patelnetworks-5.2-open" title="Patel Networks Database Schema" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ 4. ROLES & ACCESS ════════════════════ -->
+<section id="access">
+  <div class="wrap">
+    <div class="sec-eyebrow">Section 4</div>
+    <h2>Roles & access — Superadmin, Staff, Customer</h2>
+    <p class="sec-sub">Three roles, three isolated session systems. The superadmin controls exactly which modules each staff member can access via a creation wizard with 18 permissions across 9 modules.</p>
+
+    <div class="grid2" style="margin-top:20px">
+      <div class="rolecard owner">
+        <span class="tag">Superadmin / Owner</span>
+        <h3>SUPER_ADMIN</h3>
+        <ul>
+          <li>Full access to every module — no permission checks</li>
+          <li>Can create other superadmins</li>
+          <li>Can change own credentials</li>
+          <li>Manages staff accounts via /admin/employees</li>
+          <li>Staff creation wizard with permission matrix</li>
+        </ul>
+      </div>
+      <div class="rolecard staff">
+        <span class="tag">Staff / Employee</span>
+        <h3>STAFF</h3>
+        <ul>
+          <li>Dynamic permissions set by superadmin</li>
+          <li>18 permissions across 9 modules</li>
+          <li>Sidebar filters nav items by permissions</li>
+          <li>Server actions check permissions (defense in depth)</li>
+          <li>Access to /stock panel (if STOCK_VIEW granted)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:12px">Permission Modules (18 permissions)</h3>
+      <div class="chips">
+        <span class="chip hl">Dashboard</span>
+        <span class="chip">Orders (View/Manage)</span>
+        <span class="chip">Products (View/Manage)</span>
+        <span class="chip">Inventory (View/Adjust)</span>
+        <span class="chip">Customers (View/Manage)</span>
+        <span class="chip">Reports (View/Export)</span>
+        <span class="chip brass">Stock Panel (View/Alerts/Count/Export)</span>
+        <span class="chip">Employees (View/Manage)</span>
+        <span class="chip">Settings (View/Manage)</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:12px">Session Cookies (3 isolated systems)</h3>
+      <table class="simple">
+        <thead><tr><th>Cookie</th><th>Scope</th><th>Auth Method</th><th>Protected Routes</th></tr></thead>
+        <tbody>
+          <tr><td><span class="k">pn_admin_session</span></td><td>Admin console</td><td>Email + password (JWT HS256)</td><td>/admin/*</td></tr>
+          <tr><td><span class="k">pn_stock_session</span></td><td>Stock panel</td><td>Email + password (JWT HS256)</td><td>/stock/*</td></tr>
+          <tr><td><span class="k">pn_session</span></td><td>Customer portal</td><td>Phone + SMS OTP (JWT HS256)</td><td>/account/*</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ 5. ORDER LIFECYCLE ════════════════════ -->
+<section id="orders">
+  <div class="wrap">
+    <div class="sec-eyebrow">Section 5</div>
+    <h2>Order lifecycle — 13 states, strictly enforced</h2>
+    <p class="sec-sub">Orders transition through a strict state machine. Each transition is logged in order_status_history with the user ID and timestamp. Inventory is reserved at checkout and released on cancellation.</p>
+
+    <div class="grid2" style="margin-top:20px">
+      <div class="phase">
+        <h3><span class="num">1</span> Creation & Payment</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+          <span class="st pay">PAYMENT_PENDING</span><span class="arr">→</span>
+          <span class="st run">PENDING</span><span class="arr">→</span>
+          <span class="st pay">CONFIRMED</span>
+        </div>
+        <p style="margin-top:14px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px">
+          Customer places order → Razorpay/COD selected → payment verified → order confirmed.
+          If payment fails: <span class="st term">PAYMENT_FAILED</span> or <span class="st term">FAILED</span>.
+        </p>
+      </div>
+      <div class="phase">
+        <h3><span class="num">2</span> Fulfillment</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+          <span class="st run">CONFIRMED</span><span class="arr">→</span>
+          <span class="st run">PACKING</span><span class="arr">→</span>
+          <span class="st run">READY_TO_SHIP</span><span class="arr">→</span>
+          <span class="st run">SHIPPED</span>
+        </div>
+        <p style="margin-top:14px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px">
+          Admin fulfills order → packs → creates shipment (AWB generated via Shiprocket/Delhivery) → dispatched.
+        </p>
+      </div>
+      <div class="phase">
+        <h3><span class="num">3</span> Delivery</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+          <span class="st run">SHIPPED</span><span class="arr">→</span>
+          <span class="st run">OUT_FOR_DELIVERY</span><span class="arr">→</span>
+          <span class="st done">DELIVERED</span>
+        </div>
+        <p style="margin-top:14px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px">
+          Carrier tracking webhook updates status → customer notified via WhatsApp/SMS → delivered.
+        </p>
+      </div>
+      <div class="phase">
+        <h3><span class="num">4</span> Termination</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+          <span class="st term">CANCELLED</span><span class="arr">→</span>
+          <span class="st term">RETURNED</span><span class="arr">→</span>
+          <span class="st term">REFUNDED</span>
+        </div>
+        <p style="margin-top:14px;font-size:12.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px">
+          Cancellation restocks inventory. Returns trigger RMA. Refunds processed via Razorpay.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ 6. ROUTE MAP ════════════════════ -->
+<section id="routes">
+  <div class="wrap">
+    <div class="sec-eyebrow">Section 6</div>
+    <h2>Every route in the system</h2>
+    <p class="sec-sub">26 routes across storefront, admin console, stock panel, API webhooks, and SEO. All protected routes redirect to their respective login pages when unauthenticated.</p>
+
+    <h3 style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px">Storefront (customer-facing)</h3>
+    <div class="routes">
+      <span class="rt">/ <i>homepage</i></span>
+      <span class="rt">/products <i>catalog</i></span>
+      <span class="rt">/products/[slug] <i>detail</i></span>
+      <span class="rt">/kit-builder <i>5-step</i></span>
+      <span class="rt">/cart</span>
+      <span class="rt">/checkout</span>
+      <span class="rt">/order-success/[orderNumber]</span>
+      <span class="rt scoped">/account <i>protected</i></span>
+      <span class="rt">/account/login <i>OTP</i></span>
+      <span class="rt">/about</span>
+      <span class="rt">/contact</span>
+      <span class="rt">/faq</span>
+      <span class="rt">/shipping-policy</span>
+      <span class="rt">/return-policy</span>
+      <span class="rt">/privacy-policy</span>
+      <span class="rt">/terms</span>
+      <span class="rt">/pitch <i>business pitch</i></span>
+    </div>
+
+    <h3 style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px">Admin Console (pn_admin_session)</h3>
+    <div class="routes">
+      <span class="rt">/admin/login</span>
+      <span class="rt scoped">/admin <i>DASHBOARD_VIEW</i></span>
+      <span class="rt scoped">/admin/orders <i>ORDERS_VIEW</i></span>
+      <span class="rt scoped">/admin/products <i>PRODUCTS_VIEW</i></span>
+      <span class="rt scoped">/admin/inventory <i>INVENTORY_VIEW</i></span>
+      <span class="rt scoped">/admin/customers <i>CUSTOMERS_VIEW</i></span>
+      <span class="rt scoped">/admin/reports <i>REPORTS_VIEW</i></span>
+      <span class="rt scoped">/admin/employees <i>EMPLOYEES_VIEW</i></span>
+      <span class="rt scoped">/admin/settings/cod <i>SETTINGS_VIEW</i></span>
+    </div>
+
+    <h3 style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px">Stock Panel (pn_stock_session)</h3>
+    <div class="routes">
+      <span class="rt">/stock/login</span>
+      <span class="rt scoped">/stock <i>STOCK_VIEW</i></span>
+      <span class="rt scoped">/stock/alerts <i>STOCK_VIEW</i></span>
+      <span class="rt scoped">/stock/adjust <i>INVENTORY_ADJUST</i></span>
+      <span class="rt scoped">/stock/movements <i>STOCK_VIEW</i></span>
+      <span class="rt scoped">/stock/count <i>STOCK_COUNT</i></span>
+    </div>
+
+    <h3 style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px">API & SEO</h3>
+    <div class="routes">
+      <span class="rt">/api/webhooks/razorpay <i>POST</i></span>
+      <span class="rt">/api/webhooks/shipping <i>POST</i></span>
+      <span class="rt">/api/webhooks/whatsapp <i>GET+POST</i></span>
+      <span class="rt">/sitemap.xml</span>
+      <span class="rt">/robots.txt</span>
+      <span class="rt">/index-help.html <i>this page</i></span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ FOOTER ════════════════════ -->
+<footer>
+  <div class="wrap">
+    <span>Designed & developed by <b>Omkar Kardile</b> — <a href="https://omkardile.is-a.dev/" style="color:var(--cobalt);text-decoration:none">omkardile.is-a.dev</a></span>
+    <span>Patel Networks · India · 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>

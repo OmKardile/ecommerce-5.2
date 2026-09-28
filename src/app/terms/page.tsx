@@ -61,7 +61,7 @@ export default function TermsPage() {
             <Reveal delay={120}>
               <p className="mt-8 text-base sm:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
                 These terms govern all purchases of security, surveillance, and networking
-                hardware made on Patel Networks (MegaTech) by retail consumers, electrical
+                hardware made on Patel Networks by retail consumers, electrical
                 contractors, and institutional buyers.
               </p>
             </Reveal>

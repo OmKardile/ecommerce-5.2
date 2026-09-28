@@ -1,4 +1,4 @@
-# Patel Networks (MegaTech) — Production Deployment & Manual Configuration Checklist (`production-deployment-checklist.md`)
+# Patel Networks — Production Deployment & Manual Configuration Checklist (`production-deployment-checklist.md`)
 
 > **Target Audience**: Business Owner, System Administrator, DevOps Engineer  
 > **Platform Scope**: Commercial CCTV, Surveillance & Structured Networking Platform (India)  

@@ -73,7 +73,7 @@ export default function ContactPage() {
                 <div className="eyebrow text-stone-500 mb-2">Warehouse &amp; Node</div>
                 <p className="text-sm text-foreground leading-relaxed">
                   Patel Networks<br />
-                  (MegaTech Distribution Center)<br />
+                  (Distribution Center)<br />
                   Commercial Arcade, Ring Road Hub<br />
                   Surat, Gujarat — 395003, India
                 </p>

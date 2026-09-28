@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
 
             <Reveal delay={120}>
               <p className="mt-8 text-base sm:text-lg text-stone-600 dark:text-stone-400 leading-relaxed max-w-2xl">
-                Patel Networks (MegaTech) is committed to protecting the privacy, corporate
+                Patel Networks is committed to protecting the privacy, corporate
                 tax data, and financial transactions of all retail consumers and commercial
                 surveillance contractors.
               </p>

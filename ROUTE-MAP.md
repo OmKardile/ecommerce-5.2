@@ -174,6 +174,6 @@
 ---
 
 <p align="center">
-<em>Authored by Omkar Kardile — Patel Networks / MegaTech</em><br/>
+<em>Authored by Omkar Kardile — Omkar Kardile</em><br/>
 <sub>Surveillance hardware procurement platform · India</sub>
 </p>

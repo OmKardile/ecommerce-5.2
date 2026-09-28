@@ -6,7 +6,7 @@ import { Footer } from '@/components/storefront/Footer';
 import { Reveal } from '@/components/storefront/Reveal';
 
 export const metadata = {
-  title: 'About Patel Networks (MegaTech) | Authorized CCTV Distribution',
+  title: 'About Patel Networks | Authorized CCTV Distribution',
   description: 'Gujarat premier commercial security distributor for CP Plus, Hikvision, Dahua, and enterprise networking hardware.',
 };
 
@@ -79,7 +79,7 @@ export default function AboutPage() {
 
             <Reveal delay={120}>
               <p className="mt-8 text-base sm:text-lg text-background/70 leading-relaxed max-w-xl">
-                Headquartered in Surat, Gujarat, Patel Networks (MegaTech) supplies
+                Headquartered in Surat, Gujarat, Patel Networks supplies
                 commercial security cameras, AI-enabled NVRs, structured Cat6 cabling, and
                 enterprise fiber equipment to security installers, electrical contractors,
                 and corporate institutions.

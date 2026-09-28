@@ -2,7 +2,7 @@
 
 > **System Blueprint, Database Schemas, Concurrency Patterns, and Engineering Protocols**  
 > Stack: Next.js (Unified Fullstack App Router) · PostgreSQL 16+ & Prisma · Razorpay + Selective COD · Shiprocket/Delhivery  
-> **Source of Truth for Decisions**: Refer to [decisions.md](file:///d:/work/megatech/patelnetworks/decisions.md)
+> **Source of Truth for Decisions**: Refer to [decisions.md](decisions.md)
 
 ---
 
@@ -10,7 +10,7 @@
 
 All engineering tasks across all development phases must strictly conform to these rules:
 
-1. **Unified Fullstack Architecture ([ADR-001](file:///d:/work/megatech/patelnetworks/decisions.md#adr-001-unified-nextjs-fullstack-architecture))**:  
+1. **Unified Fullstack Architecture ([ADR-001](decisions.md#adr-001-unified-nextjs-fullstack-architecture))**:  
    Build both the Storefront and the Back-office Admin portal within a unified Next.js App Router project. Business logic resides in modular backend domain services under `src/server/services/`, invoked via Server Actions and Route Handlers.
 2. **The Inventory Invariant**:  
    `Product ➔ Variant ➔ SKU ➔ Inventory`. Stock counters are stored and decremented strictly at the **SKU** level. Product-level stock is a derived property and must never be stored as an independent source of truth.
@@ -793,7 +793,7 @@ Implemented by `ShiprocketProvider` and `DelhiveryProvider` with automatic fallb
 
 ---
 
-## 6. Payment (Razorpay) & WhatsApp Notification Integration ([ADR-007](file:///d:/work/megatech/patelnetworks/decisions.md#adr-007-integration-readiness--placeholder-fallback-for-razorpay--whatsapp-api))
+## 6. Payment (Razorpay) & WhatsApp Notification Integration ([ADR-007](decisions.md#adr-007-integration-readiness--placeholder-fallback-for-razorpay--whatsapp-api))
 
 Because vendor verification for **Razorpay** and **WhatsApp Business API** is currently in progress, the platform uses an **Active Implementation + Safe Fallback Mock Pattern**:
 
@@ -1061,7 +1061,7 @@ SMS_SENDER_ID="PTLNET"
 ## 12. WhatsApp Business Cloud API & Real-Time E-Commerce Lifecycle Messaging (Phase 6)
 
 ### 12.1 Gateway Architecture (`src/server/services/whatsapp.service.ts`)
-* **Dual-Mode Cloud Gateway ([ADR-013](file:///d:/work/megatech/patelnetworks/decisions.md#adr-013-whatsapp-business-cloud-api--real-time-e-commerce-lifecycle-messaging-engine))**:
+* **Dual-Mode Cloud Gateway ([ADR-013](decisions.md#adr-013-whatsapp-business-cloud-api--real-time-e-commerce-lifecycle-messaging-engine))**:
   * **Live Meta Graph API**: Communicates directly with Meta Cloud API endpoints (`POST https://graph.facebook.com/v20.0/${PHONE_NUMBER_ID}/messages`) using Bearer token authentication.
   * **Senior Sandbox Mode**: Detects placeholder credentials (`WHATSAPP_ACCESS_TOKEN`), formats complete HSM template payloads, renders human-readable notifications in formatted terminal cards, and records audit logs in the database.
 * **Phone Normalization**:

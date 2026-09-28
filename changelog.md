@@ -190,7 +190,7 @@ A ground-up visual rework of the storefront, transforming the prior AI-template 
 - **Search Engine Crawling Policies (`src/app/robots.ts` - ADR-015)**:
   - Allows public crawling of catalog, kit builder, and homepage while strictly protecting `/admin`, `/account`, `/checkout`, and `/api/*`.
 - **Google Search Rich Snippets (JSON-LD Schemas - ADR-015)**:
-  - Injected `Product`, `AggregateOffer` (low/high prices in INR, in-stock availability), and `BreadcrumbList` structured data into PDP ([ProductDetailPage.tsx](file:///d:/work/megatech/patelnetworks/src/app/products/[slug]/page.tsx)).
+  - Injected `Product`, `AggregateOffer` (low/high prices in INR, in-stock availability), and `BreadcrumbList` structured data into PDP ([ProductDetailPage.tsx](src/app/products/[slug]/page.tsx)).
 - **Master Loopback Automated Regression Suite (`scripts/master_loopback_test.ts` - ADR-015)**:
   - 25-point comprehensive end-to-end regression covering catalog taxonomy, pincode routing, GST math, B2B order creation, carrier AWB booking, WhatsApp lifecycle alerts, admin dashboard telemetry, and hardware serial tracking.
   - Achieved **100% pass rate (25/25 assertions)**.
@@ -252,7 +252,7 @@ A ground-up visual rework of the storefront, transforming the prior AI-template 
 - **Storefront Customer & Contractor UI Components**:
   - `WhatsAppSupportWidget.tsx`: Floating interactive WhatsApp launcher in bottom-right corner of entire application with quick-prompt chips ("Track My Order", "B2B Contractor Pricing", "CCTV Architecture Advice", "Warranty & Support Desk") and custom inquiry composer launching direct WhatsApp chats.
   - `B2BQuoteModal.tsx`: Project bulk quotation modal with quantity selector, company name, and project scope notes.
-  - `B2BContractorCallout.tsx`: Embedded on PDP ([DynamicVariantSelector.tsx](file:///d:/work/megatech/patelnetworks/src/components/storefront/DynamicVariantSelector.tsx)) allowing security installers to request wholesale project pricing.
+  - `B2BContractorCallout.tsx`: Embedded on PDP ([DynamicVariantSelector.tsx](src/components/storefront/DynamicVariantSelector.tsx)) allowing security installers to request wholesale project pricing.
 - **Automated Verification Suite (`scripts/verify_phase6.ts`)**:
   - Verified phone normalization, Order Confirmation, Shipment Dispatched, Out for Delivery, and Delivered alerts.
   - Verified B2B contractor quote inquiry submission and database audit records.
@@ -402,7 +402,7 @@ A ground-up visual rework of the storefront, transforming the prior AI-template 
 
 ### Added
 - **Architectural & Business Decision Records (`decisions.md`)**:
-  - Established [decisions.md](file:///d:/work/megatech/patelnetworks/decisions.md) as the single source of truth for all project decisions.
+  - Established [decisions.md](decisions.md) as the single source of truth for all project decisions.
   - **ADR-001**: Accepted Unified Next.js Fullstack Architecture (App Router, Server Actions, Route Handlers, PostgreSQL + Prisma).
   - **ADR-002**: Accepted Hybrid B2C & B2B Billing with Indian GSTIN Input Tax Credit capture.
   - **ADR-003**: Accepted Phone Number + 6-digit SMS OTP (MSG91 / Fast2SMS / Firebase) as primary customer authentication.
@@ -413,9 +413,9 @@ A ground-up visual rework of the storefront, transforming the prior AI-template 
   - **ADR-008**: Accepted Senior Lead Production-Grade Engineering Standard & Enterprise Principles.
   - **ADR-009**: Accepted Managed Cloud Database on Supabase PostgreSQL (Connection Pooling & Direct URL).
 - **Schema & Architecture Synchronization**:
-  - Updated [technical-dcoumentation.md](file:///d:/work/megatech/patelnetworks/technical-dcoumentation.md) with WhatsApp notification service, Razorpay mock mode, environment variable specifications (`.env.example`), and RBAC guards.
-  - Updated [business-documentation.md](file:///d:/work/megatech/patelnetworks/business-documentation.md) with WhatsApp transactional message templates (OTP, Order Placed, COD Verification, Shipped with AWB, Out for Delivery, Refund).
-  - Updated [readme.md](file:///d:/work/megatech/patelnetworks/readme.md) directory map, tech stack table, and quick start commands.
+  - Updated [technical-dcoumentation.md](technical-dcoumentation.md) with WhatsApp notification service, Razorpay mock mode, environment variable specifications (`.env.example`), and RBAC guards.
+  - Updated [business-documentation.md](business-documentation.md) with WhatsApp transactional message templates (OTP, Order Placed, COD Verification, Shipped with AWB, Out for Delivery, Refund).
+  - Updated [readme.md](readme.md) directory map, tech stack table, and quick start commands.
 
 ---
 
