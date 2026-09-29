@@ -27,8 +27,8 @@ export async function adjustStockAction(input: {
     revalidatePath('/admin');
     revalidatePath('/admin/inventory');
     return { success: true, data: updated };
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Failed to adjust stock' };
+  } catch (err: unknown) {
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) || 'Failed to adjust stock' };
   }
 }
 
@@ -39,8 +39,8 @@ export async function toggleProductCodAction(productId: string, isCodAllowed: bo
     revalidatePath('/admin/settings/cod');
     revalidatePath('/products');
     return { success: true, data: updated };
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Failed to toggle COD policy' };
+  } catch (err: unknown) {
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) || 'Failed to toggle COD policy' };
   }
 }
 
@@ -59,8 +59,8 @@ export async function adminTransitionOrderStatusAction(
     revalidatePath('/admin/orders');
     revalidatePath('/admin');
     return { success: true, data: updated };
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Status transition failed' };
+  } catch (err: unknown) {
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) || 'Status transition failed' };
   }
 }
 
@@ -73,8 +73,8 @@ export async function adminCreateShipmentAction(orderId: string, carrier?: strin
     revalidatePath('/admin/orders');
     revalidatePath('/admin');
     return { success: true, data: shipment };
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Failed to book shipment' };
+  } catch (err: unknown) {
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) || 'Failed to book shipment' };
   }
 }
 
@@ -86,7 +86,7 @@ export async function saveSerialNumbersAction(
     const updated = await updateOrderItemSerialNumbers(orderItemId, serialNumbers);
     revalidatePath('/admin/orders');
     return { success: true, data: updated };
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Failed to save serial numbers' };
+  } catch (err: unknown) {
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) || 'Failed to save serial numbers' };
   }
 }

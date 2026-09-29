@@ -70,7 +70,7 @@ export function ProductCatalogTable({ initialProducts }: Props) {
           `COD policy updated · ${nextVal ? 'COD allowed' : 'Prepaid only'}`
         );
       } else {
-        alert(res.error || 'Failed to update COD policy');
+        setFeedback(res.error || 'Failed to update COD policy');
       }
     });
   };

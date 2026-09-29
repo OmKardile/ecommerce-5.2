@@ -88,7 +88,7 @@ export async function processCheckoutAction(formData: unknown) {
     if (err instanceof z.ZodError) {
       return { success: false, error: err.issues[0]?.message || 'Validation error' };
     }
-    const msg = err instanceof Error ? err.message : 'Checkout failed';
+    const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : 'Checkout failed';
     return { success: false, error: msg };
   }
 }
@@ -119,7 +119,7 @@ export async function confirmPaymentAction(input: {
 
     return { success: true, result };
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Payment confirmation failed';
+    const msg = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : 'Payment confirmation failed';
     return { success: false, error: msg };
   }
 }

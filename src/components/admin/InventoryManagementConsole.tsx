@@ -112,7 +112,7 @@ export function InventoryManagementConsole({ initialItems }: Props) {
         );
         setSelectedSku(null);
       } else {
-        alert(res.error || 'Failed to adjust stock');
+        setFeedback(res.error || 'Failed to adjust stock');
       }
     });
   };

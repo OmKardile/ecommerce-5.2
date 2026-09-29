@@ -187,7 +187,7 @@ export function AccountPortalClient({ user, orders }: AccountPortalClientProps) 
   const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!addrRecipient.trim() || !addrLine1.trim() || !addrCity.trim() || !/^\d{6}$/.test(addrPincode)) {
-      alert('Please fill out all required address fields with a valid 6-digit PIN code.');
+      alert('Please fill out all required fields with a valid 6-digit PIN code.');
       return;
     }
 

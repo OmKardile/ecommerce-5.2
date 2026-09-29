@@ -104,8 +104,8 @@ export async function createEmployeeAction(formData: FormData) {
   let session;
   try {
     session = await requireSuperAdmin();
-  } catch (err: any) {
-    return toError(err?.message || 'Unauthorized');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Unauthorized');
   }
 
   try {
@@ -169,8 +169,8 @@ export async function createEmployeeAction(formData: FormData) {
 
     revalidatePath('/admin/employees');
     return toResult(serialize(profile as EmployeeRow));
-  } catch (err: any) {
-    return toError(err?.message || 'Failed to create staff member.');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Failed to create staff member.');
   }
 }
 
@@ -180,8 +180,8 @@ export async function createEmployeeAction(formData: FormData) {
 export async function updateEmployeeAction(employeeId: string, formData: FormData) {
   try {
     await requireSuperAdmin();
-  } catch (err: any) {
-    return toError(err?.message || 'Unauthorized');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Unauthorized');
   }
 
   try {
@@ -249,8 +249,8 @@ export async function updateEmployeeAction(employeeId: string, formData: FormDat
 
     revalidatePath('/admin/employees');
     return toResult(serialize(updated as EmployeeRow));
-  } catch (err: any) {
-    return toError(err?.message || 'Failed to update staff member.');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Failed to update staff member.');
   }
 }
 
@@ -260,8 +260,8 @@ export async function updateEmployeeAction(employeeId: string, formData: FormDat
 export async function toggleEmployeeActiveAction(employeeId: string) {
   try {
     await requireSuperAdmin();
-  } catch (err: any) {
-    return toError(err?.message || 'Unauthorized');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Unauthorized');
   }
 
   try {
@@ -288,8 +288,8 @@ export async function toggleEmployeeActiveAction(employeeId: string) {
 
     revalidatePath('/admin/employees');
     return toResult(serialize(updated as EmployeeRow));
-  } catch (err: any) {
-    return toError(err?.message || 'Failed to toggle staff status.');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Failed to toggle staff status.');
   }
 }
 
@@ -302,8 +302,8 @@ export async function updateEmployeePermissionsAction(
 ) {
   try {
     await requireSuperAdmin();
-  } catch (err: any) {
-    return toError(err?.message || 'Unauthorized');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Unauthorized');
   }
 
   try {
@@ -323,8 +323,8 @@ export async function updateEmployeePermissionsAction(
 
     revalidatePath('/admin/employees');
     return toResult(serialize(updated as EmployeeRow));
-  } catch (err: any) {
-    return toError(err?.message || 'Failed to update permissions.');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Failed to update permissions.');
   }
 }
 
@@ -337,8 +337,8 @@ export async function resetEmployeePasswordAction(
 ) {
   try {
     await requireSuperAdmin();
-  } catch (err: any) {
-    return toError(err?.message || 'Unauthorized');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Unauthorized');
   }
 
   try {
@@ -359,7 +359,7 @@ export async function resetEmployeePasswordAction(
 
     revalidatePath('/admin/employees');
     return { success: true as const, data: { employeeId, reset: true } };
-  } catch (err: any) {
-    return toError(err?.message || 'Failed to reset password.');
+  } catch (err: unknown) {
+    return toError(err instanceof Error ? err.message : 'Failed to reset password.');
   }
 }
