@@ -5,7 +5,7 @@
 
 services:
   - type: web
-    name: patel-5.2
+    name: ecommerce-5.2
     runtime: node
     plan: free
     region: singapore
