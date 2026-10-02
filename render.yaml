@@ -1,0 +1,78 @@
+# Render Blueprint — Patel Networks
+# https://render.com/docs/blueprint-spec
+# This file defines the web service + all environment variables.
+# Deploy via: connect GitHub repo → Render detects render.yaml → auto-configures.
+
+services:
+  - type: web
+    name: patel-5.2
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # ── Database (Supabase PostgreSQL — temporary until VPS provisioning) ──
+      - key: DATABASE_URL
+        value: postgresql://postgres.yhqgogsednnarjfspado:AJ9J8PM4iS2q8D0C@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
+      - key: DIRECT_URL
+        value: postgresql://postgres.yhqgogsednnarjfspado:AJ9J8PM4iS2q8D0C@aws-0-ap-northeast-1.supabase.com:5432/postgres?sslmode=require
+
+      # ── Authentication ──
+      - key: JWT_SECRET
+        value: f8Torv3csTSc+GFaIOxzyvu74tpz0vzcSjudKHYpRb9Efburdq0KzeyT0pzulEMo
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: NODE_ENV
+        value: production
+
+      # ── Application ──
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://patel-5-2.onrender.com
+
+      # ── Razorpay (SIMULATION MODE — placeholder keys) ──
+      - key: RAZORPAY_KEY_ID
+        value: rzp_test_placeholder_key_id
+      - key: RAZORPAY_KEY_SECRET
+        value: placeholder_secret_key
+      - key: RAZORPAY_WEBHOOK_SECRET
+        value: placeholder_webhook_secret
+      - key: NEXT_PUBLIC_RAZORPAY_KEY_ID
+        value: rzp_test_placeholder_key_id
+
+      # ── WhatsApp Cloud API (SIMULATION MODE) ──
+      - key: WHATSAPP_API_URL
+        value: https://graph.facebook.com/v20.0
+      - key: WHATSAPP_ACCESS_TOKEN
+        value: placeholder_whatsapp_access_token
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        value: placeholder_phone_number_id
+      - key: WHATSAPP_BUSINESS_ACCOUNT_ID
+        value: placeholder_business_account_id
+      - key: WHATSAPP_VERIFY_TOKEN
+        value: placeholder_whatsapp_verify_token
+
+      # ── Shiprocket Shipping (SIMULATION MODE) ──
+      - key: SHIPROCKET_EMAIL
+        value: placeholder@patelnetworks.com
+      - key: SHIPROCKET_PASSWORD
+        value: placeholder_shiprocket_password
+      - key: SHIPROCKET_API_URL
+        value: https://apiv2.shiprocket.in/v1/external
+
+      # ── SMS OTP Gateway (SIMULATION MODE) ──
+      - key: SMS_GATEWAY_API_KEY
+        value: placeholder_sms_api_key
+      - key: SMS_SENDER_ID
+        value: PTLNET
+
+      # ── Cloudinary Media Storage (placeholder) ──
+      - key: CLOUDINARY_CLOUD_NAME
+        value: placeholder_cloud_name
+      - key: CLOUDINARY_API_KEY
+        value: placeholder_api_key
+      - key: CLOUDINARY_API_SECRET
+        value: placeholder_api_secret
