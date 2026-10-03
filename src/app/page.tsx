@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   Truck,
   FileText,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
@@ -39,7 +40,6 @@ export default async function HomePage() {
     .filter(Boolean)
     .slice(0, 6);
 
-  // Split products for the two rows
   const firstRow = featuredProducts.slice(0, 4);
   const secondRow = featuredProducts.slice(4, 8);
 
@@ -49,7 +49,7 @@ export default async function HomePage() {
 
       <main className="flex-1">
         {/* ============================================================ */}
-        {/* HERO — Apple-style: full-bleed image, centered text overlay */}
+        {/* HERO — FROZEN (do not change) */}
         {/* ============================================================ */}
         <section className="relative h-[90vh] min-h-[600px] flex items-end justify-center overflow-hidden bg-[#1A1A1A]">
           <Image
@@ -60,9 +60,7 @@ export default async function HomePage() {
             sizes="100vw"
             className="object-cover opacity-90"
           />
-          {/* Gradient overlay for text legibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
-
           <div className="relative z-10 text-center text-white px-6 pb-16 lg:pb-24 max-w-3xl">
             <div className="flex items-center justify-center gap-3 mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-[#8BAAC4]" />
@@ -90,66 +88,81 @@ export default async function HomePage() {
         </section>
 
         {/* ============================================================ */}
-        {/* TRUST BAR — Nike-style minimal strip */}
+        {/* TRUST BAR — Zara-style: thin, elegant, minimal */}
         {/* ============================================================ */}
-        <section className="bg-[#1A1A1A] text-white py-6 border-t border-white/10">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { icon: ShieldCheck, label: '100% Genuine', sub: 'Serial-tracked' },
-              { icon: FileText, label: '18% GST ITC', sub: 'B2B invoicing' },
-              { icon: Truck, label: 'Pan-India', sub: 'Express dispatch' },
-              { icon: ShieldCheck, label: 'Warranty', sub: 'Manufacturer-backed' },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-3">
-                <item.icon className="w-5 h-5 text-[#8BAAC4] shrink-0" strokeWidth={1.5} />
-                <div>
-                  <div className="text-xs font-bold">{item.label}</div>
-                  <div className="text-[10px] text-white/40">{item.sub}</div>
+        <section className="border-b border-border">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-5">
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+              {[
+                { icon: ShieldCheck, label: '100% Genuine' },
+                { icon: FileText, label: '18% GST ITC' },
+                { icon: Truck, label: 'Pan-India Dispatch' },
+                { icon: ShieldCheck, label: 'Manufacturer Warranty' },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2">
+                  <item.icon className="w-3.5 h-3.5 text-stone-soft" strokeWidth={1.5} />
+                  <span className="text-[11px] tracking-[0.05em] text-stone">{item.label}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* CATEGORIES — Apple Store tile grid */}
+        {/* CATEGORIES — Zara-style editorial index (not tiles) */}
         {/* ============================================================ */}
-        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-12 lg:py-16">
-          <h2
-            className="text-xl lg:text-2xl font-medium tracking-tight mb-6"
-            style={{ fontFamily: 'Georgia, serif' }}
-          >
-            Shop by Category
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {curatedCategories.map((cat) => (
+        <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
+          <div className="mb-10">
+            <h2
+              className="text-[clamp(1.5rem,3vw,2rem)] font-medium tracking-tight text-foreground"
+              style={{ fontFamily: 'Georgia, serif' }}
+            >
+              Categories
+            </h2>
+          </div>
+          <div className="border-t border-border">
+            {curatedCategories.map((cat, idx) => (
               <Link
                 key={cat!.id}
                 href={`/products?category=${cat!.slug}`}
-                className="group bg-card border border-border rounded-xl p-5 hover:shadow-lg transition-all duration-300 text-center"
+                className="group flex items-center justify-between py-5 border-b border-border hover:bg-surface-2 transition-colors px-2 -mx-2"
               >
-                <div className="text-sm font-bold text-foreground group-hover:text-[var(--brand)] transition-colors">
-                  {cat!.name}
+                <div className="flex items-baseline gap-4">
+                  <span className="font-mono text-xs text-stone-soft">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <span
+                    className="text-lg lg:text-xl font-medium text-foreground group-hover:text-[var(--brand)] transition-colors"
+                    style={{ fontFamily: 'Georgia, serif' }}
+                  >
+                    {cat!.name}
+                  </span>
                 </div>
-                <div className="text-[10px] text-stone mt-1">{cat!._count.products} products</div>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs text-stone hidden sm:block">{cat!._count.products} products</span>
+                  <ArrowUpRight className="w-4 h-4 text-stone-soft group-hover:text-foreground group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                </div>
               </Link>
             ))}
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* FEATURED PRODUCTS — Allbirds/Nike product-first grid */}
+        {/* FEATURED PRODUCTS — Zara-style clean grid */}
         {/* ============================================================ */}
         <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-8 lg:pb-12">
-          <div className="flex items-baseline justify-between mb-6">
+          <div className="flex items-baseline justify-between mb-8">
             <h2
-              className="text-xl lg:text-2xl font-medium tracking-tight"
+              className="text-[clamp(1.5rem,3vw,2rem)] font-medium tracking-tight text-foreground"
               style={{ fontFamily: 'Georgia, serif' }}
             >
-              Featured Products
+              Featured
             </h2>
-            <Link href="/products" className="text-xs text-stone hover:text-foreground transition-colors">
-              View all →
+            <Link
+              href="/products"
+              className="text-xs text-stone hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              View all <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -160,45 +173,53 @@ export default async function HomePage() {
         </section>
 
         {/* ============================================================ */}
-        {/* KIT BUILDER — Apple-style full-bleed banner */}
+        {/* KIT BUILDER — Zara-style split editorial */}
         {/* ============================================================ */}
-        <section className="relative h-[400px] lg:h-[500px] overflow-hidden bg-[#1A1A1A] my-8 lg:my-12">
-          <Image
-            src="/editorial/hero-camera-light.jpg"
-            alt="Build a CCTV kit"
-            fill
-            sizes="100vw"
-            className="object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
-          <div className="relative z-10 h-full flex items-center px-6 lg:px-16">
-            <div className="max-w-lg text-white">
-              <h2
-                className="text-[clamp(1.5rem,4vw,2.5rem)] font-medium tracking-tight mb-4"
-                style={{ fontFamily: 'Georgia, serif' }}
-              >
-                Build a Custom CCTV Kit
-              </h2>
-              <p className="text-sm text-white/60 mb-6 max-w-md">
-                Pick your DVR, cameras, storage & accessories in 5 steps.
-                Automatic bundle discount applied.
-              </p>
-              <Link
-                href="/kit-builder"
-                className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-6 py-3 rounded-lg font-bold text-sm hover:bg-white/90 transition-colors"
-              >
-                <Wrench className="w-4 h-4" />
-                Start Builder
-              </Link>
+        <section className="border-y border-border">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Image side */}
+            <div className="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] bg-surface-2 overflow-hidden">
+              <Image
+                src="/editorial/hero-camera-light.jpg"
+                alt="Build a CCTV kit"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
+            {/* Text side */}
+            <div className="flex items-center px-8 lg:px-16 py-12 lg:py-0">
+              <div className="max-w-md">
+                <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-stone mb-4 block">
+                  Configuration Tool
+                </span>
+                <h2
+                  className="text-[clamp(1.5rem,3.5vw,2.5rem)] font-medium tracking-tight text-foreground mb-4"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  Build a Custom CCTV Kit
+                </h2>
+                <p className="text-sm text-stone leading-relaxed mb-8">
+                  Select your DVR, cameras, storage and accessories in 5 steps.
+                  Automatic bundle discount applied at checkout.
+                </p>
+                <Link
+                  href="/kit-builder"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground border-b border-foreground pb-1 hover:text-[var(--brand)] hover:border-[var(--brand)] transition-colors"
+                >
+                  <Wrench className="w-4 h-4" />
+                  Start Builder
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
         {/* ============================================================ */}
-        {/* MORE PRODUCTS — second row */}
+        {/* MORE PRODUCTS */}
         {/* ============================================================ */}
         {secondRow.length > 0 && (
-          <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 pb-12 lg:pb-16">
+          <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
               {secondRow.map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -208,21 +229,21 @@ export default async function HomePage() {
         )}
 
         {/* ============================================================ */}
-        {/* BRANDS — Nike-style horizontal wordmark strip */}
+        {/* BRANDS — Zara-style: minimal text, no boxes */}
         {/* ============================================================ */}
-        <section className="bg-card border-y border-border py-12 lg:py-16">
+        <section className="border-t border-border py-16 lg:py-20">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            <h2
-              className="text-sm font-medium text-stone uppercase tracking-[0.15em] mb-8 text-center"
-            >
-              Shop by Brand
-            </h2>
-            <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-10">
+            <div className="text-center mb-10">
+              <span className="text-[11px] tracking-[0.2em] uppercase font-medium text-stone">
+                Authorized Supply
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:gap-x-12">
               {brands.map((b) => (
                 <Link
                   key={b.id}
                   href={`/products?brand=${b.slug}`}
-                  className="text-lg lg:text-xl font-medium text-stone hover:text-foreground transition-colors"
+                  className="text-base lg:text-lg font-medium text-stone hover:text-foreground transition-colors"
                   style={{ fontFamily: 'Georgia, serif' }}
                 >
                   {b.name}
