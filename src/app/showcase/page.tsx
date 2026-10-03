@@ -1,83 +1,82 @@
 import React from 'react';
 import Image from 'next/image';
 import {
-  ShieldCheck, FileText, Truck, Wrench, Users, Package,
-  BarChart3, Bell, ShoppingCart, Smartphone, Globe, Lock,
-  CheckCircle2, ArrowRight, Sparkles, Building2,
-  Cpu, Camera, HardDrive, Cable, Boxes, Zap,
-  Database, Layout, Eye, Settings, TrendingUp,
+  ShoppingCart, BarChart3, Package, Users, Cpu, Sparkles,
+  Check, ArrowRight, ArrowUpRight, ShieldCheck, Truck,
+  FileText, Wrench, Building2, Smartphone, Camera, HardDrive,
+  Cable, Boxes, Zap, Database, Lock, Globe,
 } from 'lucide-react';
 
 export const metadata = {
-  title: 'Patel Networks — Business Pitch',
-  description: 'Premium B2B + B2C e-commerce platform for commercial CCTV and security hardware. Built from scratch for the Indian market.',
+  title: 'Patel Networks — Showcase',
+  description: 'A premium B2B + B2C e-commerce platform for commercial CCTV and security hardware. Built from scratch by Omkar Kardile.',
 };
 
-const features = [
-  { icon: ShoppingCart, title: 'Premium Storefront', points: ['Product catalogue with real-time stock levels', 'Interactive 5-step CCTV Kit Builder with bundle discount', 'B2B GST invoicing with GSTIN input tax credit', 'Dual payment: Razorpay + selective Cash on Delivery', 'Pincode delivery checker with COD eligibility', 'WhatsApp support integration'] },
-  { icon: BarChart3, title: 'Operations Command Center', points: ['Live dashboard with KPIs, revenue, pending orders', 'Order fulfillment with 5-stage shipment tracking', 'Inventory management with movement audit trail', 'Customer directory with B2B/B2C segmentation', 'GSTR-1 tax analytics + CSV exports', 'Per-product COD eligibility rules'] },
-  { icon: Package, title: 'Stock Monitor Employee Panel', points: ['Dedicated warehouse operations system', 'Real-time stock adjustments with reason logging', 'Auto-generated low-stock & out-of-stock alerts', 'Searchable movement log with CSV export', 'Batch physical count sessions with reconciliation', 'Separate from admin — isolated permissions'] },
-  { icon: Users, title: 'Role-Based Access Control', points: ['SUPER_ADMIN: full access, can create other superadmins', 'STAFF: 18 dynamic permissions across 9 modules', 'Visual staff creation wizard with permission matrix', 'Admin sidebar filters by staff permissions', 'CUSTOMER: OTP-based phone login, account portal', 'Three isolated session systems (admin/staff/customer)'] },
-  { icon: Cpu, title: 'Technical Architecture', points: ['Next.js 16 + React 19 + Turbopack', 'PostgreSQL 16 with Prisma ORM (33 tables)', 'JWT auth with separate session cookies', 'Edge proxy guards on all protected routes', 'Self-hosted: Docker + PgBouncer + Caddy + pm2', 'SEO: XML sitemap, robots.txt, JSON-LD structured data'] },
-  { icon: Sparkles, title: 'Design Philosophy', points: ['Editorial premium aesthetic, not a template', 'Warm off-white + deep charcoal + restrained cobalt', 'Serif display typography for major statements', '3-level border hierarchy (structural/component/divider)', 'Dark mode toggle (Industrial Steel theme)', 'Mobile-first, tested at 375px viewport'] },
+const stats = [
+  { value: '33', label: 'DB Tables', sub: '9 domains' },
+  { value: '26+', label: 'Routes', sub: 'storefront + admin + stock' },
+  { value: '18', label: 'Permissions', sub: '9 modules' },
+  { value: '3', label: 'Auth Systems', sub: 'isolated sessions' },
+  { value: '10+', label: 'Brands', sub: 'authorized' },
+  { value: '100%', label: 'Custom Built', sub: 'not a template' },
+];
+
+const systems = [
+  { num: '01', icon: ShoppingCart, title: 'Storefront', desc: 'Product catalogue, cart, checkout, kit builder, OTP login', features: ['Real-time stock levels per SKU', '5-step CCTV Kit Builder with bundle discount', 'B2B GST invoicing with GSTIN ITC', 'Razorpay + selective COD', 'Pincode delivery checker', 'WhatsApp support integration'] },
+  { num: '02', icon: BarChart3, title: 'Operations', desc: 'Admin command center for orders, inventory, customers', features: ['Live KPI dashboard (revenue, orders, stock)', 'Order fulfillment with 5-stage tracking', 'Inventory with movement audit trail', 'Customer directory (B2B/B2C)', 'GSTR-1 tax analytics + CSV export', 'Per-product COD eligibility rules'] },
+  { num: '03', icon: Package, title: 'Warehouse', desc: 'Dedicated stock panel for warehouse staff', features: ['Real-time stock adjustments', 'Auto low-stock & out-of-stock alerts', 'Searchable movement log + CSV export', 'Batch physical count sessions', 'Reconciliation with variance tracking', 'Isolated from admin — own session'] },
+  { num: '04', icon: Users, title: 'Access Control', desc: 'Role-based permissions with visual wizard', features: ['SUPER_ADMIN: full access, can create superadmins', 'STAFF: 18 dynamic permissions, 9 modules', 'Staff creation wizard with permission matrix', 'Sidebar filters by permissions', 'CUSTOMER: OTP phone login', '3 isolated JWT session cookies'] },
+  { num: '05', icon: Cpu, title: 'Architecture', desc: 'Built for scale, security, self-hosting', features: ['Next.js 16 + React 19 + Turbopack', 'PostgreSQL 16 + Prisma ORM', 'JWT auth, edge proxy guards', 'Docker + PgBouncer + Caddy + pm2', 'XML sitemap, robots.txt, JSON-LD', 'ISR caching for performance'] },
 ];
 
 const comparisons = [
-  ['Catalogue', 'WhatsApp photos + Excel', 'Live web catalogue with real-time stock'],
-  ['Orders', 'Phone calls + manual entry', 'Online checkout with Razorpay/COD'],
-  ['Invoices', 'Manual GST bills', 'Auto-generated tax invoices with GSTIN'],
-  ['Inventory', 'Physical count + gut feeling', 'Digital stock with movement audit trail'],
-  ['Shipping', '"I\'ll send it tomorrow"', 'AWB generation + 5-stage tracking timeline'],
-  ['Staff access', 'Everyone sees everything', 'Role-based permissions, 18 granular controls'],
-  ['Kit building', 'Buy items separately', 'Interactive 5-step builder with bundle discount'],
-  ['Design', 'Generic WordPress/Shopify', 'Custom-built editorial premium design'],
-  ['Data ownership', 'Hosted on someone\'s server', 'Self-hosted on your own server'],
+  ['Catalogue', 'WhatsApp photos', 'Live web catalogue'],
+  ['Orders', 'Phone calls', 'Online checkout'],
+  ['Invoices', 'Manual bills', 'Auto GST invoices'],
+  ['Inventory', 'Gut feeling', 'Digital audit trail'],
+  ['Shipping', 'Tomorrow maybe', 'AWB + 5-stage tracking'],
+  ['Staff', 'Everyone sees all', '18 granular permissions'],
+  ['Kit building', 'Buy separately', '5-step builder + discount'],
+  ['Design', 'WordPress template', 'Custom editorial premium'],
+  ['Data', 'Someone else\'s server', 'Self-hosted VPS'],
 ];
 
 const categories = [
-  { icon: Camera, name: 'HD Analog Cameras', desc: '2MP to 16MP bullet & dome' },
-  { icon: Cpu, name: 'Network IP Cameras', desc: 'PoE AI smart surveillance' },
-  { icon: Boxes, name: 'DVR & NVR Recorders', desc: '4, 8 & 16 channel with AI' },
-  { icon: HardDrive, name: 'Surveillance Storage', desc: '1TB to 8TB Seagate & WD' },
-  { icon: Cable, name: 'CCTV & Cat6 Cables', desc: '305m drums & 3+1 HD' },
-  { icon: Zap, name: 'Power & Accessories', desc: 'SMPS & BNC connectors' },
+  { icon: Camera, name: 'HD Analog Cameras', desc: '2MP–16MP' },
+  { icon: Cpu, name: 'Network IP Cameras', desc: 'PoE AI' },
+  { icon: Boxes, name: 'DVR & NVR', desc: '4–16 channel' },
+  { icon: HardDrive, name: 'Storage', desc: '1TB–8TB' },
+  { icon: Cable, name: 'Cables', desc: 'Cat6 + 3+1 HD' },
+  { icon: Zap, name: 'Power', desc: 'SMPS + BNC' },
 ];
 
-const benefits = [
-  { icon: Building2, title: 'For the Store Owner', points: ['24/7 automated sales — no phone calls needed', 'GST compliance built into every order', 'Real inventory visibility — know what to reorder', 'Staff accountability — every movement logged', 'Scalable — add staff with specific permissions'] },
-  { icon: Wrench, title: 'For B2B Installers', points: ['Bulk ordering with kit builder discounts', 'GST Input Tax Credit on every purchase', 'Full technical specs before buying', 'Real-time shipment tracking with AWB', 'Order history & invoices in one portal'] },
-  { icon: Smartphone, title: 'For End Consumers', points: ['Genuine serial-tracked manufacturer warranty', 'Transparent GST-inclusive pricing', 'Razorpay prepaid or Cash on Delivery', 'Fast pan-India dispatch with WhatsApp updates', 'Order tracking from placement to delivery'] },
-];
-
-const brands = ['CP Plus', 'Hikvision', 'Dahua', 'D-Link', 'Optilink', 'Lapcare', 'AOC', 'DGSoal', 'Axpial', 'MTC'];
-
-export default function PitchPage() {
+export default function ShowcasePage() {
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#1A1A1A] overflow-x-hidden">
       {/* ===== HERO ===== */}
-      <section className="relative min-h-screen flex items-center justify-center bg-[#1A1A1A] text-white overflow-hidden">
-        {/* Animated grid background */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
-            backgroundSize: '80px 80px',
-          }}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#1A1A1A] text-white">
+        {/* Background image */}
+        <Image
+          src="/editorial/hero-camera-dark.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-40"
         />
-        {/* Glow orb */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 blur-[120px]"
-          style={{ background: 'radial-gradient(circle, #2C5282 0%, transparent 70%)' }}
-        />
+        {/* Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-6 lg:px-10 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-1.5 rounded-full text-xs font-medium mb-8">
-            <Sparkles className="w-3.5 h-3.5 text-[#8BAAC4]" />
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-xs font-medium mb-8">
+            <span className="w-2 h-2 rounded-full bg-[#8BAAC4] animate-pulse" />
             Designed & Built by Omkar Kardile
           </div>
 
+          {/* Headline */}
           <h1
-            className="text-[clamp(2.2rem,7vw,5.5rem)] font-medium leading-[0.98] tracking-tight mb-8"
+            className="text-[clamp(2.5rem,8vw,6rem)] font-medium leading-[0.95] tracking-tight mb-6"
             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
           >
             Surveillance infrastructure,
@@ -87,199 +86,158 @@ export default function PitchPage() {
             exceptional taste.
           </h1>
 
-          <p className="text-sm sm:text-base lg:text-lg text-white/50 max-w-xl mx-auto leading-relaxed mb-10">
-            A premium B2B + B2C e-commerce platform for commercial CCTV and security
-            hardware — built from scratch for the Indian market.
-            Not Shopify. Not WordPress. A purpose-built system.
+          <p className="text-base sm:text-lg text-white/50 max-w-xl mx-auto leading-relaxed mb-10">
+            A complete B2B + B2C e-commerce platform for CCTV and security hardware.
+            Not Shopify. Not WordPress. Built from scratch for India.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <a
-              href="https://patel-5-2.onrender.com"
-              className="group inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-6 py-3.5 rounded-lg font-bold text-sm transition-transform hover:scale-105"
+              href="https://ecommerce-5-2.onrender.com"
+              className="group inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-7 py-3.5 rounded-lg font-bold text-sm transition-transform hover:scale-105"
             >
-              Visit the Store
+              Visit Store
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
-              href="#features"
-              className="inline-flex items-center gap-2 border border-white/15 px-6 py-3.5 rounded-lg font-bold text-sm hover:bg-white/5 transition-colors"
+              href="#systems"
+              className="inline-flex items-center gap-2 border border-white/15 px-7 py-3.5 rounded-lg font-bold text-sm hover:bg-white/5 transition-colors"
             >
-              Explore Features
+              Explore Systems
             </a>
           </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-8 max-w-3xl mx-auto pt-8 border-t border-white/10">
-            {[
-              { v: '33', l: 'DB Tables', i: Database },
-              { v: '26+', l: 'Routes', i: Globe },
-              { v: '18', l: 'Permissions', i: Lock },
-              { v: '10+', l: 'Brands', i: ShieldCheck },
-              { v: '3', l: 'Auth Systems', i: Users },
-              { v: '9', l: 'DB Domains', i: Boxes },
-            ].map((s) => (
-              <div key={s.l} className="text-center">
-                <s.i className="w-4 h-4 text-[#8BAAC4] mx-auto mb-1.5" strokeWidth={1.5} />
-                <div className="text-xl lg:text-2xl font-bold">{s.v}</div>
-                <div className="text-[10px] text-white/40 mt-0.5">{s.l}</div>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30">
-          <span className="text-[10px] tracking-[0.2em] uppercase">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent" />
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20">
+          <span className="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+          <div className="w-px h-10 bg-gradient-to-b from-white/30 to-transparent" />
         </div>
       </section>
 
-      {/* ===== OVERVIEW BANNER ===== */}
+      {/* ===== STATS ===== */}
       <section className="bg-white border-b border-[#E5E2DD] py-12 lg:py-16 px-6 lg:px-10">
-        <div className="max-w-4xl mx-auto">
-          <div
-            className="text-[clamp(1.5rem,4vw,2.5rem)] font-medium leading-[1.15] tracking-tight mb-6"
-            style={{ fontFamily: 'Georgia, serif' }}
-          >
-            India's CCTV market is growing 30%+ annually.
-            <br />
-            <span className="text-[#1E3A5F]">Most suppliers still use WhatsApp + Excel.</span>
-          </div>
-          <p className="text-sm lg:text-base text-[#6B6B6B] max-w-2xl leading-relaxed">
-            Patel Networks changes that. We've built a complete digital procurement platform —
-            not a Shopify store, not a WordPress template — a purpose-built system designed
-            specifically for how security hardware is bought and sold in India.
-          </p>
-        </div>
-      </section>
-
-      {/* ===== FEATURES ===== */}
-      <section id="features" className="py-20 lg:py-28 px-4 sm:px-6 lg:px-10">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="text-[11px] tracking-[0.2em] uppercase font-medium text-[#A8743A] mb-3">Section 1</div>
-            <h2
-              className="text-[clamp(1.8rem,4vw,3rem)] font-medium tracking-tight mb-3"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              Everything Built In
-            </h2>
-            <p className="text-sm text-[#6B6B6B]">Five interconnected systems, one unified platform.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {features.map((f, idx) => (
-              <div
-                key={f.title}
-                className="group bg-white border border-[#E5E2DD] p-7 lg:p-8 rounded-xl hover:border-[#1E3A5F] hover:shadow-lg transition-all duration-300"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-11 h-11 rounded-xl bg-[#1E3A5F] flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <f.icon className="w-5 h-5 text-white" strokeWidth={1.5} />
-                  </div>
-                  <h3 className="text-lg font-bold">{f.title}</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-8">
+            {stats.map((s) => (
+              <div key={s.label} className="text-center">
+                <div
+                  className="text-3xl lg:text-4xl font-bold text-[#1E3A5F] mb-1"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  {s.value}
                 </div>
-                <ul className="space-y-2.5">
-                  {f.points.map((p) => (
-                    <li key={p} className="flex items-start gap-2.5 text-sm text-[#6B6B6B] leading-relaxed">
-                      <CheckCircle2 className="w-4 h-4 text-[#1E3A5F] shrink-0 mt-0.5" strokeWidth={1.5} />
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="text-xs font-semibold text-[#1A1A1A]">{s.label}</div>
+                <div className="text-[10px] text-[#9B9B9B] mt-0.5">{s.sub}</div>
               </div>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ===== SYSTEMS (alternating dark/light) ===== */}
+      <section id="systems" className="py-0">
+        {systems.map((sys, idx) => {
+          const isDark = idx % 2 === 1;
+          return (
+            <div
+              key={sys.num}
+              className={isDark ? 'bg-[#1A1A1A] text-white py-20 lg:py-28 px-6 lg:px-10' : 'bg-[#FAF8F5] text-[#1A1A1A] py-20 lg:py-28 px-6 lg:px-10'}
+            >
+              <div className="max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                  {/* Left: number + icon + title */}
+                  <div className="lg:col-span-4">
+                    <div
+                      className={`text-6xl lg:text-7xl font-bold mb-4 ${isDark ? 'text-white/10' : 'text-[#1E3A5F]/15'}`}
+                      style={{ fontFamily: 'Georgia, serif' }}
+                    >
+                      {sys.num}
+                    </div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-[#1E3A5F]'}`}>
+                        <sys.icon className="w-5 h-5" strokeWidth={1.5} color={isDark ? '#8BAAC4' : '#fff'} />
+                      </div>
+                      <h3
+                        className="text-xl lg:text-2xl font-medium tracking-tight"
+                        style={{ fontFamily: 'Georgia, serif' }}
+                      >
+                        {sys.title}
+                      </h3>
+                    </div>
+                    <p className={`text-sm ${isDark ? 'text-white/40' : 'text-[#6B6B6B]'} leading-relaxed`}>
+                      {sys.desc}
+                    </p>
+                  </div>
+
+                  {/* Right: features list */}
+                  <div className="lg:col-span-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {sys.features.map((f) => (
+                        <div
+                          key={f}
+                          className={`flex items-start gap-3 p-4 rounded-lg border ${isDark ? 'border-white/10 bg-white/5' : 'border-[#E5E2DD] bg-white'}`}
+                        >
+                          <Check className={`w-4 h-4 shrink-0 mt-0.5 ${isDark ? 'text-[#8BAAC4]' : 'text-[#1E3A5F]'}`} strokeWidth={2} />
+                          <span className={`text-sm ${isDark ? 'text-white/70' : 'text-[#6B6B6B]'}`}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </section>
 
       {/* ===== COMPARISON ===== */}
-      <section className="bg-white border-y border-[#E5E2DD] py-20 lg:py-24 px-4 sm:px-6 lg:px-10">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="text-[11px] tracking-[0.2em] uppercase font-medium text-[#A8743A] mb-3">Section 2</div>
-            <h2
-              className="text-[clamp(1.8rem,4vw,3rem)] font-medium tracking-tight"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              Why This Is Different
-            </h2>
-          </div>
-          <div className="overflow-x-auto rounded-xl border border-[#E5E2DD]">
-            <table className="w-full text-sm" style={{ minWidth: '600px' }}>
-              <thead>
-                <tr className="bg-[#F3F0EB]">
-                  <th className="text-left py-4 px-4 sm:px-6 font-semibold text-[#6B6B6B] text-xs uppercase tracking-wider">Feature</th>
-                  <th className="text-left py-4 px-4 sm:px-6 font-semibold text-[#6B6B6B] text-xs uppercase tracking-wider">Typical Supplier</th>
-                  <th className="text-left py-4 px-4 sm:px-6 font-semibold text-[#1E3A5F] text-xs uppercase tracking-wider">Patel Networks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E5E2DD] bg-white">
-                {comparisons.map(([f, t, p]) => (
-                  <tr key={f} className="hover:bg-[#FAF8F5] transition-colors">
-                    <td className="py-3.5 px-4 sm:px-6 font-medium text-[#1A1A1A]">{f}</td>
-                    <td className="py-3.5 px-4 sm:px-6 text-[#9B9B9B]">{t}</td>
-                    <td className="py-3.5 px-4 sm:px-6 font-medium text-[#1A1A1A]">{p}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <section className="bg-white border-y border-[#E5E2DD] py-20 lg:py-28 px-6 lg:px-10">
+        <div className="max-w-4xl mx-auto">
+          <h2
+            className="text-2xl lg:text-4xl font-medium tracking-tight text-center mb-3"
+            style={{ fontFamily: 'Georgia, serif' }}
+          >
+            Why this is different
+          </h2>
+          <p className="text-sm text-[#9B9B9B] text-center mb-12">Built differently from the ground up.</p>
+
+          <div className="space-y-2">
+            {comparisons.map(([feature, typical, ours], idx) => (
+              <div
+                key={feature}
+                className="grid grid-cols-3 gap-4 items-center py-4 border-b border-[#F0EDE8] last:border-0"
+              >
+                <div className="text-sm font-semibold text-[#1A1A1A]">{feature}</div>
+                <div className="text-sm text-[#9B9B9B] line-through decoration-[#9B9B9B]/40">{typical}</div>
+                <div className="text-sm font-medium text-[#1E3A5F] flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#1E3A5F] shrink-0" strokeWidth={2} />
+                  {ours}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ===== CATEGORIES ===== */}
-      <section className="bg-[#F3F0EB] py-20 lg:py-24 px-4 sm:px-6 lg:px-10">
+      <section className="py-20 lg:py-28 px-6 lg:px-10">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="text-[11px] tracking-[0.2em] uppercase font-medium text-[#A8743A] mb-3">Section 3</div>
-            <h2
-              className="text-[clamp(1.8rem,4vw,3rem)] font-medium tracking-tight"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              Six Disciplines
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((c) => (
-              <div key={c.name} className="bg-white border border-[#E5E2DD] p-6 rounded-xl text-center hover:shadow-md transition-shadow">
-                <c.icon className="w-8 h-8 text-[#1E3A5F] mx-auto mb-3" strokeWidth={1.5} />
-                <div className="text-sm font-bold">{c.name}</div>
-                <div className="text-xs text-[#6B6B6B] mt-1">{c.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== BENEFITS ===== */}
-      <section className="py-20 lg:py-28 px-4 sm:px-6 lg:px-10">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="text-[11px] tracking-[0.2em] uppercase font-medium text-[#A8743A] mb-3">Section 4</div>
-            <h2
-              className="text-[clamp(1.8rem,4vw,3rem)] font-medium tracking-tight"
-              style={{ fontFamily: 'Georgia, serif' }}
-            >
-              Business Benefits
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {benefits.map((b) => (
-              <div key={b.title} className="bg-white border border-[#E5E2DD] p-7 rounded-xl">
-                <div className="w-12 h-12 rounded-xl bg-[#1E3A5F] flex items-center justify-center mb-5">
-                  <b.icon className="w-6 h-6 text-white" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-lg font-bold mb-4">{b.title}</h3>
-                <ul className="space-y-2.5">
-                  {b.points.map((p) => (
-                    <li key={p} className="flex items-start gap-2 text-sm text-[#6B6B6B]">
-                      <CheckCircle2 className="w-4 h-4 text-[#1E3A5F] shrink-0 mt-0.5" strokeWidth={1.5} />
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
+          <h2
+            className="text-2xl lg:text-4xl font-medium tracking-tight text-center mb-12"
+            style={{ fontFamily: 'Georgia, serif' }}
+          >
+            Six disciplines of security hardware
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {categories.map((cat) => (
+              <div
+                key={cat.name}
+                className="bg-white border border-[#E5E2DD] rounded-xl p-6 text-center hover:shadow-lg hover:border-[#1E3A5F] transition-all duration-300"
+              >
+                <cat.icon className="w-8 h-8 text-[#1E3A5F] mx-auto mb-3" strokeWidth={1.5} />
+                <div className="text-sm font-bold">{cat.name}</div>
+                <div className="text-xs text-[#9B9B9B] mt-1">{cat.desc}</div>
               </div>
             ))}
           </div>
@@ -287,19 +245,19 @@ export default function PitchPage() {
       </section>
 
       {/* ===== BRANDS ===== */}
-      <section className="py-16 px-4 sm:px-6 lg:px-10">
+      <section className="bg-[#1A1A1A] py-16 px-6 lg:px-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="text-[11px] tracking-[0.2em] uppercase font-medium text-[#6B6B6B] mb-8">
-            Authorized Supply — Premier Security Brands
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-8">
-            {brands.map((brand) => (
+          <p className="text-[10px] tracking-[0.2em] uppercase font-medium text-white/40 mb-8">
+            Authorized supply
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-10">
+            {['CP Plus', 'Hikvision', 'Dahua', 'D-Link', 'Optilink', 'Lapcare', 'AOC', 'DGSoal', 'Axpial', 'MTC'].map((b) => (
               <span
-                key={brand}
-                className="text-base lg:text-xl font-medium text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors cursor-default"
+                key={b}
+                className="text-lg lg:text-xl font-medium text-white/40 hover:text-white transition-colors cursor-default"
                 style={{ fontFamily: 'Georgia, serif' }}
               >
-                {brand}
+                {b}
               </span>
             ))}
           </div>
@@ -307,48 +265,43 @@ export default function PitchPage() {
       </section>
 
       {/* ===== CTA ===== */}
-      <section className="relative overflow-hidden bg-[#1A1A1A] text-white py-20 lg:py-28 px-4 sm:px-6 lg:px-10">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-15 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #2C5282 0%, transparent 70%)' }}
-        />
-        <div className="relative z-10 max-w-2xl mx-auto text-center">
+      <section className="relative overflow-hidden bg-[#FAF8F5] py-24 lg:py-32 px-6 lg:px-10">
+        <div className="max-w-3xl mx-auto text-center">
           <h2
-            className="text-[clamp(1.8rem,4vw,3.5rem)] font-medium tracking-tight mb-4"
+            className="text-3xl lg:text-5xl font-medium tracking-tight mb-4"
             style={{ fontFamily: 'Georgia, serif' }}
           >
-            Ready to see it in action?
+            See it for yourself.
           </h2>
-          <p className="text-sm text-white/50 mb-10">
-            The platform is live and ready. Browse the catalogue, build a kit, place an order.
+          <p className="text-sm text-[#6B6B6B] mb-10 max-w-md mx-auto">
+            The platform is live. Browse the catalogue, build a kit, log into the admin console.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
-              href="https://patel-5-2.onrender.com"
-              className="group inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-6 py-3.5 rounded-lg font-bold text-sm transition-transform hover:scale-105"
+              href="https://ecommerce-5-2.onrender.com"
+              className="group inline-flex items-center gap-2 bg-[#1A1A1A] text-white px-7 py-3.5 rounded-lg font-bold text-sm transition-transform hover:scale-105"
             >
-              Visit the Store
+              Visit Store
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
-            <a href="https://patel-5-2.onrender.com/admin/login" className="inline-flex items-center gap-2 border border-white/15 px-6 py-3.5 rounded-lg font-bold text-sm hover:bg-white/5 transition-colors">
+            <a
+              href="https://ecommerce-5-2.onrender.com/admin/login"
+              className="inline-flex items-center gap-2 border border-[#D1CEC9] px-7 py-3.5 rounded-lg font-bold text-sm hover:bg-[#F3F0EB] transition-colors"
+            >
               Admin Demo
             </a>
-            <a href="https://patel-5-2.onrender.com/stock/login" className="inline-flex items-center gap-2 border border-white/15 px-6 py-3.5 rounded-lg font-bold text-sm hover:bg-white/5 transition-colors">
-              Stock Panel Demo
+            <a
+              href="https://ecommerce-5-2.onrender.com/stock/login"
+              className="inline-flex items-center gap-2 border border-[#D1CEC9] px-7 py-3.5 rounded-lg font-bold text-sm hover:bg-[#F3F0EB] transition-colors"
+            >
+              Stock Panel
             </a>
           </div>
         </div>
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="bg-[#1A1A1A] text-white/40 border-t border-white/10 py-8 px-4 sm:px-6 lg:px-10">
+      <footer className="bg-[#1A1A1A] text-white/30 py-8 px-6 lg:px-10">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-xs">
             Designed & developed by{' '}
@@ -356,7 +309,7 @@ export default function PitchPage() {
               Omkar Kardile
             </a>
           </p>
-          <p className="text-[10px] mt-1 text-white/30">
+          <p className="text-[10px] mt-1 text-white/20">
             Patel Networks · India · {new Date().getFullYear()}
           </p>
         </div>
